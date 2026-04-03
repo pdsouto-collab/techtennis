@@ -41,9 +41,10 @@ interface HomeTileProps {
   onClick: () => void;
   fullWidth?: boolean;
   backgroundPosition?: string;
+  backgroundSize?: string;
 }
 
-const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth, backgroundPosition }) => {
+const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth, backgroundPosition, backgroundSize }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -62,7 +63,7 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       <div style={{
         position: 'absolute', inset: 0,
         backgroundImage: `url(${backgroundImage})`,
-        backgroundSize: 'cover',
+        backgroundSize: backgroundSize || 'cover',
         backgroundPosition: backgroundPosition || 'center',
       }} />
       <div style={{
@@ -143,7 +144,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="center 35%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -179,7 +180,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
-              backgroundImage={ernestoImg} backgroundPosition="center 35%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -195,7 +196,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="center 35%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
