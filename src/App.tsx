@@ -147,12 +147,12 @@ const Hero = () => {
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Logística"
-              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1596464522927-463d1ef9b2c8?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Dashboard"
-              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
@@ -168,22 +168,22 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1538356111053-748a48e1acb8?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1605295484803-fdccaa22d56d?q=80&w=1500&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Agenda Completa"
-              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
-              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1587325514668-3e4b3e8e2fa6?q=80&w=800&auto=format&fit=crop"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
-              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1596464522927-463d1ef9b2c8?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
           </>
@@ -199,12 +199,12 @@ const Hero = () => {
             />
             <HomeTile 
               title="Buscar Aula Avulsa" subtitle="Treine Hoje"
-              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1518606016146-527bf14e5b72?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Meus Agendamentos"
-              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
           </>
