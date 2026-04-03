@@ -5,13 +5,13 @@ import type { Customer, Racket, StringingJob } from '../types';
 
 // Mock Data
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MOCK_CUSTOMER: Customer = {
+export const MOCK_CUSTOMER: Customer = {
   id: 'c1', name: 'Rafael Nadal', email: 'rafa@example.com',
   phone: '+1234567890', playStyle: 'Aggressive Baseliner', dominantHand: 'Left'
 };
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const MOCK_RACKET: Racket = {
+export const MOCK_RACKET: Racket = {
   id: 'r1', customerId: 'c1', brand: 'Babolat', model: 'Pure Aero',
   stringPattern: '16x19', headSize: 100, weight: 300
 };

@@ -1,6 +1,7 @@
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Menu, ArrowRight, User } from 'lucide-react';
+import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 
@@ -21,13 +22,6 @@ const Navbar = () => (
           TechTennis
         </Link>
       </div>
-      
-      {/* Center Links */}
-      <div style={{ display: 'flex', gap: '32px' }} className="nav-links">
-        <Link to="/stringer" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Encordoador</Link>
-        <Link to="/feedback" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Feedback</Link>
-        <Link to="/matches" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Live Scoring</Link>
-      </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
         <Search size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
@@ -38,94 +32,188 @@ const Navbar = () => (
   </nav>
 );
 
-const Hero = () => (
-  <div style={{ 
-    minHeight: '100vh', 
-    display: 'flex', 
-    alignItems: 'center', 
-    padding: '140px 5% 60px',
-    position: 'relative'
-  }}>
-    <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'grid', gridTemplateColumns: '1fr 0.8fr', gap: '64px', zIndex: 1, position: 'relative', alignItems: 'center', width: '100%' }}>
+// --- NTC Style Tile Component ---
+interface HomeTileProps {
+  title: string;
+  subtitle?: string;
+  backgroundImage: string;
+  onClick: () => void;
+  fullWidth?: boolean;
+}
+
+const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth }) => {
+  return (
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      onClick={onClick}
+      style={{
+        position: 'relative',
+        borderRadius: '24px', // Keeps glassmorphism soft edges
+        overflow: 'hidden',
+        cursor: 'pointer',
+        height: fullWidth ? '320px' : '260px',
+        gridColumn: fullWidth ? '1 / -1' : 'span 1',
+        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+      }}
+    >
+      <div style={{
+        position: 'absolute', inset: 0,
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }} />
+      {/* Dark overlay for NTC feel but keeping true to white/modern contrast */}
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(31, 80, 138, 0.8) 100%)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '24px', left: '24px', right: '24px',
+        display: 'flex', flexDirection: 'column', gap: '4px'
+      }}>
+        {subtitle && <span style={{ color: 'var(--primary-color)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>}
+        <h3 style={{
+          color: '#fff', fontSize: fullWidth ? '32px' : '24px',
+          fontFamily: 'var(--font-heading)', fontWeight: 800, textTransform: 'uppercase',
+          lineHeight: 1.1
+        }}>{title}</h3>
+      </div>
+    </motion.div>
+  );
+};
+
+// --- Main Home Screen ---
+type UserProfile = 'ENCORDOADOR' | 'PROFESSOR' | 'CLIENTE';
+
+const Hero = () => {
+  const navigate = useNavigate();
+  const [profile, setProfile] = useState<UserProfile>('ENCORDOADOR');
+
+  return (
+    <div style={{ 
+      minHeight: '100vh', 
+      padding: '120px 5% 60px',
+      maxWidth: '1200px',
+      margin: '0 auto',
+      width: '100%'
+    }}>
       
-      <motion.div 
-        initial={{ opacity: 0, x: -30 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-      >
-        <div style={{ 
-          display: 'inline-block', padding: '6px 16px', background: 'rgba(255,255,255,0.2)', 
-          borderRadius: '100px', border: '1px solid rgba(255,255,255,0.4)', marginBottom: '24px',
-          fontWeight: 600, fontSize: '14px', letterSpacing: '1px'
-        }}>
-          AO OFFICIAL PARTNER
+      {/* Profile Switcher (For Demo Purposes) */}
+      <div className="glass-panel" style={{ 
+        padding: '16px', marginBottom: '32px', display: 'flex', 
+        alignItems: 'center', justifyContent: 'space-between',
+        background: 'rgba(255,255,255,0.3)', flexWrap: 'wrap', gap: '16px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Settings size={20} color="var(--bg-gradient-bottom)" />
+          <span style={{ fontWeight: 700, color: 'var(--bg-gradient-bottom)' }}>Modo de Visualização:</span>
         </div>
-        <h1 style={{ fontSize: 'clamp(56px, 6vw, 96px)', lineHeight: 1.05, marginBottom: '24px' }}>
-          Gestão de <br/>
-          <span style={{ fontWeight: 800 }}>Encordoamento</span>
-        </h1>
-        <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '85%', lineHeight: 1.5 }}>
-          Ciclo de vida completo do material: input técnico da máquina, feedback na quadra e recomendações via AI.
-        </p>
+        <div style={{ display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.4)', padding: '6px', borderRadius: '100px' }}>
+          {(['ENCORDOADOR', 'PROFESSOR', 'CLIENTE'] as UserProfile[]).map(p => (
+            <button
+              key={p}
+              onClick={() => setProfile(p)}
+              style={{
+                padding: '8px 16px', borderRadius: '100px', border: 'none', cursor: 'pointer',
+                background: profile === p ? 'var(--bg-gradient-bottom)' : 'transparent',
+                color: profile === p ? '#fff' : 'var(--bg-gradient-bottom)',
+                fontWeight: 600, fontSize: '14px', transition: 'all 0.3s'
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <h1 style={{ fontSize: '32px', marginBottom: '24px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
+        BEM-VINDO AO TECHTENNIS
+      </h1>
+
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+        gap: '24px' 
+      }}>
         
-        <div style={{ display: 'flex', gap: '16px' }}>
-          <Link to="/stringer">
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-primary">
-              Acesso Encordoador <ArrowRight size={20} />
-            </motion.button>
-          </Link>
-          <Link to="/feedback">
-            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-secondary">
-              Deixe seu Feedback
-            </motion.button>
-          </Link>
-        </div>
-      </motion.div>
+        {/* ENCORDOADOR (Master) */}
+        {profile === 'ENCORDOADOR' && (
+          <>
+            <HomeTile 
+              title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/stringer')}
+            />
+            <HomeTile 
+              title="Coleta de Raquetes" subtitle="Logística"
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Dashboard"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Aulas Avulsas" subtitle="Marketplace" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
 
-      {/* Glass Mockup Area resembling the attached image */}
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 1, delay: 0.2 }}
-        style={{ display: 'flex', gap: '20px', justifyContent: 'center' }}
-      >
-        {/* Main Phone Mockup */}
-        <div className="glass-panel" style={{ 
-          width: '320px', height: '640px', padding: '24px', 
-          display: 'flex', flexDirection: 'column',
-          background: 'linear-gradient(180deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 100%)',
-          boxShadow: '0 24px 60px rgba(0,0,255,0.1)'
-        }}>
-           <div style={{ flex: 1, position: 'relative', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-              <h3 style={{ fontSize: '24px', fontWeight: 600, marginTop: '20px' }}>Match Live</h3>
-              <div style={{ marginTop: '40px', width: '100%', background: 'rgba(255,255,255,0.8)', borderRadius: '24px', padding: '20px', boxShadow: '0 8px 32px rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                   <div style={{ fontWeight: 600, color: '#1e293b' }}>USA</div>
-                   <div style={{ fontWeight: 400, color: '#64748b', fontSize: '14px' }}>VS</div>
-                   <div style={{ fontWeight: 600, color: '#1e293b' }}>ARG</div>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                   <div style={{ fontSize: '32px', fontWeight: 800, color: '#1e293b' }}>70</div>
-                   <div style={{ background: 'var(--primary-color)', color: '#1e293b', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: 700 }}>LIVE</div>
-                   <div style={{ fontSize: '32px', fontWeight: 800, color: '#64748b' }}>14</div>
-                </div>
-              </div>
+        {/* PROFESSOR DE TÊNIS */}
+        {profile === 'PROFESSOR' && (
+          <>
+            <HomeTile 
+              title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1538356111053-748a48e1acb8?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Agenda Completa"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Meu Encordoamento" subtitle="Equipamento Pessoal"
+              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=800&auto=format&fit=crop"
+              onClick={() => navigate('/stringer')}
+            />
+            <HomeTile 
+              title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
 
-              <div style={{ marginTop: 'auto', width: '100%', padding: '20px', background: 'rgba(255,255,255,0.3)', borderRadius: '24px', backdropFilter: 'blur(20px)' }}>
-                 <p style={{ fontSize: '14px', fontWeight: 600, marginBottom: '12px' }}>Advanced AI Shot Coach</p>
-                 <div style={{ display: 'flex', justifyContent: 'space-between', gap: '8px' }}>
-                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px', borderRadius: '16px', flex: 1, textAlign: 'center', color: '#1e293b', fontWeight: 700 }}>81%</div>
-                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px', borderRadius: '16px', flex: 1, textAlign: 'center', color: '#1e293b', fontWeight: 700 }}>78%</div>
-                    <div style={{ background: 'rgba(255,255,255,0.5)', padding: '12px', borderRadius: '16px', flex: 1, textAlign: 'center', color: '#1e293b', fontWeight: 700 }}>92%</div>
-                 </div>
-              </div>
-           </div>
-        </div>
-      </motion.div>
+        {/* CLIENTE FINAL */}
+        {profile === 'CLIENTE' && (
+          <>
+            <HomeTile 
+              title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/feedback')}
+            />
+            <HomeTile 
+              title="Buscar Aula Avulsa" subtitle="Treine Hoje"
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Meus Agendamentos"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
+      </div>
 
     </div>
-  </div>
-);
+  );
+};
 
 function App() {
   return (
