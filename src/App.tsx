@@ -123,7 +123,7 @@ const Hero = () => (
 
 function App() {
   return (
-    <Router>
+    <Router basename="/techtennis">
       <div className="page-container">
         <Navbar />
         <main>
