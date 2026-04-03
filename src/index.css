@@ -5,8 +5,8 @@
   --primary-color-dim: rgba(225, 255, 0, 0.3);
   
   /* The core AO blues based on the reference image */
-  --bg-gradient-top: #408DD1; /* Light AO Blue */
-  --bg-gradient-bottom: #2864A8; /* Deep AO Blue */
+  --bg-gradient-top: #4298E7; /* Light AO Blue */
+  --bg-gradient-bottom: #2652B0; /* Deep AO Blue */
   --secondary-color: #0091D2; /* Process Blue */
 
   /* Glass Panels */
