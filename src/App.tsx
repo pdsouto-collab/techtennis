@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
-import ernestoImg from './assets/ernesto.jpg';
+import ernestoImg from './assets/miami-open-ernesto.jpg';
 
 const Navbar = () => (
   <nav style={{
@@ -179,7 +179,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
-              backgroundImage="https://images.unsplash.com/photo-1587325514668-3e4b3e8e2fa6?q=80&w=800&auto=format&fit=crop"
+              backgroundImage={ernestoImg} backgroundPosition="center 35%"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -195,7 +195,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage={ernestoImg} backgroundPosition="center 35%"
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
