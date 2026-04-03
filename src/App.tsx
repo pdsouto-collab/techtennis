@@ -144,7 +144,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -180,7 +180,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -196,7 +196,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="130%"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
