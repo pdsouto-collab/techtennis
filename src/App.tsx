@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Menu, ArrowRight, User } from 'lucide-react';
+import { StringerDashboard } from './components/StringerDashboard';
+import { CustomerFeedback } from './components/CustomerFeedback';
 
 const Navbar = () => (
   <nav style={{
@@ -22,9 +24,9 @@ const Navbar = () => (
       
       {/* Center Links */}
       <div style={{ display: 'flex', gap: '32px' }} className="nav-links">
-        <Link to="/racquets" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Equipment</Link>
+        <Link to="/stringer" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Encordoador</Link>
+        <Link to="/feedback" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Feedback</Link>
         <Link to="/matches" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Live Scoring</Link>
-        <Link to="/training" style={{ color: 'var(--text-primary)', fontWeight: 500 }}>Coach AI</Link>
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
@@ -59,20 +61,24 @@ const Hero = () => (
           AO OFFICIAL PARTNER
         </div>
         <h1 style={{ fontSize: 'clamp(56px, 6vw, 96px)', lineHeight: 1.05, marginBottom: '24px' }}>
-          Advance<br/>
-          Your <span style={{ fontWeight: 800 }}>Game</span>
+          Gestão de <br/>
+          <span style={{ fontWeight: 800 }}>Encordoamento</span>
         </h1>
         <p style={{ fontSize: '20px', color: 'var(--text-secondary)', marginBottom: '40px', maxWidth: '85%', lineHeight: 1.5 }}>
-          Analyze your progress, set new goals, and improve your skills with advanced AI tracking and live tournament scores.
+          Ciclo de vida completo do material: input técnico da máquina, feedback na quadra e recomendações via AI.
         </p>
         
         <div style={{ display: 'flex', gap: '16px' }}>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-primary">
-            Get Started <ArrowRight size={20} />
-          </motion.button>
-          <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-secondary">
-            View Live Scores
-          </motion.button>
+          <Link to="/stringer">
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-primary">
+              Acesso Encordoador <ArrowRight size={20} />
+            </motion.button>
+          </Link>
+          <Link to="/feedback">
+            <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="button-secondary">
+              Deixe seu Feedback
+            </motion.button>
+          </Link>
         </div>
       </motion.div>
 
@@ -100,7 +106,7 @@ const Hero = () => (
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                    <div style={{ fontSize: '32px', fontWeight: 800, color: '#1e293b' }}>70</div>
-                   <div style={{ background: '#d8f533', color: '#1e293b', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: 700 }}>LIVE</div>
+                   <div style={{ background: 'var(--primary-color)', color: '#1e293b', padding: '4px 12px', borderRadius: '100px', fontSize: '12px', fontWeight: 700 }}>LIVE</div>
                    <div style={{ fontSize: '32px', fontWeight: 800, color: '#64748b' }}>14</div>
                 </div>
               </div>
@@ -129,6 +135,8 @@ function App() {
         <main>
           <Routes>
             <Route path="/" element={<Hero />} />
+            <Route path="/stringer" element={<StringerDashboard />} />
+            <Route path="/feedback" element={<CustomerFeedback />} />
           </Routes>
         </main>
       </div>
