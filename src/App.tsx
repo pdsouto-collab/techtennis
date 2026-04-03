@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
+import ernestoImg from './assets/ernesto.jpg';
 
 const Navbar = () => (
   <nav style={{
@@ -141,7 +142,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage={ernestoImg}
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
