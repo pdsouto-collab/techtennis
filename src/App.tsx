@@ -65,7 +65,7 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(0, 12, 60, 0.1) 0%, rgba(0, 12, 60, 0.95) 100%)',
+        background: 'linear-gradient(180deg, rgba(30, 80, 150, 0.1) 0%, rgba(30, 80, 150, 0.8) 100%)',
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
@@ -141,12 +141,12 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Logística"
-              backgroundImage="https://images.unsplash.com/photo-1596464522927-463d1ef9b2c8?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
@@ -182,7 +182,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
-              backgroundImage="https://images.unsplash.com/photo-1596464522927-463d1ef9b2c8?q=80&w=800&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
               onClick={() => {}}
             />
           </>
@@ -193,7 +193,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
