@@ -1,24 +1,25 @@
 /* src/index.css */
 :root {
-  /* Brand Colors - Based on the new visual identity */
-  --primary-color: #d8f533; /* The tennis ball yellow/green */
-  --primary-color-dim: rgba(216, 245, 51, 0.5);
+  /* Brand Colors - Australian Open Theme */
+  --primary-color: #E1FF00; /* Amarelo Tênis (Destaque) */
+  --primary-color-dim: rgba(225, 255, 0, 0.3);
   
-  /* The core blue gradients */
-  --bg-gradient-top: #6db3e6;
-  --bg-gradient-bottom: #1f508a;
+  /* The core AO blues */
+  --bg-gradient-top: #000C3C; /* Navy Fundo */
+  --bg-gradient-bottom: #1E2886; /* Royal Blue */
+  --secondary-color: #0091D2; /* Process Blue */
 
-  /* Glass Panels - Frosty White/Blue */
-  --bg-panel: rgba(255, 255, 255, 0.25);
-  --bg-panel-solid: rgba(255, 255, 255, 0.6);
+  /* Glass Panels - Deep Blue/Process Blue frost */
+  --bg-panel: rgba(0, 145, 210, 0.15);
+  --bg-panel-solid: rgba(30, 40, 134, 0.8);
   
   /* Text */
   --text-primary: #ffffff; /* For dark backgrounds */
-  --text-dark: #1e293b; /* For light panels */
+  --text-dark: #000C3C; /* Navy text */
   --text-secondary: rgba(255, 255, 255, 0.8);
   
   /* Borders */
-  --border-light: rgba(255, 255, 255, 0.4);
+  --border-light: rgba(0, 145, 210, 0.4);
   
   /* Typography */
   --font-heading: 'Outfit', sans-serif;

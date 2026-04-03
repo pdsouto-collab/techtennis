@@ -10,7 +10,7 @@ const Navbar = () => (
     position: 'fixed',
     top: '20px', left: '50%', transform: 'translateX(-50%)',
     width: '90%', maxWidth: '1200px', zIndex: 50,
-    background: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(16px)',
+    background: 'rgba(0, 145, 210, 0.15)', backdropFilter: 'blur(16px)',
     border: '1px solid var(--border-light)',
     borderRadius: '100px',
     padding: '12px 32px'
@@ -18,7 +18,7 @@ const Navbar = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
         <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--primary-color)', color: 'var(--bg-gradient-bottom)', borderRadius: '50%', width: '32px', height: '32px', marginRight: '8px', fontSize: '18px' }}>T</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--primary-color)', color: 'var(--text-dark)', borderRadius: '50%', width: '32px', height: '32px', marginRight: '8px', fontSize: '18px' }}>T</span>
           TechTennis
         </Link>
       </div>
@@ -49,12 +49,12 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       onClick={onClick}
       style={{
         position: 'relative',
-        borderRadius: '24px', // Keeps glassmorphism soft edges
+        borderRadius: '24px', 
         overflow: 'hidden',
         cursor: 'pointer',
         height: fullWidth ? '320px' : '260px',
         gridColumn: fullWidth ? '1 / -1' : 'span 1',
-        boxShadow: '0 10px 30px rgba(0,0,0,0.1)'
+        boxShadow: '0 10px 40px rgba(0, 12, 60, 0.4)'
       }}
     >
       <div style={{
@@ -63,10 +63,9 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
         backgroundSize: 'cover',
         backgroundPosition: 'center',
       }} />
-      {/* Dark overlay for NTC feel but keeping true to white/modern contrast */}
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(31, 80, 138, 0.8) 100%)',
+        background: 'linear-gradient(180deg, rgba(0, 12, 60, 0.1) 0%, rgba(0, 12, 60, 0.95) 100%)',
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
@@ -103,22 +102,22 @@ const Hero = () => {
       <div className="glass-panel" style={{ 
         padding: '16px', marginBottom: '32px', display: 'flex', 
         alignItems: 'center', justifyContent: 'space-between',
-        background: 'rgba(255,255,255,0.3)', flexWrap: 'wrap', gap: '16px'
+        background: 'var(--bg-panel-solid)', flexWrap: 'wrap', gap: '16px'
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Settings size={20} color="var(--bg-gradient-bottom)" />
-          <span style={{ fontWeight: 700, color: 'var(--bg-gradient-bottom)' }}>Modo de Visualização:</span>
+          <Settings size={20} color="var(--primary-color)" />
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Modo de Visualização:</span>
         </div>
-        <div style={{ display: 'flex', gap: '8px', background: 'rgba(255,255,255,0.4)', padding: '6px', borderRadius: '100px' }}>
+        <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,12,60,0.5)', padding: '6px', borderRadius: '100px' }}>
           {(['ENCORDOADOR', 'PROFESSOR', 'CLIENTE'] as UserProfile[]).map(p => (
             <button
               key={p}
               onClick={() => setProfile(p)}
               style={{
                 padding: '8px 16px', borderRadius: '100px', border: 'none', cursor: 'pointer',
-                background: profile === p ? 'var(--bg-gradient-bottom)' : 'transparent',
-                color: profile === p ? '#fff' : 'var(--bg-gradient-bottom)',
-                fontWeight: 600, fontSize: '14px', transition: 'all 0.3s'
+                background: profile === p ? 'var(--primary-color)' : 'transparent',
+                color: profile === p ? 'var(--text-dark)' : 'var(--text-primary)',
+                fontWeight: 700, fontSize: '14px', transition: 'all 0.3s'
               }}
             >
               {p}
