@@ -129,7 +129,7 @@ const Hero = () => {
       </div>
 
       <h1 style={{ fontSize: '32px', marginBottom: '24px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
-        BEM-VINDO AO TECHTENNIS
+        BEM-VINDO A TECHTENNIS
       </h1>
 
       <div style={{ 
