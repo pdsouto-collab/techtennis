@@ -40,9 +40,10 @@ interface HomeTileProps {
   backgroundImage: string;
   onClick: () => void;
   fullWidth?: boolean;
+  backgroundPosition?: string;
 }
 
-const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth }) => {
+const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth, backgroundPosition }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -62,11 +63,11 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
         position: 'absolute', inset: 0,
         backgroundImage: `url(${backgroundImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: backgroundPosition || 'center',
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(30, 80, 150, 0.1) 0%, rgba(30, 80, 150, 0.8) 100%)',
+        background: 'linear-gradient(180deg, rgba(30, 80, 150, 0) 0%, rgba(30, 80, 150, 0.5) 100%)',
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
@@ -142,7 +143,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage={ernestoImg}
+              backgroundImage={ernestoImg} backgroundPosition="top center"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
