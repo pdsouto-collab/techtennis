@@ -67,7 +67,7 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(30, 80, 150, 0) 0%, rgba(30, 80, 150, 0.5) 100%)',
+        background: 'linear-gradient(180deg, rgba(0, 12, 60, 0) 0%, rgba(0, 12, 60, 0) 40%, rgba(0, 12, 60, 0.9) 100%)',
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
@@ -143,7 +143,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="top center"
+              backgroundImage={ernestoImg} backgroundPosition="center 35%"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
