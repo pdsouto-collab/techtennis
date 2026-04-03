@@ -1,0 +1,127 @@
+/* src/index.css */
+:root {
+  /* Brand Colors - Based on the new visual identity */
+  --primary-color: #d8f533; /* The tennis ball yellow/green */
+  --primary-color-dim: rgba(216, 245, 51, 0.5);
+  
+  /* The core blue gradients */
+  --bg-gradient-top: #6db3e6;
+  --bg-gradient-bottom: #1f508a;
+
+  /* Glass Panels - Frosty White/Blue */
+  --bg-panel: rgba(255, 255, 255, 0.25);
+  --bg-panel-solid: rgba(255, 255, 255, 0.6);
+  
+  /* Text */
+  --text-primary: #ffffff; /* For dark backgrounds */
+  --text-dark: #1e293b; /* For light panels */
+  --text-secondary: rgba(255, 255, 255, 0.8);
+  
+  /* Borders */
+  --border-light: rgba(255, 255, 255, 0.4);
+  
+  /* Typography */
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  background: linear-gradient(160deg, var(--bg-gradient-top) 0%, var(--bg-gradient-bottom) 100%);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  overflow-x: hidden;
+  background-attachment: fixed;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Utilities */
+.glass-panel {
+  background: var(--bg-panel);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-light);
+  border-radius: 32px; /* Very rounded corners like the mockup */
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #ffffff 0%, var(--text-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #a2cc00 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.button-primary {
+  background-color: var(--text-primary); /* White pill buttons */
+  color: var(--bg-gradient-bottom);
+  font-family: var(--font-heading);
+  font-weight: 700;
+  padding: 16px 32px;
+  border-radius: 100px; /* Pill shape */
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+}
+
+.button-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.button-secondary {
+  background-color: transparent;
+  color: var(--text-primary);
+  font-family: var(--font-heading);
+  font-weight: 500;
+  padding: 16px 32px;
+  border-radius: 100px;
+  border: 1.5px solid var(--border-light);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-secondary:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.6);
+}
+
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+main {
+  flex: 1;
+}
