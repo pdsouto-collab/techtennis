@@ -1,168 +1,214 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { User, Menu } from 'lucide-react';
+import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 
 const Navbar = () => (
   <nav style={{
-    position: 'absolute',
-    top: 0, left: 0, right: 0,
-    width: '100%', zIndex: 50,
-    padding: '24px 20px',
-    background: 'transparent'
+    position: 'fixed',
+    top: '20px', left: '50%', transform: 'translateX(-50%)',
+    width: '90%', maxWidth: '1200px', zIndex: 50,
+    background: 'rgba(0, 145, 210, 0.15)', backdropFilter: 'blur(16px)',
+    border: '1px solid var(--border-light)',
+    borderRadius: '100px',
+    padding: '12px 32px'
   }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', maxWidth: '600px', margin: '0 auto' }}>
-      
-      {/* Back/Menu Icon (Simulating left action) */}
-      <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-         <Menu color="#ffffff" size={24} />
+    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+        <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--primary-color)', color: 'var(--text-dark)', borderRadius: '50%', width: '32px', height: '32px', marginRight: '8px', fontSize: '18px' }}>T</span>
+          TechTennis
+        </Link>
       </div>
 
-      {/* Center Logo */}
-      <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '32px', fontWeight: 900, color: '#ffffff', letterSpacing: '-1px' }}>
-        T<span style={{ fontSize: '32px', opacity: 0.9 }}>T</span>
-      </Link>
-
-      {/* Right User Icon */}
-      <div style={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
-         <User color="#ffffff" size={24} />
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        <Search size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
+        <User size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
+        <Menu size={24} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
       </div>
     </div>
   </nav>
 );
 
-// --- Circular Story Component ---
-interface StoryCircleProps {
+// --- NTC Style Tile Component ---
+interface HomeTileProps {
   title: string;
-  subtitle: string;
-  imageUrl: string;
+  subtitle?: string;
+  backgroundImage: string;
   onClick: () => void;
+  fullWidth?: boolean;
 }
 
-const StoryCircle: React.FC<StoryCircleProps> = ({ title, subtitle, imageUrl, onClick }) => {
+const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth }) => {
   return (
-    <motion.div 
-      whileHover={{ scale: 1.05 }} 
-      whileTap={{ scale: 0.95 }}
+    <motion.div
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
       onClick={onClick}
-      style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', cursor: 'pointer', minWidth: '90px', gap: '8px' }}
+      style={{
+        position: 'relative',
+        borderRadius: '24px', 
+        overflow: 'hidden',
+        cursor: 'pointer',
+        height: fullWidth ? '320px' : '260px',
+        gridColumn: fullWidth ? '1 / -1' : 'span 1',
+        boxShadow: '0 10px 40px rgba(0, 12, 60, 0.4)'
+      }}
     >
       <div style={{
-        width: '84px', height: '84px',
-        borderRadius: '50%',
-        padding: '3px',
-        background: 'linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(255,255,255,0.7) 100%)',
-        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+        position: 'absolute', inset: 0,
+        backgroundImage: `url(${backgroundImage})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+      }} />
+      <div style={{
+        position: 'absolute', inset: 0,
+        background: 'linear-gradient(180deg, rgba(30, 80, 150, 0.1) 0%, rgba(30, 80, 150, 0.8) 100%)',
+      }} />
+      <div style={{
+        position: 'absolute', bottom: '24px', left: '24px', right: '24px',
+        display: 'flex', flexDirection: 'column', gap: '4px'
       }}>
-        <div style={{
-          width: '100%', height: '100%',
-          borderRadius: '50%',
-          overflow: 'hidden',
-          background: '#000',
-          position: 'relative'
-        }}>
-           <img src={imageUrl} alt={title} style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.8 }} />
-        </div>
-      </div>
-      <div style={{ textAlign: 'center', lineHeight: 1.1 }}>
-        <p style={{ color: '#ffffff', fontSize: '12px', fontWeight: 700, fontFamily: 'var(--font-heading)' }}>{title}</p>
-        <p style={{ color: 'rgba(255,255,255,0.8)', fontSize: '11px', fontWeight: 500 }}>{subtitle}</p>
+        {subtitle && <span style={{ color: 'var(--primary-color)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>}
+        <h3 style={{
+          color: '#fff', fontSize: fullWidth ? '32px' : '24px',
+          fontFamily: 'var(--font-heading)', fontWeight: 800, textTransform: 'uppercase',
+          lineHeight: 1.1
+        }}>{title}</h3>
       </div>
     </motion.div>
   );
 };
 
 // --- Main Home Screen ---
+type UserProfile = 'ENCORDOADOR' | 'PROFESSOR' | 'CLIENTE';
+
 const Hero = () => {
   const navigate = useNavigate();
+  const [profile, setProfile] = useState<UserProfile>('ENCORDOADOR');
 
   return (
     <div style={{ 
       minHeight: '100vh', 
-      paddingTop: '100px',
-      maxWidth: '600px',
+      padding: '120px 5% 60px',
+      maxWidth: '1200px',
       margin: '0 auto',
-      width: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative',
-      overflow: 'hidden'
+      width: '100%'
     }}>
+      
+      {/* Profile Switcher */}
+      <div className="glass-panel" style={{ 
+        padding: '16px', marginBottom: '32px', display: 'flex', 
+        alignItems: 'center', justifyContent: 'space-between',
+        background: 'var(--bg-panel-solid)', flexWrap: 'wrap', gap: '16px'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Settings size={20} color="var(--primary-color)" />
+          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Modo de Visualização:</span>
+        </div>
+        <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,12,60,0.5)', padding: '6px', borderRadius: '100px' }}>
+          {(['ENCORDOADOR', 'PROFESSOR', 'CLIENTE'] as UserProfile[]).map(p => (
+            <button
+              key={p}
+              onClick={() => setProfile(p)}
+              style={{
+                padding: '8px 16px', borderRadius: '100px', border: 'none', cursor: 'pointer',
+                background: profile === p ? 'var(--primary-color)' : 'transparent',
+                color: profile === p ? 'var(--text-dark)' : 'var(--text-primary)',
+                fontWeight: 700, fontSize: '14px', transition: 'all 0.3s'
+              }}
+            >
+              {p}
+            </button>
+          ))}
+        </div>
+      </div>
 
-      {/* Horizontal Stories Row */}
-      <div style={{
-        display: 'flex', gap: '16px', overflowX: 'auto', padding: '0 20px 24px',
-        scrollbarWidth: 'none', msOverflowStyle: 'none'
-      }} className="hide-scroll">
-        <style dangerouslySetInnerHTML={{__html: `
-          .hide-scroll::-webkit-scrollbar { display: none; }
-        `}} />
+      <h1 style={{ fontSize: '32px', marginBottom: '24px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
+        BEM-VINDO AO TECHTENNIS
+      </h1>
+
+      <div style={{ 
+        display: 'grid', 
+        gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', 
+        gap: '24px' 
+      }}>
         
-        <StoryCircle 
-          title="Encordoar" subtitle="Registro Master"
-          imageUrl="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=300&auto=format&fit=crop"
-          onClick={() => navigate('/stringer')}
-        />
-        <StoryCircle 
-          title="Feedback" subtitle="Sua Avaliação"
-          imageUrl="https://images.unsplash.com/photo-1622279457486-62dcc4a631d6?q=80&w=300&auto=format&fit=crop"
-          onClick={() => navigate('/feedback')}
-        />
-        <StoryCircle 
-          title="Trophy Time" subtitle="Últimas Finais"
-          imageUrl="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=300&auto=format&fit=crop"
-          onClick={() => {}}
-        />
-        <StoryCircle 
-          title="Match Live" subtitle="Resultados ATP"
-          imageUrl="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=300&auto=format&fit=crop"
-          onClick={() => {}}
-        />
-      </div>
+        {/* ENCORDOADOR (Master) */}
+        {profile === 'ENCORDOADOR' && (
+          <>
+            <HomeTile 
+              title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/stringer')}
+            />
+            <HomeTile 
+              title="Coleta de Raquetes" subtitle="Logística"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Dashboard"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Aulas Avulsas" subtitle="Marketplace" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
 
-      <div style={{ padding: '20px 24px', textAlign: 'center', zIndex: 10 }}>
-        {/* Main Title replicating the white bold reference */}
-        <h1 style={{ 
-          fontSize: '32px', 
-          fontWeight: 800, 
-          color: '#ffffff', 
-          fontFamily: 'var(--font-heading)',
-          textTransform: 'uppercase',
-          lineHeight: 1.2
-        }}>
-          GERENCIE O SEU<br/>
-          CICLO DE JOGO!
-        </h1>
-      </div>
+        {/* PROFESSOR DE TÊNIS */}
+        {profile === 'PROFESSOR' && (
+          <>
+            <HomeTile 
+              title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1605295484803-fdccaa22d56d?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Agenda Completa"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Meu Encordoamento" subtitle="Equipamento Pessoal"
+              backgroundImage="https://images.unsplash.com/photo-1587325514668-3e4b3e8e2fa6?q=80&w=800&auto=format&fit=crop"
+              onClick={() => navigate('/stringer')}
+            />
+            <HomeTile 
+              title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
+              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
 
-      {/* Overlapping Player Cut-out Image */}
-      {/* We use a high-quality pre-cut transparent PNG from external sources representing players/champions */}
-      <motion.div 
-        initial={{ y: 50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 1, ease: "easeOut" }}
-        style={{
-          marginTop: 'auto',
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'flex-end',
-          pointerEvents: 'none',
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          zIndex: 1
-        }}
-      >
-        {/* Transparent PNG of isolated tennis players / equipment. Using a known tennis player isolated PNG link */}
-        <img 
-          src="https://pngimg.com/uploads/tennis/tennis_PNG10385.png" 
-          alt="Tennis Champions" 
-          style={{ width: '130%', maxWidth: '700px', height: 'auto', objectFit: 'contain', objectPosition: 'bottom', transform: 'translateY(10%)' }} 
-        />
-      </motion.div>
+        {/* CLIENTE FINAL */}
+        {profile === 'CLIENTE' && (
+          <>
+            <HomeTile 
+              title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
+              backgroundImage="https://images.unsplash.com/photo-1595435934249-5df7ed86e1c0?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/feedback')}
+            />
+            <HomeTile 
+              title="Buscar Aula Avulsa" subtitle="Treine Hoje"
+              backgroundImage="https://images.unsplash.com/photo-1518606016146-527bf14e5b72?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+            <HomeTile 
+              title="Gestão de Aulas" subtitle="Meus Agendamentos"
+              backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
+              onClick={() => {}}
+            />
+          </>
+        )}
+      </div>
 
     </div>
   );
@@ -171,7 +217,7 @@ const Hero = () => {
 function App() {
   return (
     <Router basename="/techtennis">
-      <div className="page-container" style={{ background: 'linear-gradient(180deg, var(--bg-gradient-top) 0%, var(--bg-gradient-bottom) 100%)', minHeight: '100vh' }}>
+      <div className="page-container">
         <Navbar />
         <main>
           <Routes>
