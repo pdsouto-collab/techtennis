@@ -18,9 +18,8 @@ const Navbar = () => (
   }}>
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-        <Link to="/" style={{ fontFamily: 'var(--font-heading)', fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)' }}>
-          <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'var(--primary-color)', color: 'var(--text-dark)', borderRadius: '50%', width: '32px', height: '32px', marginRight: '8px', fontSize: '18px' }}>T</span>
-          TechTennis
+        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+          <img src="/techtennis-logo.png" alt="TechTennis Pro Stringer Logo" style={{ height: '48px', objectFit: 'contain' }} />
         </Link>
       </div>
 
