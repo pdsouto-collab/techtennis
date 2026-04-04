@@ -26,6 +26,7 @@ export const StringerDashboard = () => {
   const [customerQuery, setCustomerQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<{id: string, name: string} | null>(null);
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+  const [customerError, setCustomerError] = useState(false);
   
   // Form State
   const [jobSaved, setJobSaved] = useState(false);
@@ -182,9 +183,17 @@ export const StringerDashboard = () => {
             </div>
             
             {newJobStep === 1 ? (
-              <form onSubmit={(e) => { e.preventDefault(); setNewJobStep(2); }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <form onSubmit={(e) => { 
+                e.preventDefault(); 
+                if (!selectedCustomer) {
+                  setCustomerError(true);
+                  return;
+                }
+                setCustomerError(false);
+                setNewJobStep(2); 
+              }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
-                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
                   <div style={{ flex: '1 1 300px', position: 'relative' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cliente</label>
                     <input 
@@ -195,11 +204,17 @@ export const StringerDashboard = () => {
                         setCustomerQuery(e.target.value);
                         setSelectedCustomer(null);
                         setShowCustomerDropdown(true);
+                        setCustomerError(false);
                       }}
                       onFocus={() => setShowCustomerDropdown(true)}
                       required 
-                      style={inputStyle} 
+                      style={{ ...inputStyle, borderColor: customerError ? '#D93B65' : 'var(--border-light)' }} 
                     />
+                    {customerError && (
+                      <span style={{ color: '#D93B65', fontSize: '13px', marginTop: '6px', display: 'block' }}>
+                        Por favor, selecione um cliente cadastrado da lista.
+                      </span>
+                    )}
                     
                     {/* Autocomplete Dropdown */}
                     <AnimatePresence>
@@ -228,10 +243,10 @@ export const StringerDashboard = () => {
                       )}
                     </AnimatePresence>
                   </div>
-                  <button type="button" onClick={() => setShowCustomerDropdown(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => setShowCustomerDropdown(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, marginTop: '29px' }}>
                     <Search size={18} /> Buscar Cliente
                   </button>
-                  <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '29px' }}>
                     <Plus size={18} /> Novo Cliente
                   </button>
                 </div>
