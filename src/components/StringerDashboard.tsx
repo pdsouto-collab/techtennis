@@ -10,9 +10,9 @@ const INITIAL_CUSTOMERS = [
 ];
 
 const INITIAL_JOBS = [
-  { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'ready', type: 'picking_up' },
-  { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'pending', type: 'to_string' },
-  { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'received', type: 'dropping_off' },
+  { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'pronta', type: 'picking_up' },
+  { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'aguardando', type: 'to_string' },
+  { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'entregue', type: 'dropping_off' },
 ];
 
 export const StringerDashboard = () => {
@@ -71,8 +71,8 @@ export const StringerDashboard = () => {
       racketModel: 'Raquete Customizada',
       date: new Date().toLocaleDateString('pt-BR'),
       tension: `${tensionMain} lbs`,
-      status: 'recebido',
-      type: 'dropping_off' as any
+      status: 'aguardando',
+      type: 'to_string' as any
     };
     setJobs(prev => [newJob, ...prev]);
 
@@ -174,7 +174,7 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '20px', fontWeight: 700 }}>
                   {activeFilter === 'all' ? 'Todos os Pedidos' : 
-                   activeFilter === 'dropping_off' ? 'A Receber' :
+                   activeFilter === 'dropping_off' ? 'Entregues' :
                    activeFilter === 'to_string' ? 'Fila de Encordoamento' : 'Prontos para Retirada'}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
