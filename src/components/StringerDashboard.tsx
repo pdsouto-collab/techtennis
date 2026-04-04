@@ -336,7 +336,7 @@ export const StringerDashboard = () => {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
                     <select required style={inputStyle} value={selectedJobRacket} onChange={(e) => setSelectedJobRacket(e.target.value)}>
                       <option value="">Selecione a raquete do cliente...</option>
-                      {rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).map(r => (
+                      {rackets.filter(r => r.customerId === selectedCustomer?.id).map(r => (
                         <option key={r.id} value={r.id}>{r.name}</option>
                       ))}
                     </select>
@@ -815,12 +815,12 @@ export const StringerDashboard = () => {
                     <div></div>
                   </div>
                   
-                  {rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).length === 0 ? (
+                  {rackets.filter(r => r.customerId === selectedCustomer?.id).length === 0 ? (
                     <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
                       Nenhuma raquete cadastrada na base para este cliente.
                     </div>
                   ) : (
-                    rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).map(racket => (
+                    rackets.filter(r => r.customerId === selectedCustomer?.id).map(racket => (
                       <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <div>
                           <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}</div>
