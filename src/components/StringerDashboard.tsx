@@ -863,7 +863,7 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingRight: '24px', background: 'rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', gap: '4px' }}>
                   <button onClick={() => setHistoryTab('racket')} style={{ padding: '16px 32px', background: historyTab === 'racket' ? '#4298E7' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'racket' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Histórico da raquete</button>
-                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Todos do cliente</button>
+                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Histórico do Cliente</button>
                 </div>
                 <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
               </div>
@@ -894,21 +894,28 @@ export const StringerDashboard = () => {
                   </div>
                   
                   {(() => {
-                    const mockHistoryJobs = historyTab === 'racket' 
-                      ? (selectedJobRacket ? [jobs[0]] : []) 
-                      : [
-                          {...jobs[0], id: 'mh1', racketModel: 'Babolat Pure Aero'},
-                          {...jobs[0], id: 'mh2', racketModel: 'Babolat Pure Aero 98'},
-                          {...jobs[0], id: 'mh3', racketModel: 'Head Speed Pro'}
-                        ];
+                    let filteredJobs = jobs.filter(job => job.customerName === selectedCustomer?.name);
+
+                    if (historyTab === 'racket') {
+                      if (!selectedJobRacket) {
+                        return (
+                          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                            Selecione uma raquete no formulário para ver o histórico dela, ou acesse "Histórico do Cliente".
+                          </div>
+                        );
+                      }
+                      
+                      const activeRacket = rackets.find(r => r.id === selectedJobRacket);
+                      filteredJobs = filteredJobs.filter(job => job.racketModel === activeRacket?.name);
+                    }
                         
-                    if (mockHistoryJobs.length === 0) return (
+                    if (filteredJobs.length === 0) return (
                       <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                        {historyTab === 'racket' && !selectedJobRacket ? 'Selecione uma raquete no formulário primeiro para ver o histórico dela, ou acesse "Todos do cliente".' : 'Nenhum histórico encontrado.'}
+                        Nenhum histórico encontrado para esta seleção.
                       </div>
                     );
 
-                    return mockHistoryJobs.map((job) => (
+                    return filteredJobs.map((job) => (
                       <div key={job.id} style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
                         <div>03/04/2026 19:37</div>
                         <div>
