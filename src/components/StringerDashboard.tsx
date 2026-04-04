@@ -211,13 +211,23 @@ export const StringerDashboard = () => {
         {view === 'new_job' && (
           <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="glass-panel" style={{ padding: '32px', width: '100%' }}>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-              <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <ArrowLeft size={24} />
-              </button>
-              <h2 style={{ fontSize: '28px', margin: 0 }}>
-                {newJobStep === 1 ? 'Recebimento' : 'Detalhes do Encordoamento'}
-              </h2>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <button onClick={() => newJobStep === 2 ? setNewJobStep(1) : setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <ArrowLeft size={24} />
+                </button>
+                <h2 style={{ fontSize: '28px', margin: 0 }}>
+                  {newJobStep === 1 ? 'Recebimento' : 'Detalhes do Encordoamento'}
+                </h2>
+              </div>
+              {newJobStep === 2 && selectedCustomer && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(255,255,255,0.05)', padding: '8px 16px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ width: '32px', height: '32px', borderRadius: '50%', background: 'var(--primary-color)', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+                    {selectedCustomer.name.charAt(0).toUpperCase()}
+                  </div>
+                  <span style={{ fontWeight: 600 }}>{selectedCustomer.name}</span>
+                </div>
+              )}
             </div>
             
             {newJobStep === 1 ? (
@@ -324,10 +334,9 @@ export const StringerDashboard = () => {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
                     <select required style={inputStyle}>
                       <option value="">Selecione a raquete do cliente...</option>
-                      {rackets.map(r => (
+                      {rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).map(r => (
                         <option key={r.id} value={r.id}>{r.name}</option>
                       ))}
-                      <option value="babolat_mock">Babolat Pure Aero 98</option>
                     </select>
                   </div>
                   <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -675,6 +684,7 @@ export const StringerDashboard = () => {
                   const newRacket = {
                     id: 'r' + Date.now(),
                     name: fd.get('racketName') as string,
+                    customerId: selectedCustomer?.id || ''
                   };
                   setRackets(prev => [...prev, newRacket]);
                   setIsRacketModalOpen(false); 
@@ -801,12 +811,12 @@ export const StringerDashboard = () => {
                     <div></div>
                   </div>
                   
-                  {rackets.length === 0 ? (
+                  {rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).length === 0 ? (
                     <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                      Nenhuma raquete cadastrada na base ainda.
+                      Nenhuma raquete cadastrada na base para este cliente.
                     </div>
                   ) : (
-                    rackets.map(racket => (
+                    rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).map(racket => (
                       <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <div>
                           <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}</div>
