@@ -42,9 +42,10 @@ interface HomeTileProps {
   fullWidth?: boolean;
   backgroundPosition?: string;
   backgroundSize?: string;
+  textPosition?: 'left' | 'right';
 }
 
-const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth, backgroundPosition, backgroundSize }) => {
+const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, onClick, fullWidth, backgroundPosition, backgroundSize, textPosition }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02 }}
@@ -72,7 +73,9 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
-        display: 'flex', flexDirection: 'column', gap: '4px'
+        display: 'flex', flexDirection: 'column', gap: '4px',
+        alignItems: textPosition === 'right' ? 'flex-end' : 'flex-start',
+        textAlign: textPosition === 'right' ? 'right' : 'left'
       }}>
         {subtitle && <span style={{ color: 'var(--primary-color)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>}
         <h3 style={{
@@ -144,7 +147,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" textPosition="right"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -180,7 +183,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" textPosition="right"
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
@@ -196,7 +199,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Meu Encordoamento" subtitle="Histórico & Feedback" fullWidth
-              backgroundImage={ernestoImg} backgroundPosition="left 35%" backgroundSize="cover"
+              backgroundImage={ernestoImg} backgroundPosition="left 35%" textPosition="right"
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
