@@ -114,7 +114,7 @@ export const StringerDashboard = () => {
         }}>
           Início
         </button>
-        <button onClick={() => setView('dashboard')} style={{
+        <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
           background: 'none', border: 'none', padding: '12px 0', 
           color: 'var(--primary-color)',
           fontWeight: 700, fontSize: '15px',
@@ -133,7 +133,7 @@ export const StringerDashboard = () => {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h2 style={{ fontSize: '24px', color: 'var(--text-primary)' }}>Gestão e Operação</h2>
-              <button onClick={() => setView('new_job')} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
+              <button onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setView('new_job'); }} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
                 <Plus size={18} /> Novo Encordoamento
               </button>
             </div>
@@ -490,7 +490,7 @@ export const StringerDashboard = () => {
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', fontSize: '14px' }}>Ver Histórico</button>
-                    <button style={{ flex: 1, padding: '8px', background: 'var(--primary-color)', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>Novo Serviço</button>
+                    <button onClick={() => { setSelectedCustomer(customer); setCustomerQuery(customer.name); setSelectedJobRacket(''); setNewJobStep(2); setView('new_job'); }} style={{ flex: 1, padding: '8px', background: 'var(--primary-color)', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>Novo Serviço</button>
                   </div>
                 </div>
               ))}
