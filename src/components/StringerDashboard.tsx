@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
 const MOCK_CUSTOMERS = [
@@ -19,6 +19,7 @@ export const StringerDashboard = () => {
   const navigate = useNavigate();
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers'>('dashboard');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   
   // Form State
   const [jobSaved, setJobSaved] = useState(false);
@@ -49,6 +50,8 @@ export const StringerDashboard = () => {
       default: return 'var(--primary-color)';
     }
   };
+
+  const inputStyle = { width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' };
 
   return (
     <div style={{ paddingTop: '100px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
@@ -218,7 +221,7 @@ export const StringerDashboard = () => {
                 <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer' }}><ArrowLeft size={24} /></button>
                 <h2 style={{ fontSize: '28px' }}>Base de Clientes</h2>
               </div>
-              <button className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
+              <button className="button-primary" onClick={() => setIsCustomerModalOpen(true)} style={{ padding: '8px 24px', fontSize: '14px' }}>
                 <UserPlus size={18} /> Adicionar Cliente
               </button>
             </div>
@@ -246,6 +249,153 @@ export const StringerDashboard = () => {
         )}
 
       </div>
+
+      {/* Add Customer Modal */}
+      <AnimatePresence>
+        {isCustomerModalOpen && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)',
+            zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center',
+            padding: '24px'
+          }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              
+              {/* Modal Header */}
+              <div style={{ background: '#7B61FF', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>Adicionar Cliente</h3>
+                <button onClick={() => setIsCustomerModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
+              </div>
+
+              {/* Modal Body */}
+              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
+                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { e.preventDefault(); setIsCustomerModalOpen(false); }}>
+                  
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Sobrenome</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Nome</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Gênero</label>
+                      <select style={inputStyle}>
+                        <option value="">Selecione...</option>
+                        <option value="M">Masculino</option>
+                        <option value="F">Feminino</option>
+                        <option value="O">Outro</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Celular</label>
+                      <input type="tel" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Clube de Origem</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Professor / Treinador</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>E-mail</label>
+                      <input type="email" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data de Nascimento</label>
+                      <input type="date" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CPF / CNPJ</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone Fixo</label>
+                      <input type="tel" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Endereço</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CEP</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cidade</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>País</label>
+                      <input type="text" defaultValue="Brasil" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
+                      <select style={inputStyle}>
+                        <option value="Test">Test</option>
+                        <option value="Loja 1">Loja 1</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Código da Racketpedia</label>
+                      <input type="text" style={inputStyle} />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '32px', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
+                      <input type="radio" name="customerType" defaultChecked style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
+                      Cliente Pessoa Física
+                    </label>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
+                      <input type="radio" name="customerType" style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
+                      Cliente Pessoa Jurídica
+                    </label>
+                  </div>
+
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
+                    <textarea rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '24px' }}>
+                    <button type="button" onClick={() => setIsCustomerModalOpen(false)} style={{ padding: '16px 32px', background: 'transparent', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 700 }}>Cancelar</button>
+                    <button type="submit" className="button-primary" style={{ padding: '16px 32px' }}>Salvar Cliente</button>
+                  </div>
+
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   );
 };
