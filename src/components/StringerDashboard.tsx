@@ -24,6 +24,7 @@ export const StringerDashboard = () => {
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
+  const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
 
   // Persistent States
@@ -342,7 +343,7 @@ export const StringerDashboard = () => {
                   <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                     <Search size={18} /> Buscar Raquete
                   </button>
-                  <button type="button" onClick={() => setIsRacketModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <button type="button" onClick={() => { setRacketFormDefault(null); setIsRacketModalOpen(true); }} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={18} /> Nova Raquete
                   </button>
                   <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -674,7 +675,7 @@ export const StringerDashboard = () => {
               
               {/* Modal Header */}
               <div style={{ background: '#3A52EE', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>Adicionar Raquete</h3>
+                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>{racketFormDefault?.isClone ? 'Clonar Raquete' : 'Adicionar Raquete'}</h3>
                 <button onClick={() => setIsRacketModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
               </div>
 
@@ -695,7 +696,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
                     <div style={{ gridColumn: 'span 2' }}>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
-                      <input name="racketName" type="text" placeholder="Nome da Raquete" required style={inputStyle} />
+                      <input name="racketName" type="text" placeholder="Nome da Raquete" required style={inputStyle} defaultValue={racketFormDefault?.name || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
@@ -795,7 +796,7 @@ export const StringerDashboard = () => {
 
               <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
-                  <button className="button-primary" onClick={() => { setIsCloneRacketModalOpen(false); setIsRacketModalOpen(true); }} style={{ padding: '12px 24px', fontSize: '14px' }}>
+                  <button className="button-primary" onClick={() => { setIsCloneRacketModalOpen(false); setRacketFormDefault(null); setIsRacketModalOpen(true); }} style={{ padding: '12px 24px', fontSize: '14px' }}>
                     <Plus size={16} /> Adicionar nova raquete
                   </button>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -827,9 +828,9 @@ export const StringerDashboard = () => {
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                           <button onClick={() => {
-                            const newRacket = { ...racket, id: 'r' + Date.now(), name: racket.name + ' [Cópia]' };
-                            setRackets(prev => [...prev, newRacket]);
+                            setRacketFormDefault({ name: racket.name + ' [Cópia]', isClone: true });
                             setIsCloneRacketModalOpen(false);
+                            setIsRacketModalOpen(true);
                           }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
                             <Copy size={18} />
                           </button>
