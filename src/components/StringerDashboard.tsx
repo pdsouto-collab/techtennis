@@ -63,6 +63,9 @@ export const StringerDashboard = () => {
   const [jobSaved, setJobSaved] = useState(false);
   const [mainString, setMainString] = useState('');
   const [tensionMain, setTensionMain] = useState(55);
+  const [isHybrid, setIsHybrid] = useState(false);
+  const [crossString, setCrossString] = useState('');
+  const [tensionCross, setTensionCross] = useState(55);
 
   const filteredJobs = activeFilter === 'all' 
     ? jobs 
@@ -480,8 +483,8 @@ export const StringerDashboard = () => {
                         <input type="text" placeholder="Mains" required value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle} />
                       </div>
                       <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main</label>
-                        <input type="number" placeholder="Lbs/Kg" required value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main (Kg/Lbs)</label>
+                        <input type="number" placeholder="Tensão Main" required value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Main (%)</label>
@@ -489,9 +492,34 @@ export const StringerDashboard = () => {
                       </div>
                     </div>
 
-                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)' }}>
-                      Diferenciar cordas Cross (Híbrido)
-                    </div>
+                    <AnimatePresence>
+                      {isHybrid && (
+                        <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px', overflow: 'hidden' }}>
+                          <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Cross</label>
+                            <input type="text" placeholder="Crosses" required value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle} />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Cross (Kg/Lbs)</label>
+                            <input type="number" placeholder="Tensão Cross" required value={tensionCross} onChange={(e) => setTensionCross(Number(e.target.value))} style={inputStyle} />
+                          </div>
+                          <div>
+                            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Cross (%)</label>
+                            <select style={inputStyle}><option value=""></option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option></select>
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {isHybrid ? (
+                      <div onClick={() => setIsHybrid(false)} style={{ background: '#F9D0DA', padding: '16px', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', fontWeight: 600, color: '#D93B65', transition: 'background 0.2s' }}>
+                        Cross igual às Mains
+                      </div>
+                    ) : (
+                      <div onClick={() => setIsHybrid(true)} style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)', transition: 'background 0.2s' }}>
+                        Diferenciar cordas Cross (Híbrido)
+                      </div>
+                    )}
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 2fr', gap: '16px' }}>
                       <div>
