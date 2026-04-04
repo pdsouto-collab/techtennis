@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
-const MOCK_CUSTOMERS = [
+const INITIAL_CUSTOMERS = [
   { id: 'c1', name: 'Rafael Nadal', email: 'rafa@example.com', phone: '+1234567890' },
   { id: 'c2', name: 'Carlos Alcaraz', email: 'carlos@example.com', phone: '+0987654321' }
 ];
 
-const MOCK_JOBS = [
+const INITIAL_JOBS = [
   { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'ready', type: 'picking_up' },
   { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'pending', type: 'to_string' },
   { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'received', type: 'dropping_off' },
@@ -23,6 +23,26 @@ export const StringerDashboard = () => {
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
 
+  // Persistent States
+  const [customers, setCustomers] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
+    const saved = localStorage.getItem('tt_customers');
+    return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
+  });
+
+  const [jobs, setJobs] = useState<any[]>(() => {
+    const saved = localStorage.getItem('tt_jobs');
+    return saved ? JSON.parse(saved) : INITIAL_JOBS;
+  });
+
+  const [rackets, setRackets] = useState<any[]>(() => {
+    const saved = localStorage.getItem('tt_rackets');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
+  useEffect(() => { localStorage.setItem('tt_jobs', JSON.stringify(jobs)); }, [jobs]);
+  useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
+
   // Search State
   const [customerQuery, setCustomerQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<{id: string, name: string} | null>(null);
@@ -35,15 +55,29 @@ export const StringerDashboard = () => {
   const [tensionMain, setTensionMain] = useState(55);
 
   const filteredJobs = activeFilter === 'all' 
-    ? MOCK_JOBS 
-    : MOCK_JOBS.filter(job => job.type === activeFilter);
+    ? jobs 
+    : jobs.filter(job => job.type === activeFilter);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    const newJob = {
+      id: Date.now().toString(),
+      customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
+      racketModel: 'Raquete Customizada',
+      date: new Date().toLocaleDateString('pt-BR'),
+      tension: `${tensionMain} lbs`,
+      status: 'recebido',
+      type: 'dropping_off' as any
+    };
+    setJobs(prev => [newJob, ...prev]);
+
     setJobSaved(true);
     setTimeout(() => {
       setJobSaved(false);
       setView('dashboard');
+      setNewJobStep(1);
+      setSelectedCustomer(null);
+      setCustomerQuery('');
     }, 1500);
   };
 
@@ -111,14 +145,14 @@ export const StringerDashboard = () => {
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('to_string')}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('to_string')}`, background: activeFilter === 'to_string' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
                 <Scissors size={24} color={getStatusColor('to_string')} style={{ marginBottom: '12px' }} />
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Encordoar: {MOCK_JOBS.filter(j => j.type === 'to_string').length}</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Encordoar: {jobs.filter(j => j.type === 'to_string').length}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Fila de trabalho</p>
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('picking_up')}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('picking_up')}`, background: activeFilter === 'picking_up' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
                 <CheckCircle size={24} color={getStatusColor('picking_up')} style={{ marginBottom: '12px' }} />
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Retirar: {MOCK_JOBS.filter(j => j.type === 'picking_up').length}</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Retirar: {jobs.filter(j => j.type === 'picking_up').length}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Prontas</p>
               </motion.div>
 
@@ -223,7 +257,7 @@ export const StringerDashboard = () => {
                         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                           style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg-panel-solid)', zIndex: 10, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                           
-                          {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).map(customer => (
+                          {customers.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).map(customer => (
                             <div 
                               key={customer.id} 
                               onClick={() => {
@@ -237,7 +271,7 @@ export const StringerDashboard = () => {
                             </div>
                           ))}
 
-                          {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).length === 0 && (
+                          {customers.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).length === 0 && (
                             <div style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>Nenhum cliente encontrado</div>
                           )}
                         </motion.div>
@@ -287,7 +321,10 @@ export const StringerDashboard = () => {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
                     <select required style={inputStyle}>
                       <option value="">Selecione a raquete do cliente...</option>
-                      <option value="babolat">Babolat Pure Aero 98</option>
+                      {rackets.map(r => (
+                        <option key={r.id} value={r.id}>{r.name}</option>
+                      ))}
+                      <option value="babolat_mock">Babolat Pure Aero 98</option>
                     </select>
                   </div>
                   <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -424,15 +461,15 @@ export const StringerDashboard = () => {
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-              {MOCK_CUSTOMERS.map(customer => (
+              {customers.map(customer => (
                 <div key={customer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
                     <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-color)', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-                      {customer.name.charAt(0)}
+                      {customer.name.charAt(0).toUpperCase()}
                     </div>
                     <div>
                       <h4 style={{ fontSize: '18px', fontWeight: 700 }}>{customer.name}</h4>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{customer.phone}</p>
+                      <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{customer.phone || 'Sem celular'}</p>
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '8px' }}>
@@ -467,23 +504,39 @@ export const StringerDashboard = () => {
 
               {/* Modal Body */}
               <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { e.preventDefault(); setIsCustomerModalOpen(false); }}>
+                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  const fd = new FormData(e.currentTarget);
+                  const firstName = fd.get('firstName') as string;
+                  const lastName = fd.get('lastName') as string;
+                  const newCustomer = {
+                    id: 'c' + Date.now(),
+                    name: `${firstName} ${lastName}`.trim(),
+                    phone: fd.get('phone') as string,
+                    email: fd.get('email') as string
+                  };
+                  setCustomers(prev => [...prev, newCustomer]);
+                  // Set naturally as selected customer if coming from creation flow
+                  setSelectedCustomer(newCustomer);
+                  setCustomerQuery(newCustomer.name);
+                  setIsCustomerModalOpen(false); 
+                }}>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Sobrenome</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="lastName" type="text" style={inputStyle} required />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Nome</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="firstName" type="text" style={inputStyle} required />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Gênero</label>
-                      <select style={inputStyle}>
+                      <select name="gender" style={inputStyle}>
                         <option value="">Selecione...</option>
                         <option value="M">Masculino</option>
                         <option value="F">Feminino</option>
@@ -492,7 +545,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Celular</label>
-                      <input type="tel" style={inputStyle} />
+                      <input name="phone" type="tel" style={inputStyle} required />
                     </div>
                   </div>
 
@@ -510,7 +563,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>E-mail</label>
-                      <input type="email" style={inputStyle} />
+                      <input name="email" type="email" style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data de Nascimento</label>
@@ -613,12 +666,21 @@ export const StringerDashboard = () => {
 
               {/* Modal Body */}
               <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { e.preventDefault(); setIsRacketModalOpen(false); }}>
+                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
+                  e.preventDefault(); 
+                  const fd = new FormData(e.currentTarget);
+                  const newRacket = {
+                    id: 'r' + Date.now(),
+                    name: fd.get('racketName') as string,
+                  };
+                  setRackets(prev => [...prev, newRacket]);
+                  setIsRacketModalOpen(false); 
+                }}>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
                     <div style={{ gridColumn: 'span 2' }}>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
-                      <input type="text" placeholder="Nome da Raquete" required style={inputStyle} />
+                      <input name="racketName" type="text" placeholder="Nome da Raquete" required style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
