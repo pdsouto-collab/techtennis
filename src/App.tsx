@@ -20,7 +20,12 @@ const Navbar = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ height: '48px', objectFit: 'contain' }} />
+          <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
+            height: '72px', 
+            objectFit: 'contain',
+            filter: 'grayscale(1) contrast(10)',
+            mixBlendMode: 'multiply'
+          }} />
         </Link>
       </div>
 
