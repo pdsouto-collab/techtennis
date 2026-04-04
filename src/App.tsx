@@ -102,7 +102,7 @@ const Hero = () => {
   return (
     <div style={{ 
       minHeight: '100vh', 
-      padding: '120px 5% 60px',
+      padding: '160px 5% 60px',
       maxWidth: '1200px',
       margin: '0 auto',
       width: '100%'

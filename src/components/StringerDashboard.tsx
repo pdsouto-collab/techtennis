@@ -106,7 +106,7 @@ export const StringerDashboard = () => {
   const inputStyle = { width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' };
 
   return (
-    <div style={{ paddingTop: '100px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ paddingTop: '140px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       {/* Top Navbar / Tabs (Dashboard specific) */}
       <div style={{ 

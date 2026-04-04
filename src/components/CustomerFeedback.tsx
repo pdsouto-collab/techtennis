@@ -28,7 +28,7 @@ export const CustomerFeedback = () => {
 
   if (submitted) {
     return (
-      <div style={{ padding: '80px 24px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ padding: '130px 24px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel" style={{ padding: '40px 24px', textAlign: 'center', maxWidth: '400px' }}>
           <div style={{ background: 'var(--primary-color)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
             <Check size={32} color="var(--bg-gradient-bottom)" />
@@ -43,7 +43,7 @@ export const CustomerFeedback = () => {
   }
 
   return (
-    <div style={{ padding: '80px 24px 40px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ padding: '130px 24px 40px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       
       <div style={{ width: '100%', maxWidth: '500px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
