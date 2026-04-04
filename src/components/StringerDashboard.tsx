@@ -21,6 +21,7 @@ export const StringerDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
+  const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
 
   // Persistent States
@@ -333,7 +334,7 @@ export const StringerDashboard = () => {
                   <button type="button" onClick={() => setIsRacketModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={18} /> Nova Raquete
                   </button>
-                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                     <Copy size={18} /> Clonar Raquete
                   </button>
                 </div>
@@ -760,6 +761,75 @@ export const StringerDashboard = () => {
                   </div>
 
                 </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Clone Racket Modal (Customer Rackets) */}
+      <AnimatePresence>
+        {isCloneRacketModalOpen && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              
+              <div style={{ background: '#3A52EE', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>Raquetes do Cliente</h3>
+                <button onClick={() => setIsCloneRacketModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
+              </div>
+
+              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
+                  <button className="button-primary" onClick={() => { setIsCloneRacketModalOpen(false); setIsRacketModalOpen(true); }} style={{ padding: '12px 24px', fontSize: '14px' }}>
+                    <Plus size={16} /> Adicionar nova raquete
+                  </button>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Buscar:</span>
+                    <input type="text" placeholder="Nome da raquete..." style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                  </div>
+                </div>
+
+                {/* Table */}
+                <div style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '12px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)' }}>
+                    <div>Raquete</div>
+                    <div>Último Encordoamento</div>
+                    <div>Notas</div>
+                    <div></div>
+                  </div>
+                  
+                  {rackets.length === 0 ? (
+                    <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                      Nenhuma raquete cadastrada na base ainda.
+                    </div>
+                  ) : (
+                    rackets.map(racket => (
+                      <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                        <div>
+                          <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}</div>
+                        </div>
+                        <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{new Date().toLocaleDateString('pt-BR')} 16:30</div>
+                        <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <button onClick={() => {
+                            const newRacket = { ...racket, id: 'r' + Date.now(), name: racket.name + ' [Cópia]' };
+                            setRackets(prev => [...prev, newRacket]);
+                            setIsCloneRacketModalOpen(false);
+                          }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
+                            <Copy size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+                
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px' }}>
+                  <button onClick={() => setIsCloneRacketModalOpen(false)} style={{ padding: '12px 32px', background: 'transparent', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 700 }}>
+                    Fechar
+                  </button>
+                </div>
               </div>
             </motion.div>
           </div>
