@@ -126,3 +126,9 @@ a {
 main {
   flex: 1;
 }
+
+/* Fix native select options being unreadable */
+select option {
+  background-color: #ffffff;
+  color: var(--text-dark);
+}
