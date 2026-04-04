@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle } from 'lucide-react';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -190,7 +190,7 @@ export const StringerDashboard = () => {
                   <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhum evento para exibir</div>
                 ) : (
                   filteredJobs.map(job => (
-                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 1fr 1fr auto', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
+                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: activeFilter === 'to_string' ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr auto', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
                       <div style={{ fontWeight: 600 }}>{job.date}</div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '16px' }}>{job.customerName}</div>
@@ -199,8 +199,39 @@ export const StringerDashboard = () => {
                       <div>
                         <div style={{ fontSize: '14px', color: 'var(--primary-color)' }}>{job.tension}</div>
                       </div>
-                      <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{job.status.toUpperCase()}</div>
-                      <button style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><MoreHorizontal size={20} /></button>
+                      
+                      {activeFilter === 'to_string' ? (
+                        <>
+                          <div>
+                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mains: Solinco Hyper-G</div>
+                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: Solinco Hyper-G</div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => setJobs(prev => prev.filter(j => j.id !== job.id))} style={{ background: '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Excluir">
+                              <Trash2 size={16} />
+                            </button>
+                            <button onClick={() => {
+                              const cust = customers.find(c => c.name === job.customerName);
+                              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
+                              setView('new_job');
+                              setNewJobStep(2);
+                            }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
+                              <Edit size={16} />
+                            </button>
+                            <button onClick={() => alert('Página de Ordem em breve...')} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
+                              <ClipboardList size={16} />
+                            </button>
+                            <button onClick={() => alert('Interface de Encordoar em breve...')} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
+                              <Grid size={16} />
+                            </button>
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{job.status.toUpperCase()}</div>
+                          <button style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', justifyContent: 'flex-end' }}><MoreHorizontal size={20} /></button>
+                        </>
+                      )}
                     </div>
                   ))
                 )}
