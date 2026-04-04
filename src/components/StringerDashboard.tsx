@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck } from 'lucide-react';
+import { OrderDetailsView } from './OrderDetailsView';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -17,7 +18,8 @@ const INITIAL_JOBS = [
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details'>('dashboard');
+  const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
@@ -226,7 +228,7 @@ export const StringerDashboard = () => {
                             }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
                               <Edit size={16} />
                             </button>
-                            <button onClick={() => alert('Página de Ordem em breve...')} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
+                            <button onClick={() => { setActiveOrderJob(job); setView('order_details'); }} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
                               <ClipboardList size={16} />
                             </button>
                             <button onClick={() => { setActiveStringingJob(job); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
@@ -251,7 +253,7 @@ export const StringerDashboard = () => {
                             }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
                               <Edit size={16} />
                             </button>
-                            <button onClick={() => alert('Página de Ordem em breve...')} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
+                            <button onClick={() => { setActiveOrderJob(job); setView('order_details'); }} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
                               <ClipboardList size={16} />
                             </button>
                             <button onClick={() => { setActivePaymentJob(job); setIsPaymentModalOpen(true); }} style={{ background: job.paid ? '#6FCF97' : '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Pagamento">
@@ -681,6 +683,12 @@ export const StringerDashboard = () => {
               </div>
            </motion.div>
         )}
+
+        <OrderDetailsView 
+           view={view} setView={setView} 
+           activeOrderJob={activeOrderJob} 
+           jobs={jobs} setActiveStringingJob={setActiveStringingJob} 
+        />
 
         {/* Customers View */}
         {view === 'customers' && (
