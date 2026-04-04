@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X } from 'lucide-react';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
 const MOCK_CUSTOMERS = [
@@ -20,14 +20,12 @@ export const StringerDashboard = () => {
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers'>('dashboard');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
   
   // Form State
   const [jobSaved, setJobSaved] = useState(false);
   const [mainString, setMainString] = useState('');
-  const [crossString, setCrossString] = useState('');
   const [tensionMain, setTensionMain] = useState(55);
-  const [tensionCross, setTensionCross] = useState(53);
-  const [notes, setNotes] = useState('');
 
   const filteredJobs = activeFilter === 'all' 
     ? MOCK_JOBS 
@@ -165,51 +163,190 @@ export const StringerDashboard = () => {
           </motion.div>
         )}
 
-        {/* New Job View */}
+        {/* New Job Flow */}
         {view === 'new_job' && (
-          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="glass-panel" style={{ padding: '32px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-            <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '24px', fontWeight: 600 }}>
-              <ArrowLeft size={20} /> Voltar ao Dashboard
-            </button>
-            <h2 style={{ fontSize: '28px', marginBottom: '24px' }}>Registrar Novo Serviço</h2>
+          <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="glass-panel" style={{ padding: '32px', width: '100%' }}>
             
-            <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cliente</label>
-                <input type="text" placeholder="Buscar cliente por nome..." required style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' }} />
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Main</label>
-                  <input type="text" required value={mainString} onChange={(e) => setMainString(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Cross</label>
-                  <input type="text" required value={crossString} onChange={(e) => setCrossString(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' }} />
-                </div>
-              </div>
-
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main (lbs/kg)</label>
-                  <input type="number" required value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' }} />
-                </div>
-                <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Cross (lbs/kg)</label>
-                  <input type="number" required value={tensionCross} onChange={(e) => setTensionCross(Number(e.target.value))} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white' }} />
-                </div>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
-                <textarea rows={4} value={notes} onChange={(e) => setNotes(e.target.value)} style={{ width: '100%', padding: '14px', borderRadius: '12px', background: 'rgba(255,255,255,0.1)', border: '1px solid var(--border-light)', color: 'white', resize: 'none' }} />
-              </div>
-
-              <button type="submit" className="button-primary" style={{ padding: '16px', marginTop: '16px', fontSize: '16px' }}>
-                {jobSaved ? <><CheckCircle size={20} /> Salvo com sucesso!</> : 'Salvar Encordoamento'}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+              <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <ArrowLeft size={24} />
               </button>
-            </form>
+              <h2 style={{ fontSize: '28px', margin: 0 }}>
+                {newJobStep === 1 ? 'Recebimento' : 'Detalhes do Encordoamento'}
+              </h2>
+            </div>
+            
+            {newJobStep === 1 ? (
+              <form onSubmit={(e) => { e.preventDefault(); setNewJobStep(2); }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 300px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cliente</label>
+                    <input type="text" placeholder="Insira o nome do cliente" required style={inputStyle} />
+                  </div>
+                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                    <Search size={18} /> Buscar Cliente
+                  </button>
+                  <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Plus size={18} /> Novo Cliente
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Previsão de Entrega (Order pick up)</label>
+                    <input type="datetime-local" required style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
+                    <select style={inputStyle}>
+                      <option value="test">Test</option>
+                      <option value="loja1">Loja 1</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações (Notes)</label>
+                  <textarea rows={4} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                  <button type="submit" className="button-primary" style={{ padding: '16px 40px', fontSize: '16px' }}>
+                    Continuar
+                  </button>
+                </div>
+
+              </form>
+            ) : (
+              <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                
+                {/* Racket Selection Row */}
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ flex: '1 1 300px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
+                    <select required style={inputStyle}>
+                      <option value="">Selecione a raquete do cliente...</option>
+                      <option value="babolat">Babolat Pure Aero 98</option>
+                    </select>
+                  </div>
+                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                    <Search size={18} /> Buscar Raquete
+                  </button>
+                  <button type="button" className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <Plus size={18} /> Nova Raquete
+                  </button>
+                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                    <Copy size={18} /> Clonar Raquete
+                  </button>
+                </div>
+
+                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(250px, 1fr) 3fr', gap: '32px' }}>
+                  
+                  {/* Left Column Configs */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Encordoamento</label>
+                      <select style={inputStyle} defaultValue="Sim">
+                        <option value="Sim">Sim</option>
+                        <option value="Nao">Não</option>
+                      </select>
+                    </div>
+
+                    <div style={{ padding: '16px', background: 'var(--primary-color)', borderRadius: '12px', color: 'var(--text-dark)', fontWeight: 700, display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer' }}>
+                      <Search size={18} /> Hitórico Recente
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                      <span>Usa rolo próprio</span>
+                      <input type="checkbox" style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
+                    </div>
+
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
+                      <span>Usa set próprio</span>
+                      <input type="checkbox" style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
+                    </div>
+
+                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Trocar grip base</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Trocar overgrip</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Serviço customizado</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Compra de raquete nova</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Outros serviços</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                  </div>
+
+                  {/* Right Column / Main Inputs */}
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tipo de Encordoamento</label>
+                        <select style={inputStyle}>
+                          <option>4 nós</option>
+                          <option>2 nós</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Unidade de Tensão</label>
+                        <select style={inputStyle}>
+                          <option>Lbs</option>
+                          <option>Kg</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço (BRL)</label>
+                        <input type="number" placeholder="0.00" style={inputStyle} />
+                      </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px' }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Main</label>
+                        <input type="text" placeholder="Mains" required value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main</label>
+                        <input type="number" placeholder="Lbs/Kg" required value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Main (%)</label>
+                        <select style={inputStyle}><option value=""></option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option></select>
+                      </div>
+                    </div>
+
+                    <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '12px', textAlign: 'center', cursor: 'pointer', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      Diferenciar cordas Cross (Híbrido)
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 2fr', gap: '16px' }}>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Logo</label>
+                        <select style={inputStyle}><option>Não</option><option>Sim</option></select>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Notas do Logo</label>
+                        <textarea rows={2} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Notas sobre a raquete</label>
+                        <textarea rows={2} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                  <button type="button" onClick={() => { setView('dashboard'); setNewJobStep(1); }} style={{ padding: '16px 32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                    Fechar
+                  </button>
+                  <button type="button" style={{ padding: '16px 32px', background: '#D93B65', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                    Adicionar outra raquete
+                  </button>
+                  <button type="submit" className="button-primary" style={{ padding: '16px 40px', fontSize: '16px' }}>
+                    {jobSaved ? <><CheckCircle size={20} /> Salvo!</> : 'Finalizar Pedido'}
+                  </button>
+                </div>
+              </form>
+            )}
           </motion.div>
         )}
 
