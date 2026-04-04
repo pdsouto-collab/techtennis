@@ -341,14 +341,11 @@ export const StringerDashboard = () => {
                       ))}
                     </select>
                   </div>
-                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                     <Search size={18} /> Buscar Raquete
                   </button>
                   <button type="button" onClick={() => { setRacketFormDefault(null); setIsRacketModalOpen(true); }} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <Plus size={18} /> Nova Raquete
-                  </button>
-                  <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
-                    <Copy size={18} /> Clonar Raquete
                   </button>
                 </div>
 
@@ -827,13 +824,19 @@ export const StringerDashboard = () => {
                         </div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{new Date().toLocaleDateString('pt-BR')} 16:30</div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                           <button onClick={() => {
                             setRacketFormDefault({ name: racket.name + ' [Cópia]', isClone: true });
                             setIsCloneRacketModalOpen(false);
                             setIsRacketModalOpen(true);
                           }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
                             <Copy size={18} />
+                          </button>
+                          <button onClick={() => {
+                            setSelectedJobRacket(racket.id);
+                            setIsCloneRacketModalOpen(false);
+                          }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Selecionar raquete">
+                            <ArrowRightCircle size={18} />
                           </button>
                         </div>
                       </div>
