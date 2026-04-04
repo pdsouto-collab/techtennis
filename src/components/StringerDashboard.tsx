@@ -17,7 +17,8 @@ const INITIAL_JOBS = [
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing'>('dashboard');
+  const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
@@ -221,7 +222,7 @@ export const StringerDashboard = () => {
                             <button onClick={() => alert('Página de Ordem em breve...')} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
                               <ClipboardList size={16} />
                             </button>
-                            <button onClick={() => alert('Interface de Encordoar em breve...')} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
+                            <button onClick={() => { setActiveStringingJob(job); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
                               <Grid size={16} />
                             </button>
                           </div>
@@ -492,6 +493,133 @@ export const StringerDashboard = () => {
               </form>
             )}
           </motion.div>
+        )}
+        {/* Stringing Execution View */}
+        {view === 'stringing' && activeStringingJob && (
+           <motion.div initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="glass-panel" style={{ width: '100%', padding: '32px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex' }}><ArrowLeft size={24} /></button>
+                    <h2 style={{ fontSize: '24px', margin: 0, color: 'white' }}>{activeStringingJob.racketModel || 'Head Speed Pro'} <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal', fontSize: '16px' }}>18x20 L3</span></h2>
+                 </div>
+                 <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                    <button onClick={() => setView('dashboard')} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Fechar</button>
+                    <button style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta (coração)</button>
+                    <button style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta</button>
+                    <button onClick={() => { setView('new_job'); setNewJobStep(2); }} style={{ padding: '8px 16px', background: '#4298E7', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Editar Encordoamento</button>
+                    <button onClick={() => {
+                        setJobs(jobs.map(j => j.id === activeStringingJob.id ? { ...j, type: 'picking_up', status: 'pronta' } : j));
+                        setView('dashboard');
+                        setActiveFilter('picking_up');
+                    }} style={{ padding: '8px 16px', background: '#6FCF97', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer' }}>Finalizar Encordoamento</button>
+                 </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: 'minmax(300px, 1.2fr) 3fr', gap: '24px' }}>
+                 {/* Left Column Data Blocks */}
+                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div style={{ background: 'rgba(111, 207, 151, 0.1)', border: '1px solid rgba(111, 207, 151, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#6FCF97', marginBottom: '4px' }}>Cliente</div>
+                       <div style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}>{activeStringingJob.customerName}</div>
+                    </div>
+                    <div style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Data de retirada</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Sábado 4 Abril 2026 - 12:30</div>
+                    </div>
+                    <div style={{ background: 'rgba(155, 81, 224, 0.1)', border: '1px solid rgba(155, 81, 224, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#B37AF0', marginBottom: '4px' }}>Tipo de Encordoamento</div>
+                       <div style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}>ATW</div>
+                    </div>
+                    <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Mains</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Solinco Hyper-G Green 115 @{activeStringingJob.tension}</div>
+                    </div>
+                    <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
+                       <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Crosses</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Solinco Hyper-G Green 115 @{activeStringingJob.tension}</div>
+                    </div>
+                 </div>
+
+                 {/* Right Column Form & Dashboard */}
+                 <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                    <div>
+                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Notas do encordoamento</label>
+                       <textarea rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Encordoador</label>
+                          <select style={inputStyle}>
+                             <option>Tester Ernesto</option>
+                             <option>Paulo Souto</option>
+                          </select>
+                       </div>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Máquina</label>
+                          <select style={inputStyle}>
+                             <option>Babolat Star 5</option>
+                             <option>Wilson Baiardo</option>
+                          </select>
+                       </div>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Data do encordoamento</label>
+                          <input type="text" defaultValue="04/04/2026 16:14" style={inputStyle} />
+                       </div>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '16px' }}>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Frequência (HZ)</label>
+                          <input type="number" placeholder="Frequency" style={inputStyle} />
+                       </div>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Ert DT (DT)</label>
+                          <input type="number" placeholder="Ert DT" style={inputStyle} />
+                       </div>
+                       <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Chromatic (CH)</label>
+                          <input type="number" placeholder="Chromatic" style={inputStyle} />
+                       </div>
+                    </div>
+
+                    <div style={{ marginTop: '16px' }}>
+                       <h3 style={{ fontSize: '18px', marginBottom: '16px', color: 'white' }}>Últimos encordoamentos da raquete</h3>
+                       <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                          <div style={{ minWidth: '800px', display: 'grid', gridTemplateColumns: '1.2fr 2fr 2fr 0.5fr 0.5fr 0.5fr 1fr 0.8fr 0.5fr', padding: '16px', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                             <div>Data de ins.</div>
+                             <div>Mains</div>
+                             <div>Crosses</div>
+                             <div>HZ</div>
+                             <div>DT</div>
+                             <div>CH</div>
+                             <div>Encordoador</div>
+                             <div>Preço</div>
+                             <div>Horas</div>
+                          </div>
+                          
+                          {[1, 2].map((i) => (
+                             <div key={i} style={{ minWidth: '800px', display: 'grid', gridTemplateColumns: '1.2fr 2fr 2fr 0.5fr 0.5fr 0.5fr 1fr 0.8fr 0.5fr', padding: '16px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
+                               <div>{i === 1 ? '04/04/2026 13:27' : '03/04/2026 19:37'}</div>
+                               <div>
+                                 <div style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</div>
+                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@52lbs</div>
+                               </div>
+                               <div>
+                                 <div style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</div>
+                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@52lbs</div>
+                               </div>
+                               <div>-</div><div>-</div><div>-</div>
+                               <div>Tester Ernesto</div>
+                               <div style={{ fontWeight: 600 }}>BRL 120.00</div>
+                               <div>0</div>
+                             </div>
+                          ))}
+                       </div>
+                    </div>
+                 </div>
+              </div>
+           </motion.div>
         )}
 
         {/* Customers View */}
