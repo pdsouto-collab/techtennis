@@ -26,6 +26,8 @@ export const StringerDashboard = () => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activePaymentJob, setActivePaymentJob] = useState<any>(null);
+  const [isPickupModalOpen, setIsPickupModalOpen] = useState(false);
+  const [activePickupJob, setActivePickupJob] = useState<any>(null);
   const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
@@ -252,7 +254,7 @@ export const StringerDashboard = () => {
                             <button onClick={() => { setActivePaymentJob(job); setIsPaymentModalOpen(true); }} style={{ background: job.paid ? '#6FCF97' : '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Pagamento">
                               <DollarSign size={16} color={job.paid ? 'var(--text-dark)' : 'white'} />
                             </button>
-                            <button onClick={() => setJobs(prev => prev.filter(j => j.id !== job.id))} style={{ background: '#1A202C', border: '1px solid rgba(255,255,255,0.1)', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Entregar e Finalizar">
+                            <button onClick={() => { setActivePickupJob(job); setIsPickupModalOpen(true); }} style={{ background: '#1A202C', border: '1px solid rgba(255,255,255,0.1)', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Entregar e Finalizar">
                               <Truck size={16} />
                             </button>
                           </div>
@@ -1203,6 +1205,58 @@ export const StringerDashboard = () => {
                       Editar Valores
                     </button>
                   </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
+
+        {/* PICKUP CONFIRMATION MODAL */}
+        <AnimatePresence>
+          {isPickupModalOpen && activePickupJob && (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-panel" style={{ width: '90%', maxWidth: '600px', background: 'var(--bg-panel)', borderRadius: '16px', overflow: 'hidden' }}>
+                <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                  <h2 style={{ margin: 0, fontSize: '20px' }}>Confirmação de Retirada</h2>
+                  <button onClick={() => setIsPickupModalOpen(false)} style={{ background: 'white', border: 'none', color: 'var(--text-dark)', cursor: 'pointer', borderRadius: '8px', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>X</button>
+                </div>
+                
+                <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                  <button onClick={() => {
+                    setJobs(prev => prev.filter(j => j.id !== activePickupJob.id));
+                    setIsPickupModalOpen(false);
+                  }} style={{ background: '#F2C94C', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{ marginBottom: '4px' }}>Raquete única</div>
+                    <div>(Paga)</div>
+                  </button>
+
+                  <button onClick={() => {
+                    setJobs(prev => prev.filter(j => j.customerName !== activePickupJob.customerName || j.type !== 'picking_up'));
+                    setIsPickupModalOpen(false);
+                  }} style={{ background: '#D93B65', border: 'none', borderRadius: '8px', padding: '24px', color: 'white', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
+                    <div style={{ marginBottom: '4px' }}>Ordem completa</div>
+                    <div>(Paga)</div>
+                  </button>
+
+                  {!activePickupJob.paid && (
+                    <>
+                      <button onClick={() => {
+                        setJobs(prev => prev.filter(j => j.id !== activePickupJob.id));
+                        setIsPickupModalOpen(false);
+                      }} style={{ background: '#FFF9E6', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ marginBottom: '4px' }}>Raquete única</div>
+                        <div>(Não paga)</div>
+                      </button>
+
+                      <button onClick={() => {
+                        setJobs(prev => prev.filter(j => j.customerName !== activePickupJob.customerName || j.type !== 'picking_up'));
+                        setIsPickupModalOpen(false);
+                      }} style={{ background: '#FFF0F5', border: 'none', borderRadius: '8px', padding: '24px', color: '#D93B65', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
+                        <div style={{ marginBottom: '4px' }}>Ordem completa</div>
+                        <div>(Não paga)</div>
+                      </button>
+                    </>
+                  )}
                 </div>
               </motion.div>
             </div>
