@@ -389,8 +389,10 @@ export const StringerDashboard = () => {
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tipo de Encordoamento</label>
                         <select style={inputStyle}>
-                          <option>4 nós</option>
+                          <option>Não definido</option>
                           <option>2 nós</option>
+                          <option>4 nós</option>
+                          <option>ATW</option>
                         </select>
                       </div>
                       <div>
