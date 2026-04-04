@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid } from 'lucide-react';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -10,7 +10,7 @@ const INITIAL_CUSTOMERS = [
 ];
 
 const INITIAL_JOBS = [
-  { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'pronta', type: 'picking_up' },
+  { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'pronta', type: 'picking_up', paid: true, price: 120 },
   { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'aguardando', type: 'to_string' },
   { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'entregue', type: 'dropping_off' },
 ];
@@ -24,6 +24,8 @@ export const StringerDashboard = () => {
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [activePaymentJob, setActivePaymentJob] = useState<any>(null);
   const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
@@ -191,7 +193,7 @@ export const StringerDashboard = () => {
                   <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhum evento para exibir</div>
                 ) : (
                   filteredJobs.map(job => (
-                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: activeFilter === 'to_string' ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr auto', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
+                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: (activeFilter === 'to_string' || activeFilter === 'picking_up') ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr auto', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
                       <div style={{ fontWeight: 600 }}>{job.date}</div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '16px' }}>{job.customerName}</div>
@@ -224,6 +226,34 @@ export const StringerDashboard = () => {
                             </button>
                             <button onClick={() => { setActiveStringingJob(job); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
                               <Grid size={16} />
+                            </button>
+                          </div>
+                        </>
+                      ) : activeFilter === 'picking_up' ? (
+                        <>
+                          <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontWeight: 600, fontSize: '16px' }}>BRL {job.price ? job.price.toFixed(2) : '120.00'}</div>
+                            <div style={{ fontSize: '12px', color: job.paid ? '#6FCF97' : '#E04A59', fontWeight: 600 }}>
+                              {job.paid ? 'PAGO' : 'NÃO PAGO'}
+                            </div>
+                          </div>
+                          <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => {
+                              const cust = customers.find(c => c.name === job.customerName);
+                              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
+                              setView('new_job');
+                              setNewJobStep(2);
+                            }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
+                              <Edit size={16} />
+                            </button>
+                            <button onClick={() => alert('Página de Ordem em breve...')} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
+                              <ClipboardList size={16} />
+                            </button>
+                            <button onClick={() => { setActivePaymentJob(job); setIsPaymentModalOpen(true); }} style={{ background: job.paid ? '#6FCF97' : '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Pagamento">
+                              <DollarSign size={16} color={job.paid ? 'var(--text-dark)' : 'white'} />
+                            </button>
+                            <button onClick={() => setJobs(prev => prev.filter(j => j.id !== job.id))} style={{ background: '#1A202C', border: '1px solid rgba(255,255,255,0.1)', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Entregar e Finalizar">
+                              <Truck size={16} />
                             </button>
                           </div>
                         </>
@@ -1119,6 +1149,65 @@ export const StringerDashboard = () => {
           </div>
         )}
       </AnimatePresence>
+
+        {/* PAYMENT MODAL */}
+        <AnimatePresence>
+          {isPaymentModalOpen && activePaymentJob && (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-panel" style={{ width: '90%', maxWidth: '800px', background: 'var(--bg-card)', borderRadius: '16px', overflow: 'hidden' }}>
+                <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-panel)' }}>
+                  <h2 style={{ margin: 0, fontSize: '20px' }}>Preços</h2>
+                  <button onClick={() => setIsPaymentModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={24} /></button>
+                </div>
+                <div style={{ padding: '32px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr', padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      <div>Item</div>
+                      <div>Preço</div>
+                      <div>Notas</div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr', padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div>Encordoamento</div>
+                      <div>{activePaymentJob.price ? activePaymentJob.price.toFixed(2) : '120.00'} BRL</div>
+                      <div>-</div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '16px', fontWeight: 600 }}>
+                      <span style={{ marginRight: '16px', color: 'var(--text-secondary)' }}>Total</span>
+                      <span>{activePaymentJob.price ? activePaymentJob.price.toFixed(2) : '120.00'} BRL</span>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '24px', fontSize: '14px', fontWeight: 600, minHeight: '24px' }}>
+                    {activePaymentJob.paid && (
+                      <span>Pagamento recebido em: {new Date().toLocaleDateString('pt-BR')} 19:34</span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    {activePaymentJob.paid ? (
+                      <button onClick={() => {
+                        setJobs(jobs.map(j => j.id === activePaymentJob.id ? { ...j, paid: false } : j));
+                        setIsPaymentModalOpen(false);
+                      }} style={{ padding: '12px 24px', background: '#E04A59', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
+                        Cancelar Pagamento
+                      </button>
+                    ) : (
+                      <button onClick={() => {
+                        setJobs(jobs.map(j => j.id === activePaymentJob.id ? { ...j, paid: true } : j));
+                        setIsPaymentModalOpen(false);
+                      }} style={{ padding: '12px 24px', background: '#6FCF97', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer' }}>
+                        Confirmar Pagamento
+                      </button>
+                    )}
+                    <button style={{ padding: '12px 24px', background: '#4298E7', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
+                      Editar Valores
+                    </button>
+                  </div>
+                </div>
+              </motion.div>
+            </div>
+          )}
+        </AnimatePresence>
 
     </div>
   );
