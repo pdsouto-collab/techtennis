@@ -21,6 +21,11 @@ export const StringerDashboard = () => {
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
+
+  // Search State
+  const [customerQuery, setCustomerQuery] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<{id: string, name: string} | null>(null);
+  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   
   // Form State
   const [jobSaved, setJobSaved] = useState(false);
@@ -180,11 +185,50 @@ export const StringerDashboard = () => {
               <form onSubmit={(e) => { e.preventDefault(); setNewJobStep(2); }} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap' }}>
-                  <div style={{ flex: '1 1 300px' }}>
+                  <div style={{ flex: '1 1 300px', position: 'relative' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cliente</label>
-                    <input type="text" placeholder="Insira o nome do cliente" required style={inputStyle} />
+                    <input 
+                      type="text" 
+                      placeholder="Insira o nome do cliente" 
+                      value={selectedCustomer ? selectedCustomer.name : customerQuery}
+                      onChange={(e) => {
+                        setCustomerQuery(e.target.value);
+                        setSelectedCustomer(null);
+                        setShowCustomerDropdown(true);
+                      }}
+                      onFocus={() => setShowCustomerDropdown(true)}
+                      required 
+                      style={inputStyle} 
+                    />
+                    
+                    {/* Autocomplete Dropdown */}
+                    <AnimatePresence>
+                      {showCustomerDropdown && (
+                        <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
+                          style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg-panel-solid)', zIndex: 10, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                          
+                          {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).map(customer => (
+                            <div 
+                              key={customer.id} 
+                              onClick={() => {
+                                setSelectedCustomer(customer);
+                                setCustomerQuery(customer.name);
+                                setShowCustomerDropdown(false);
+                              }}
+                              style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'white', fontWeight: 500 }}
+                            >
+                              {customer.name}
+                            </div>
+                          ))}
+
+                          {MOCK_CUSTOMERS.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).length === 0 && (
+                            <div style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>Nenhum cliente encontrado</div>
+                          )}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </div>
-                  <button type="button" style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => setShowCustomerDropdown(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                     <Search size={18} /> Buscar Cliente
                   </button>
                   <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px' }}>
