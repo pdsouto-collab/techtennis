@@ -25,6 +25,7 @@ export const StringerDashboard = () => {
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
   const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
+  const [selectedJobRacket, setSelectedJobRacket] = useState('');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
 
   // Persistent States
@@ -333,7 +334,7 @@ export const StringerDashboard = () => {
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ flex: '1 1 300px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
-                    <select required style={inputStyle}>
+                    <select required style={inputStyle} value={selectedJobRacket} onChange={(e) => setSelectedJobRacket(e.target.value)}>
                       <option value="">Selecione a raquete do cliente...</option>
                       {rackets.filter(r => !r.customerId || r.customerId === selectedCustomer?.id).map(r => (
                         <option key={r.id} value={r.id}>{r.name}</option>
@@ -861,8 +862,8 @@ export const StringerDashboard = () => {
               {/* Header Tabs Block */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingRight: '24px', background: 'rgba(0,0,0,0.1)' }}>
                 <div style={{ display: 'flex', gap: '4px' }}>
-                  <button onClick={() => setHistoryTab('racket')} style={{ padding: '16px 32px', background: historyTab === 'racket' ? '#4298E7' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'racket' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Racket stringings</button>
-                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>All customer stringings</button>
+                  <button onClick={() => setHistoryTab('racket')} style={{ padding: '16px 32px', background: historyTab === 'racket' ? '#4298E7' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'racket' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Histórico da raquete</button>
+                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Todos do cliente</button>
                 </div>
                 <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
               </div>
@@ -871,44 +872,56 @@ export const StringerDashboard = () => {
                 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Search:</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>Buscar:</span>
                     <input type="text" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
                   </div>
                 </div>
 
                 <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                    <div>Insertion date</div>
-                    <div>Racket</div>
+                    <div>Data de inserção</div>
+                    <div>Raquete</div>
                     <div>Mains</div>
                     <div>Crosses</div>
                     <div>HZ</div>
                     <div>DT</div>
                     <div>CH</div>
-                    <div>Stringer</div>
-                    <div>Stringing date</div>
-                    <div>Price</div>
-                    <div>Played hours</div>
+                    <div>Encordoador</div>
+                    <div>Data do enc.</div>
+                    <div>Preço</div>
+                    <div>Horas jogadas</div>
                     <div></div>
                   </div>
                   
-                  {jobs.length === 0 ? (
-                    <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>Nenhum histórico encontrado.</div>
-                  ) : (
-                    jobs.map(job => (
+                  {(() => {
+                    const mockHistoryJobs = historyTab === 'racket' 
+                      ? (selectedJobRacket ? [jobs[0]] : []) 
+                      : [
+                          {...jobs[0], id: 'mh1', racketModel: 'Babolat Pure Aero'},
+                          {...jobs[0], id: 'mh2', racketModel: 'Babolat Pure Aero 98'},
+                          {...jobs[0], id: 'mh3', racketModel: 'Head Speed Pro'}
+                        ];
+                        
+                    if (mockHistoryJobs.length === 0) return (
+                      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                        {historyTab === 'racket' && !selectedJobRacket ? 'Selecione uma raquete no formulário primeiro para ver o histórico dela, ou acesse "Todos do cliente".' : 'Nenhum histórico encontrado.'}
+                      </div>
+                    );
+
+                    return mockHistoryJobs.map((job) => (
                       <div key={job.id} style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
                         <div>03/04/2026 19:37</div>
                         <div>
-                          <div style={{ fontWeight: 600 }}>{job.racketModel || 'Head Speed Pro 2022 [1]'}</div>
+                          <div style={{ fontWeight: 600 }}>{job.racketModel || 'Head Speed Pro'}</div>
                           <div style={{ fontWeight: 400, color: 'var(--text-secondary)', marginTop: '4px' }}>18x20 L3</div>
                         </div>
                         <div>
                           <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
-                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52lbs'}</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52/52 lbs'}</span>
                         </div>
                         <div>
                           <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
-                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52lbs'}</span>
+                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52/52 lbs'}</span>
                         </div>
                         <div></div>
                         <div></div>
@@ -921,15 +934,13 @@ export const StringerDashboard = () => {
                         <div style={{ fontWeight: 600 }}>BRL 140.00</div>
                         <div style={{ color: 'var(--text-secondary)' }}>0</div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                          <button onClick={() => {
-                            setIsHistoryModalOpen(false);
-                          }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Importar">
+                          <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Importar">
                             <ArrowRightCircle size={18} />
                           </button>
                         </div>
                       </div>
-                    ))
-                  )}
+                    ));
+                  })()}
                 </div>
               </div>
             </motion.div>
