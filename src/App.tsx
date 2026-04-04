@@ -5,6 +5,7 @@ import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
+import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => (
   <nav style={{
@@ -19,7 +20,7 @@ const Navbar = () => (
     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
         <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src="/techtennis-logo.png" alt="TechTennis Pro Stringer Logo" style={{ height: '48px', objectFit: 'contain' }} />
+          <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ height: '48px', objectFit: 'contain' }} />
         </Link>
       </div>
 

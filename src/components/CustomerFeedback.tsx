@@ -47,7 +47,7 @@ export const CustomerFeedback = () => {
       
       <div style={{ width: '100%', maxWidth: '500px' }}>
         <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h2 style={{ fontSize: '28px', marginBottom: '8px', color: 'var(--text-primary)' }}>Sua Experiência</h2>
+          <h2 style={{ fontSize: '28px', marginBottom: '8px', color: 'var(--text-primary)', lineHeight: 1.3, paddingTop: '4px' }}>Sua Experiência</h2>
           <p style={{ color: '#b2c0cc', fontSize: '15px' }}>Avalie o encordoamento: Babolat RPM Blast a 55/53 lbs</p>
         </div>
 
