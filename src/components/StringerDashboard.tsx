@@ -527,7 +527,7 @@ export const StringerDashboard = () => {
                        <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Sábado 4 Abril 2026 - 12:30</div>
                     </div>
                     <div style={{ background: 'rgba(155, 81, 224, 0.1)', border: '1px solid rgba(155, 81, 224, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
-                       <div style={{ fontSize: '13px', color: '#B37AF0', marginBottom: '4px' }}>Tipo de Encordoamento</div>
+                       <div style={{ fontSize: '13px', color: '#EBA6FF', marginBottom: '4px' }}>Tipo de Encordoamento</div>
                        <div style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}>ATW</div>
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
@@ -541,7 +541,7 @@ export const StringerDashboard = () => {
                  </div>
 
                  {/* Right Column Form & Dashboard */}
-                 <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                 <div style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '16px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', overflow: 'hidden' }}>
                     <div>
                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Notas do encordoamento</label>
                        <textarea rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
