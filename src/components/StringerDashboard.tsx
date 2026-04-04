@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus } from 'lucide-react';
 
@@ -15,6 +16,7 @@ const MOCK_JOBS = [
 ];
 
 export const StringerDashboard = () => {
+  const navigate = useNavigate();
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers'>('dashboard');
   const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
   
@@ -56,17 +58,24 @@ export const StringerDashboard = () => {
         width: '100%', maxWidth: '1200px', padding: '0 24px', marginBottom: '24px',
         display: 'flex', gap: '24px', overflowX: 'auto', borderBottom: '1px solid var(--border-light)'
       }}>
-        {['Início', 'Testes de Laboratório', 'Ferramentas', 'Editoriais', 'Cloud Encordoamento'].map((tab, i) => (
-          <button key={tab} style={{
-            background: 'none', border: 'none', padding: '12px 0', 
-            color: i === 4 ? 'var(--primary-color)' : 'var(--text-secondary)',
-            fontWeight: i === 4 ? 700 : 500, fontSize: '15px',
-            borderBottom: i === 4 ? '2px solid var(--primary-color)' : '2px solid transparent',
-            cursor: 'pointer', whiteSpace: 'nowrap'
-          }}>
-            {tab}
-          </button>
-        ))}
+        <button onClick={() => navigate('/')} style={{
+          background: 'none', border: 'none', padding: '12px 0', 
+          color: 'var(--text-secondary)',
+          fontWeight: 500, fontSize: '15px',
+          borderBottom: '2px solid transparent',
+          cursor: 'pointer', whiteSpace: 'nowrap'
+        }}>
+          Início
+        </button>
+        <button onClick={() => setView('dashboard')} style={{
+          background: 'none', border: 'none', padding: '12px 0', 
+          color: 'var(--primary-color)',
+          fontWeight: 700, fontSize: '15px',
+          borderBottom: '2px solid var(--primary-color)',
+          cursor: 'pointer', whiteSpace: 'nowrap'
+        }}>
+          Dashboard
+        </button>
       </div>
 
       <div style={{ width: '100%', maxWidth: '1200px', padding: '0 24px', display: 'flex', flexDirection: 'column', gap: '24px' }}>
