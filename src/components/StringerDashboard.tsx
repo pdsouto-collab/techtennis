@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy } from 'lucide-react';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle } from 'lucide-react';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -22,6 +22,8 @@ export const StringerDashboard = () => {
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
+  const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
 
   // Persistent States
@@ -351,8 +353,8 @@ export const StringerDashboard = () => {
                       </select>
                     </div>
 
-                    <div style={{ padding: '16px', background: 'var(--primary-color)', borderRadius: '12px', color: 'var(--text-dark)', fontWeight: 700, display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer' }}>
-                      <Search size={18} /> Hitórico Recente
+                    <div onClick={() => setIsHistoryModalOpen(true)} style={{ padding: '16px', background: 'var(--primary-color)', borderRadius: '12px', color: 'var(--text-dark)', fontWeight: 700, display: 'flex', gap: '8px', alignItems: 'center', cursor: 'pointer', transition: 'transform 0.1s' }} onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'} onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}>
+                      <Search size={18} /> Histórico Recente
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
@@ -829,6 +831,92 @@ export const StringerDashboard = () => {
                   <button onClick={() => setIsCloneRacketModalOpen(false)} style={{ padding: '12px 32px', background: 'transparent', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 700 }}>
                     Fechar
                   </button>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* History Modal */}
+      <AnimatePresence>
+        {isHistoryModalOpen && (
+          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              style={{ width: '100%', maxWidth: '1200px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              
+              {/* Header Tabs Block */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingRight: '24px', background: 'rgba(0,0,0,0.1)' }}>
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  <button onClick={() => setHistoryTab('racket')} style={{ padding: '16px 32px', background: historyTab === 'racket' ? '#4298E7' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'racket' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Racket stringings</button>
+                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>All customer stringings</button>
+                </div>
+                <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
+              </div>
+
+              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
+                
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: 'var(--text-secondary)' }}>Search:</span>
+                    <input type="text" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
+                  </div>
+                </div>
+
+                <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  <div style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    <div>Insertion date</div>
+                    <div>Racket</div>
+                    <div>Mains</div>
+                    <div>Crosses</div>
+                    <div>HZ</div>
+                    <div>DT</div>
+                    <div>CH</div>
+                    <div>Stringer</div>
+                    <div>Stringing date</div>
+                    <div>Price</div>
+                    <div>Played hours</div>
+                    <div></div>
+                  </div>
+                  
+                  {jobs.length === 0 ? (
+                    <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>Nenhum histórico encontrado.</div>
+                  ) : (
+                    jobs.map(job => (
+                      <div key={job.id} style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
+                        <div>03/04/2026 19:37</div>
+                        <div>
+                          <div style={{ fontWeight: 600 }}>{job.racketModel || 'Head Speed Pro 2022 [1]'}</div>
+                          <div style={{ fontWeight: 400, color: 'var(--text-secondary)', marginTop: '4px' }}>18x20 L3</div>
+                        </div>
+                        <div>
+                          <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
+                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52lbs'}</span>
+                        </div>
+                        <div>
+                          <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
+                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52lbs'}</span>
+                        </div>
+                        <div></div>
+                        <div></div>
+                        <div></div>
+                        <div style={{ color: 'var(--text-secondary)' }}>Tester Ernesto</div>
+                        <div>
+                          <span style={{ fontWeight: 600 }}>03/04/2026</span><br/>
+                          <span style={{ color: 'var(--text-secondary)' }}>16:37</span>
+                        </div>
+                        <div style={{ fontWeight: 600 }}>BRL 140.00</div>
+                        <div style={{ color: 'var(--text-secondary)' }}>0</div>
+                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <button onClick={() => {
+                            setIsHistoryModalOpen(false);
+                          }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Importar">
+                            <ArrowRightCircle size={18} />
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </motion.div>
