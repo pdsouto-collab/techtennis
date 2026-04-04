@@ -23,7 +23,6 @@ const Navbar = () => (
           <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
             height: '72px', 
             objectFit: 'contain',
-            filter: 'grayscale(1) contrast(10)',
             mixBlendMode: 'multiply'
           }} />
         </Link>
