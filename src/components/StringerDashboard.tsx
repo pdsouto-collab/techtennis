@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
+import { CustomerHistoryModal } from './CustomerHistoryModal';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -763,7 +764,7 @@ export const StringerDashboard = () => {
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone || ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                          <button style={{ background: '#6136B3', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Histórico"><UserSquare size={16} /></button>
+                          <button onClick={() => { setSelectedCustomer(customer); setIsHistoryModalOpen(true); }} style={{ background: '#6136B3', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Histórico"><UserSquare size={16} /></button>
                           <button onClick={() => setCustomers(customers.filter(c => c.id !== customer.id))} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
                           <button onClick={() => { setSelectedCustomer(customer); setIsCustomerModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
                           <button onClick={() => { setSelectedCustomer(customer); setCustomerQuery(customer.name); setSelectedJobRacket(''); setNewJobStep(2); setView('new_job'); }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Nova Ordem"><FolderPlus size={16} /></button>
@@ -1157,103 +1158,12 @@ export const StringerDashboard = () => {
       {/* History Modal */}
       <AnimatePresence>
         {isHistoryModalOpen && (
-          <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              style={{ width: '100%', maxWidth: '1200px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-              
-              {/* Header Tabs Block */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingRight: '24px', background: 'rgba(0,0,0,0.1)' }}>
-                <div style={{ display: 'flex', gap: '4px' }}>
-                  <button onClick={() => setHistoryTab('racket')} style={{ padding: '16px 32px', background: historyTab === 'racket' ? '#4298E7' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'racket' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Histórico da raquete</button>
-                  <button onClick={() => setHistoryTab('all')} style={{ padding: '16px 32px', background: historyTab === 'all' ? '#7B61FF' : 'transparent', border: 'none', color: 'white', fontWeight: 600, cursor: 'pointer', fontSize: '15px', borderBottom: historyTab === 'all' ? '3px solid white' : '3px solid transparent', transition: 'all 0.2s' }}>Histórico do Cliente</button>
-                </div>
-                <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
-              </div>
-
-              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
-                
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '24px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ color: 'var(--text-secondary)' }}>Buscar:</span>
-                    <input type="text" style={{ padding: '10px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none' }} />
-                  </div>
-                </div>
-
-                <div style={{ overflowX: 'auto', background: 'rgba(255,255,255,0.02)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <div style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', fontWeight: 600, borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'rgba(255,255,255,0.05)', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                    <div>Data de inserção</div>
-                    <div>Raquete</div>
-                    <div>Mains</div>
-                    <div>Crosses</div>
-                    <div>HZ</div>
-                    <div>DT</div>
-                    <div>CH</div>
-                    <div>Encordoador</div>
-                    <div>Data do enc.</div>
-                    <div>Preço</div>
-                    <div>Horas jogadas</div>
-                    <div></div>
-                  </div>
-                  
-                  {(() => {
-                    let filteredJobs = jobs.filter(job => job.customerName === selectedCustomer?.name);
-
-                    if (historyTab === 'racket') {
-                      if (!selectedJobRacket) {
-                        return (
-                          <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                            Selecione uma raquete no formulário para ver o histórico dela, ou acesse "Histórico do Cliente".
-                          </div>
-                        );
-                      }
-                      
-                      const activeRacket = rackets.find(r => r.id === selectedJobRacket);
-                      filteredJobs = filteredJobs.filter(job => job.racketModel === activeRacket?.name);
-                    }
-                        
-                    if (filteredJobs.length === 0) return (
-                      <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                        Nenhum histórico encontrado para esta seleção.
-                      </div>
-                    );
-
-                    return filteredJobs.map((job) => (
-                      <div key={job.id} style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(120px, 1fr) minmax(200px, 2fr) 2fr 2fr 0.5fr 0.5fr 0.5fr 1.5fr minmax(120px, 1fr) 1fr 1fr 0.5fr', padding: '16px 20px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
-                        <div>03/04/2026 19:37</div>
-                        <div>
-                          <div style={{ fontWeight: 600 }}>{job.racketModel || 'Head Speed Pro'}</div>
-                          <div style={{ fontWeight: 400, color: 'var(--text-secondary)', marginTop: '4px' }}>18x20 L3</div>
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
-                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52/52 lbs'}</span>
-                        </div>
-                        <div>
-                          <span style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</span><br/>
-                          <span style={{ color: 'var(--text-secondary)' }}>@{job.tension || '52/52 lbs'}</span>
-                        </div>
-                        <div></div>
-                        <div></div>
-                        <div></div>
-                        <div style={{ color: 'var(--text-secondary)' }}>Tester Ernesto</div>
-                        <div>
-                          <span style={{ fontWeight: 600 }}>03/04/2026</span><br/>
-                          <span style={{ color: 'var(--text-secondary)' }}>16:37</span>
-                        </div>
-                        <div style={{ fontWeight: 600 }}>BRL 140.00</div>
-                        <div style={{ color: 'var(--text-secondary)' }}>0</div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                          <button onClick={() => setIsHistoryModalOpen(false)} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Importar">
-                            <ArrowRightCircle size={18} />
-                          </button>
-                        </div>
-                      </div>
-                    ));
-                  })()}
-                </div>
-              </div>
-            </motion.div>
-          </div>
+          <CustomerHistoryModal 
+            isOpen={isHistoryModalOpen} 
+            onClose={() => setIsHistoryModalOpen(false)} 
+            customer={selectedCustomer} 
+            jobs={jobs} 
+          />
         )}
       </AnimatePresence>
 
@@ -1371,4 +1281,3 @@ export const StringerDashboard = () => {
     </div>
   );
 };
-
