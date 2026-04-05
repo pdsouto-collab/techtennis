@@ -721,7 +721,7 @@ export const StringerDashboard = () => {
            jobs={jobs} setJobs={setJobs} setActiveStringingJob={setActiveStringingJob}
            setActivePaymentJob={setActivePaymentJob} setIsPaymentModalOpen={setIsPaymentModalOpen}
            customers={customers} setSelectedCustomer={setSelectedCustomer} setNewJobStep={setNewJobStep}
-           setActiveFilter={setActiveFilter}
+           setActiveFilter={setActiveFilter} setIsCustomerModalOpen={setIsCustomerModalOpen}
         />
 
         {/* Customers View */}
