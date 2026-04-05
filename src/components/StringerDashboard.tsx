@@ -78,7 +78,7 @@ export const StringerDashboard = () => {
     const newJob = {
       id: Date.now().toString(),
       customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
-      racketModel: 'Raquete Customizada',
+      racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
       date: new Date().toLocaleDateString('pt-BR'),
       tension: `${tensionMain} lbs`,
       status: 'aguardando',
@@ -93,6 +93,12 @@ export const StringerDashboard = () => {
       setNewJobStep(1);
       setSelectedCustomer(null);
       setCustomerQuery('');
+      setSelectedJobRacket('');
+      setMainString('');
+      setCrossString('');
+      setTensionMain(55);
+      setTensionCross(55);
+      setIsHybrid(false);
     }, 1500);
   };
 
@@ -397,7 +403,7 @@ export const StringerDashboard = () => {
 
               </form>
             ) : (
-              <form onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+              <form id="newJobForm" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                 
                 {/* Racket Selection Row */}
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
@@ -545,7 +551,32 @@ export const StringerDashboard = () => {
                   <button type="button" onClick={() => { setView('dashboard'); setNewJobStep(1); }} style={{ padding: '16px 32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
                     Fechar
                   </button>
-                  <button type="button" style={{ padding: '16px 32px', background: '#D93B65', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => {
+                     const f = document.getElementById('newJobForm') as HTMLFormElement;
+                     if (f && f.reportValidity()) {
+                        const newJob = {
+                          id: Date.now().toString(),
+                          customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
+                          racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
+                          date: new Date().toLocaleDateString('pt-BR'),
+                          tension: `${tensionMain} lbs`,
+                          status: 'aguardando',
+                          type: 'to_string' as any
+                        };
+                        setJobs(prev => [newJob, ...prev]);
+                        
+                        setSelectedJobRacket('');
+                        setMainString('');
+                        setCrossString('');
+                        setTensionMain(55);
+                        setTensionCross(55);
+                        setIsHybrid(false);
+                        
+                        // Pequeno pulso visual para feedback de que a primeira foi salva
+                        setJobSaved(true);
+                        setTimeout(() => setJobSaved(false), 1000);
+                     }
+                  }} style={{ padding: '16px 32px', background: '#D93B65', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
                     Adicionar outra raquete
                   </button>
                   <button type="submit" className="button-primary" style={{ padding: '16px 40px', fontSize: '16px' }}>
