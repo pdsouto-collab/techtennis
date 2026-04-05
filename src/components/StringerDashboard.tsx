@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck } from 'lucide-react';
+import { Users, Plus, ArrowLeft, MoreHorizontal, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 
 // Extended Mock Data for the new functionalities
@@ -737,24 +737,59 @@ export const StringerDashboard = () => {
               </button>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '20px' }}>
-              {customers.map(customer => (
-                <div key={customer.id} style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '16px', padding: '20px', border: '1px solid var(--border-light)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-color)', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', fontWeight: 'bold' }}>
-                      {customer.name.charAt(0).toUpperCase()}
-                    </div>
-                    <div>
-                      <h4 style={{ fontSize: '18px', fontWeight: 700 }}>{customer.name}</h4>
-                      <p style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{customer.phone || 'Sem celular'}</p>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '8px' }}>
-                    <button style={{ flex: 1, padding: '8px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', cursor: 'pointer', fontSize: '14px' }}>Ver Histórico</button>
-                    <button onClick={() => { setSelectedCustomer(customer); setCustomerQuery(customer.name); setSelectedJobRacket(''); setNewJobStep(2); setView('new_job'); }} style={{ flex: 1, padding: '8px', background: 'var(--primary-color)', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', fontWeight: 600, fontSize: '14px' }}>Novo Serviço</button>
-                  </div>
+            <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
+                <thead>
+                  <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Name</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Stringing point</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Coach</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Club</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Email</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Phone</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Mobile</th>
+                    <th style={{ padding: '16px' }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {customers.map((customer: any, index: number) => (
+                    <tr key={customer.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
+                      <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>Test</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}></td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Gênesis 2'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || ''}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}></td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone || ''}</td>
+                      <td style={{ padding: '16px' }}>
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button style={{ background: '#6136B3', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Histórico"><UserSquare size={16} /></button>
+                          <button onClick={() => setCustomers(customers.filter(c => c.id !== customer.id))} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
+                          <button onClick={() => { setSelectedCustomer(customer); setIsCustomerModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
+                          <button onClick={() => { setSelectedCustomer(customer); setCustomerQuery(customer.name); setSelectedJobRacket(''); setNewJobStep(2); setView('new_job'); }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Nova Ordem"><FolderPlus size={16} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              
+              {/* Pagination footer */}
+              <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '13px', background: 'white' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Show</span>
+                  <select style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
+                    <option>10</option>
+                  </select>
+                  <span>entries</span>
+                  <span style={{ marginLeft: '16px' }}>Showing 1 to {customers.length} of {customers.length} entries</span>
                 </div>
-              ))}
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button style={{ border: 'none', background: 'none', color: '#9CA3AF', cursor: 'not-allowed', fontWeight: 600 }}>Previous</button>
+                  <button style={{ border: 'none', background: '#4298E7', color: 'white', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>1</button>
+                  <button style={{ border: 'none', background: 'none', color: '#9CA3AF', cursor: 'not-allowed', fontWeight: 600 }}>Next</button>
+                </div>
+              </div>
             </div>
           </motion.div>
         )}
