@@ -31,7 +31,6 @@ export const StringerDashboard = () => {
   const [activePaymentJob, setActivePaymentJob] = useState<any>(null);
   const [isPickupModalOpen, setIsPickupModalOpen] = useState(false);
   const [activePickupJob, setActivePickupJob] = useState<any>(null);
-  const [historyTab, setHistoryTab] = useState<'racket' | 'all'>('racket');
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
@@ -58,7 +57,7 @@ export const StringerDashboard = () => {
 
   // Search State
   const [customerQuery, setCustomerQuery] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<{id: string, name: string} | null>(null);
+  const [selectedCustomer, setSelectedCustomer] = useState<any>(null);
   const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   const [customerError, setCustomerError] = useState(false);
   
@@ -807,49 +806,53 @@ export const StringerDashboard = () => {
             padding: '24px'
           }}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: '#5984C7', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
               
               {/* Modal Header */}
-              <div style={{ background: '#7B61FF', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>Adicionar Cliente</h3>
-                <button onClick={() => setIsCustomerModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
+              <div style={{ background: '#8F5FFF', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 700, margin: 0 }}>{selectedCustomer ? 'Editar Cliente' : 'Adicionar Cliente'}</h3>
+                <button onClick={() => { setIsCustomerModalOpen(false); setSelectedCustomer(null); }} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
               </div>
 
               {/* Modal Body */}
-              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
+              <div style={{ padding: '32px', overflowY: 'auto', flex: 1 }}>
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
                   e.preventDefault(); 
                   const fd = new FormData(e.currentTarget);
                   const firstName = fd.get('firstName') as string;
                   const lastName = fd.get('lastName') as string;
-                  const newCustomer = {
-                    id: 'c' + Date.now(),
+                  const customerData = {
                     name: `${firstName} ${lastName}`.trim(),
                     phone: fd.get('phone') as string,
-                    email: fd.get('email') as string
+                    email: fd.get('email') as string,
+                    originClub: fd.get('originClub') as string
                   };
-                  setCustomers(prev => [...prev, newCustomer]);
-                  // Set naturally as selected customer if coming from creation flow
-                  setSelectedCustomer(newCustomer);
-                  setCustomerQuery(newCustomer.name);
+                  if (selectedCustomer) {
+                    setCustomers(customers.map((c: any) => c.id === selectedCustomer.id ? { ...c, ...customerData } : c));
+                  } else {
+                    const newCustomer = { id: 'c' + Date.now(), ...customerData };
+                    setCustomers(prev => [...prev, newCustomer]);
+                    setSelectedCustomer(newCustomer);
+                    setCustomerQuery(newCustomer.name);
+                  }
                   setIsCustomerModalOpen(false); 
                 }}>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Sobrenome</label>
-                      <input name="lastName" type="text" style={inputStyle} required />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Sobrenome</label>
+                      <input name="lastName" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.name?.split(' ').slice(1).join(' ') : ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Nome</label>
-                      <input name="firstName" type="text" style={inputStyle} required />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Nome</label>
+                      <input name="firstName" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.name?.split(' ')[0] : ''} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Gênero</label>
-                      <select name="gender" style={inputStyle}>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Gênero</label>
+                      <select name="gender" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
                         <option value="">Selecione...</option>
                         <option value="M">Masculino</option>
                         <option value="F">Feminino</option>
@@ -857,30 +860,30 @@ export const StringerDashboard = () => {
                       </select>
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Celular</label>
-                      <input name="phone" type="tel" style={inputStyle} required />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Celular</label>
+                      <input name="phone" type="tel" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.phone : ''} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Clube de Origem</label>
-                      <input type="text" style={inputStyle} />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Clube de Origem</label>
+                      <input name="originClub" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} defaultValue={selectedCustomer?.originClub || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Professor / Treinador</label>
-                      <input type="text" style={inputStyle} />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
+                      <input type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>E-mail</label>
-                      <input name="email" type="email" style={inputStyle} />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>E-mail</label>
+                      <input name="email" type="email" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} defaultValue={selectedCustomer ? selectedCustomer.email : ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data de Nascimento</label>
-                      <input type="date" style={inputStyle} />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Data de Nascimento</label>
+                      <input type="date" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
                     </div>
                   </div>
 
@@ -956,6 +959,26 @@ export const StringerDashboard = () => {
               </div>
             </motion.div>
           </div>
+        )}
+      </AnimatePresence>
+
+      {/* History Modal */}
+      <AnimatePresence>
+        {isHistoryModalOpen && (
+          <CustomerHistoryModal 
+            isOpen={isHistoryModalOpen} 
+            onClose={() => setIsHistoryModalOpen(false)} 
+            customer={selectedCustomer} 
+            jobs={jobs} 
+            setJobs={setJobs}
+            onEdit={(job: any) => {
+              setIsHistoryModalOpen(false);
+              setCustomerQuery(job.customerName);
+              setSelectedJobRacket(job.racketModel);
+              setNewJobStep(2);
+              setView('new_job');
+            }}
+          />
         )}
       </AnimatePresence>
 
@@ -1153,22 +1176,6 @@ export const StringerDashboard = () => {
             </motion.div>
           </div>
         )}
-      </AnimatePresence>
-
-      {/* History Modal */}
-      <AnimatePresence>
-        {isHistoryModalOpen && (
-          <CustomerHistoryModal 
-            isOpen={isHistoryModalOpen} 
-            onClose={() => setIsHistoryModalOpen(false)} 
-            customer={selectedCustomer} 
-            jobs={jobs} 
-          />
-        )}
-      </AnimatePresence>
-
-        {/* PAYMENT MODAL */}
-        <AnimatePresence>
           {isPaymentModalOpen && activePaymentJob && (
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-panel" style={{ width: '90%', maxWidth: '800px', background: 'var(--bg-card)', borderRadius: '16px', overflow: 'hidden' }}>
