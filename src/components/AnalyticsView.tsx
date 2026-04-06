@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Filter, Download } from 'lucide-react';
+import { PeriodModal } from './PeriodModal';
 
 export const AnalyticsView = ({ jobs }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
+  const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
 
   const metricBoxStyle = (bg: string) => ({
     background: bg,
@@ -30,7 +32,7 @@ export const AnalyticsView = ({ jobs }: any) => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Analytics (Últimos 7 dias)</h2>
-        <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '10px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+        <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '10px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
           <Calendar size={18} /> Período
         </button>
       </div>
@@ -161,7 +163,7 @@ export const AnalyticsView = ({ jobs }: any) => {
               <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
                 <Filter size={16} /> Filtros
               </button>
-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
                 <Calendar size={16} /> Período
               </button>
             </div>
@@ -215,6 +217,7 @@ export const AnalyticsView = ({ jobs }: any) => {
         </div>
       )}
 
+    <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { console.log('Period selected:', dates); setIsPeriodModalOpen(false); }} />
     </motion.div>
   );
 };
