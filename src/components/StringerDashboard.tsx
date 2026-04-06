@@ -42,7 +42,7 @@ export const StringerDashboard = () => {
   });
 
   const [jobs, setJobs] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_jobs');
+    const saved = localStorage.getItem('tt_jobs_v2');
     return saved ? JSON.parse(saved) : INITIAL_JOBS;
   });
 
@@ -52,7 +52,7 @@ export const StringerDashboard = () => {
   });
 
   useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
-  useEffect(() => { localStorage.setItem('tt_jobs', JSON.stringify(jobs)); }, [jobs]);
+  useEffect(() => { localStorage.setItem('tt_jobs_v2', JSON.stringify(jobs)); }, [jobs]);
   useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
 
   // Search State
@@ -205,7 +205,7 @@ export const StringerDashboard = () => {
                   <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhum evento para exibir</div>
                 ) : (
                   filteredJobs.map(job => (
-                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: (activeFilter === 'to_string' || activeFilter === 'picking_up') ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr auto', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
+                    <div key={job.id} style={{ display: 'grid', gridTemplateColumns: (activeFilter === 'to_string' || activeFilter === 'picking_up') ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
                       <div style={{ fontWeight: 600 }}>{job.date}</div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '16px' }}>{job.customerName}</div>
@@ -270,10 +270,7 @@ export const StringerDashboard = () => {
                           </div>
                         </>
                       ) : (
-                        <>
-                          <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{job.status.toUpperCase()}</div>
-                          <button style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex', justifyContent: 'flex-end' }}><MoreHorizontal size={20} /></button>
-                        </>
+                        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{job.status.toUpperCase()}</div>
                       )}
                     </div>
                   ))
