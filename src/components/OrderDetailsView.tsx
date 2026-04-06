@@ -93,7 +93,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
               <div>
                 <h2 style={{ fontSize: '28px', fontWeight: 800, margin: '0 0 12px 0' }}>{activeOrderJob.customerName}</h2>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-secondary)', fontWeight: 600 }}>
-                  <ArrowRight size={16} strokeWidth={3} /> {activeCustomer?.originClub || 'Gênesis 2'}
+                  <ArrowRight size={16} strokeWidth={3} /> {activeCustomer?.originClub || 'Não informado'}
                 </div>
               </div>
               <div style={{ display: 'flex', gap: '12px' }}>

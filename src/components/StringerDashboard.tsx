@@ -779,7 +779,7 @@ export const StringerDashboard = () => {
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>Test</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}></td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Gênesis 2'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Não informado'}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}></td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone || ''}</td>
