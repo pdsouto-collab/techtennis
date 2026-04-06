@@ -14,7 +14,7 @@ const INITIAL_CUSTOMERS = [
 const INITIAL_JOBS = [
   { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'pronta', type: 'picking_up', paid: true, price: 120 },
   { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'aguardando', type: 'to_string' },
-  { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'entregue', type: 'dropping_off' },
+  { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'na_fila', type: 'to_string' },
 ];
 
 export const StringerDashboard = () => {
@@ -22,7 +22,7 @@ export const StringerDashboard = () => {
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'dropping_off' | 'to_string' | 'picking_up'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
@@ -156,8 +156,8 @@ export const StringerDashboard = () => {
 
             {/* Configurable Status Tiles */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('dropping_off')}
-                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('dropping_off')}`, background: activeFilter === 'dropping_off' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setView('new_job'); }}
+                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('dropping_off')}`, background: 'var(--bg-panel)' }}>
                 <PackageOpen size={24} color={getStatusColor('dropping_off')} style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recebimento</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Raquetes chegando</p>
@@ -190,7 +190,6 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '20px', fontWeight: 700 }}>
                   {activeFilter === 'all' ? 'Todos os Pedidos' : 
-                   activeFilter === 'dropping_off' ? 'Entregues' :
                    activeFilter === 'to_string' ? 'Fila de Encordoamento' : 'Prontos para Retirada'}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
