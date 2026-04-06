@@ -179,7 +179,7 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
           setIsFeedbackModalOpen(false);
           setActiveFeedbackJob(null);
         }}
-        readOnly={false} // Allow customer to edit here
+        readOnly={true} // Stringer can only view feedback
       />
     </div>
   );
