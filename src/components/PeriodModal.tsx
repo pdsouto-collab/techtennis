@@ -19,9 +19,58 @@ export const PeriodModal = ({ isOpen, onClose, onApply }: any) => {
     fontSize: '14px'
   };
 
+  const getFormattedDate = (date: Date) => {
+    const offset = date.getTimezoneOffset()
+    date = new Date(date.getTime() - (offset*60*1000))
+    return date.toISOString().split('T')[0]
+  };
+
   const handleApply = () => {
     if (onApply) onApply({ startDate, endDate });
     onClose();
+  };
+
+  const setRange = (type: string) => {
+    const today = new Date();
+    let start = new Date();
+    let end = new Date();
+
+    switch(type) {
+      case 'Hoje':
+        break;
+      case 'Ontem':
+        start.setDate(today.getDate() - 1);
+        end.setDate(today.getDate() - 1);
+        break;
+      case 'Última semana':
+        const dayOfWeek = today.getDay() || 7;
+        end.setDate(today.getDate() - dayOfWeek);
+        start.setDate(end.getDate() - 6);
+        break;
+      case 'Último mês':
+        start = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+        end = new Date(today.getFullYear(), today.getMonth(), 0);
+        break;
+      case 'Últimos 7 dias':
+        start.setDate(today.getDate() - 7);
+        break;
+      case 'Últimos 30 dias':
+        start.setDate(today.getDate() - 30);
+        break;
+      case 'Últimos 180 dias':
+        start.setDate(today.getDate() - 180);
+        break;
+      case 'Ano atual':
+        start = new Date(today.getFullYear(), 0, 1);
+        break;
+      case 'Ano passado':
+        start = new Date(today.getFullYear() - 1, 0, 1);
+        end = new Date(today.getFullYear() - 1, 11, 31);
+        break;
+    }
+
+    setStartDate(getFormattedDate(start));
+    setEndDate(getFormattedDate(end));
   };
 
   return (
@@ -80,15 +129,15 @@ export const PeriodModal = ({ isOpen, onClose, onApply }: any) => {
 
           {/* Quick Picks */}
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-            <button style={quickPickStyle}>Hoje</button>
-            <button style={quickPickStyle}>Ontem</button>
-            <button style={quickPickStyle}>Última semana</button>
-            <button style={quickPickStyle}>Último mês</button>
-            <button style={quickPickStyle}>Últimos 7 dias</button>
-            <button style={quickPickStyle}>Últimos 30 dias</button>
-            <button style={quickPickStyle}>Últimos 180 dias</button>
-            <button style={quickPickStyle}>Ano atual</button>
-            <button style={quickPickStyle}>Ano passado</button>
+            <button onClick={() => setRange('Hoje')} style={quickPickStyle}>Hoje</button>
+            <button onClick={() => setRange('Ontem')} style={quickPickStyle}>Ontem</button>
+            <button onClick={() => setRange('Última semana')} style={quickPickStyle}>Última semana</button>
+            <button onClick={() => setRange('Último mês')} style={quickPickStyle}>Último mês</button>
+            <button onClick={() => setRange('Últimos 7 dias')} style={quickPickStyle}>Últimos 7 dias</button>
+            <button onClick={() => setRange('Últimos 30 dias')} style={quickPickStyle}>Últimos 30 dias</button>
+            <button onClick={() => setRange('Últimos 180 dias')} style={quickPickStyle}>Últimos 180 dias</button>
+            <button onClick={() => setRange('Ano atual')} style={quickPickStyle}>Ano atual</button>
+            <button onClick={() => setRange('Ano passado')} style={quickPickStyle}>Ano passado</button>
           </div>
 
         </div>
