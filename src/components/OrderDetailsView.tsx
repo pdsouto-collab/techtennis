@@ -180,7 +180,17 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
       <div className="glass-panel" style={{ padding: '32px', background: 'white', color: 'var(--text-dark)', overflowX: 'auto' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
             <h3 style={{ fontSize: '24px', fontWeight: 900, margin: 0 }}>Raquetes da ordem</h3>
-            <button style={{ background: '#D93B65', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+            <button 
+                onClick={() => {
+                   const cust = customers?.find((c: any) => c.name === activeOrderJob.customerName);
+                   if (cust) {
+                      setSelectedCustomer(cust);
+                   }
+                   setNewJobStep(2);
+                   setView('new_job');
+                }}
+                style={{ background: '#D93B65', color: 'white', border: 'none', padding: '12px 24px', borderRadius: '8px', fontWeight: 700, fontSize: '15px', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}
+            >
                 <Plus size={18} strokeWidth={3} /> Adicionar raquete
             </button>
           </div>
