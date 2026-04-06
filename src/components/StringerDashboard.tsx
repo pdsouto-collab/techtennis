@@ -55,6 +55,23 @@ export const StringerDashboard = () => {
   useEffect(() => { localStorage.setItem('tt_jobs_v2', JSON.stringify(jobs)); }, [jobs]);
   useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
 
+  // Sync state if another tab changes localStorage
+  useEffect(() => {
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'tt_jobs_v2' && e.newValue) {
+        setJobs(JSON.parse(e.newValue));
+      }
+      if (e.key === 'tt_customers' && e.newValue) {
+        setCustomers(JSON.parse(e.newValue));
+      }
+      if (e.key === 'tt_rackets' && e.newValue) {
+        setRackets(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
+  }, []);
+
   // Search State
   const [customerQuery, setCustomerQuery] = useState('');
   const [selectedCustomer, setSelectedCustomer] = useState<any>(null);

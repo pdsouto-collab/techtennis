@@ -1,18 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { X, Star } from 'lucide-react';
 
 export const FeedbackModal = ({ isOpen, onClose, job, onSaveFeedback, readOnly = false }: any) => {
-  const existingFeedback = job?.feedback || {};
-  
   const [feedback, setFeedback] = useState({
-    tensionMaintenance: existingFeedback.tensionMaintenance || 0,
-    power: existingFeedback.power || 0,
-    comfort: existingFeedback.comfort || 0,
-    spin: existingFeedback.spin || 0,
-    control: existingFeedback.control || 0,
-    comments: existingFeedback.comments || ''
+    tensionMaintenance: 0,
+    power: 0,
+    comfort: 0,
+    spin: 0,
+    control: 0,
+    comments: ''
   });
+
+  useEffect(() => {
+    if (job?.feedback) {
+      setFeedback({
+        tensionMaintenance: job.feedback.tensionMaintenance || 0,
+        power: job.feedback.power || 0,
+        comfort: job.feedback.comfort || 0,
+        spin: job.feedback.spin || 0,
+        control: job.feedback.control || 0,
+        comments: job.feedback.comments || ''
+      });
+    } else {
+      setFeedback({ tensionMaintenance: 0, power: 0, comfort: 0, spin: 0, control: 0, comments: '' });
+    }
+  }, [job]);
 
   if (!isOpen || !job) return null;
 

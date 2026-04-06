@@ -21,6 +21,14 @@ export const CustomerFeedback = () => {
     if (saved) {
       setJobs(JSON.parse(saved));
     }
+
+    const handleStorage = (e: StorageEvent) => {
+      if (e.key === 'tt_jobs_v2' && e.newValue) {
+        setJobs(JSON.parse(e.newValue));
+      }
+    };
+    window.addEventListener('storage', handleStorage);
+    return () => window.removeEventListener('storage', handleStorage);
   }, []);
 
   const saveJobs = (newJobs: any[]) => {
