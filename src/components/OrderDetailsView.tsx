@@ -1,8 +1,22 @@
-
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PackageOpen, Scissors, Truck, Users, ArrowLeft, ArrowRight, Edit, Plus, DollarSign, Ticket, Printer, Grid, Trash2 } from 'lucide-react';
 
 export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen }: any) => {
+  const [isEditingPickup, setIsEditingPickup] = useState(false);
+  const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
+  const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
+
+  import('react').then(React => {
+     React.useEffect(() => {
+        if (activeOrderJob) {
+           setPickupDate(activeOrderJob.pickupDate || '2026-04-04T12:30');
+           setPickupNotes(activeOrderJob.pickupNotes || '');
+           setIsEditingPickup(false);
+        }
+     }, [activeOrderJob]);
+  });
+
   if (view !== 'order_details' || !activeOrderJob) return null;
 
   const activeCustomer = customers?.find((c: any) => c.name === activeOrderJob.customerName);
@@ -116,17 +130,48 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
         {/* Right Dropoff info Panel */}
         <div className="glass-panel" style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px', background: '#D9DCDF', color: 'var(--text-dark)' }}>
             <h3 style={{ fontSize: '24px', fontWeight: 900, margin: '0 0 16px 0' }}>Previsão de Retirada</h3>
+            
             <div>
               <div style={{ fontSize: '14px', color: '#555', marginBottom: '8px', fontWeight: 600 }}>Data de retirada</div>
-              <div style={{ fontSize: '22px', fontWeight: 800 }}>Sábado 4 de Abril de 2026 - 12:30</div>
+              {isEditingPickup ? (
+                <input 
+                  type="datetime-local" 
+                  value={pickupDate}
+                  onChange={(e) => setPickupDate(e.target.value)}
+                  style={{ width: '100%', padding: '12px 16px', fontSize: '16px', borderRadius: '8px', border: '1px solid #ccc', background: '#FFFFFF', color: '#333' }}
+                />
+              ) : (
+                <div style={{ fontSize: '20px', fontWeight: 800 }}>
+                  {new Date(pickupDate).toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }).replace(/^\w/, (c) => c.toUpperCase())}
+                </div>
+              )}
             </div>
             
             <div style={{ marginTop: 'auto' }}>
               <div style={{ fontSize: '14px', color: '#555', marginBottom: '8px', fontWeight: 600 }}>Observações</div>
-              <textarea readOnly value="" style={{ width: '100%', padding: '16px', borderRadius: '12px', border: '1px solid #ccc', background: '#F8F9FA', color: '#333', resize: 'none', minHeight: '120px' }}></textarea>
+              <textarea 
+                readOnly={!isEditingPickup} 
+                value={pickupNotes}
+                onChange={(e) => setPickupNotes(e.target.value)}
+                placeholder={isEditingPickup ? "Insira as observações aqui..." : ""}
+                style={{ width: '100%', padding: '16px', borderRadius: '12px', border: isEditingPickup ? '2px solid #111' : '1px solid #ccc', background: isEditingPickup ? '#FFFFFF' : '#F8F9FA', color: '#333', resize: 'none', minHeight: '120px' }}>
+              </textarea>
             </div>
+            
             <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-              <button style={{ background: '#111', color: 'white', border: 'none', padding: '14px 40px', borderRadius: '8px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>Editar</button>
+              {isEditingPickup ? (
+                <div style={{ display: 'flex', gap: '12px' }}>
+                  <button onClick={() => { setIsEditingPickup(false); setPickupDate(activeOrderJob?.pickupDate || pickupDate); setPickupNotes(activeOrderJob?.pickupNotes || pickupNotes); }} style={{ background: 'transparent', color: '#555', border: '1px solid #999', padding: '14px 24px', borderRadius: '8px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>Cancelar</button>
+                  <button onClick={() => { 
+                    setIsEditingPickup(false);
+                    // Update all jobs for this customer with the new pickup details
+                    const updatedJobs = jobs.map((j: any) => j.customerName === activeOrderJob.customerName ? { ...j, pickupDate, pickupNotes } : j);
+                    setJobs(updatedJobs);
+                  }} style={{ background: '#111', color: 'white', border: 'none', padding: '14px 40px', borderRadius: '8px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>Salvar alterações</button>
+                </div>
+              ) : (
+                <button onClick={() => setIsEditingPickup(true)} style={{ background: '#111', color: 'white', border: 'none', padding: '14px 40px', borderRadius: '8px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>Editar</button>
+              )}
             </div>
         </div>
       </div>
