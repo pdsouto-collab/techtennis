@@ -1,4 +1,4 @@
-export const printLabel = (orderJob: any, type: 'full' | 'heart', customer?: any) => {
+export const printLabel = (orderJob: any, type: 'full' | 'heart') => {
   // Extract names for layout
   const fullName = orderJob.customerName || '';
   const nameParts = fullName.split(' ');
