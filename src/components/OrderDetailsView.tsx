@@ -224,7 +224,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 </div>
                 <div>
                   <div style={{ display: 'inline-block', background: '#F2C94C', color: 'var(--text-dark)', padding: '6px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 800 }}>
-                    {orderJob.type === 'to_string' ? 'To string' : orderJob.type === 'picking_up' ? 'Pronto' : 'Aguardando'}
+                    {orderJob.type === 'to_string' ? 'Para Encordoar' : orderJob.type === 'picking_up' ? 'Pronto' : 'Aguardando'}
                   </div>
                 </div>
                 <div></div>
