@@ -1,116 +1,185 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Star } from 'lucide-react';
-
-const KPIS = [
-  { id: 'tensionMaintenance', label: 'Manutenção de Tensão' },
-  { id: 'power', label: 'Potência' },
-  { id: 'comfort', label: 'Conforto' },
-  { id: 'spin', label: 'Spin (Efeito)' },
-  { id: 'control', label: 'Controle' },
-];
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowLeft, Smile } from 'lucide-react';
+import { FeedbackModal } from './FeedbackModal';
 
 export const CustomerFeedback = () => {
-  const [ratings, setRatings] = useState<Record<string, number>>({
-    tensionMaintenance: 0, power: 0, comfort: 0, spin: 0, control: 0
-  });
-  const [comments, setComments] = useState('');
-  const [submitted, setSubmitted] = useState(false);
+  const navigate = useNavigate();
+  // Mock logged in customer for the "Cliente" view
+  const LOGGED_IN_CUSTOMER = 'Rafael Nadal';
 
-  const handleRating = (kpiId: string, value: number) => {
-    setRatings(prev => ({ ...prev, [kpiId]: value }));
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [activeTab, setActiveTab] = useState('racket'); // 'racket' or 'all'
+  const [selectedRacket, setSelectedRacket] = useState('');
+  
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('tt_jobs_v2');
+    if (saved) {
+      setJobs(JSON.parse(saved));
+    }
+  }, []);
+
+  const saveJobs = (newJobs: any[]) => {
+    setJobs(newJobs);
+    localStorage.setItem('tt_jobs_v2', JSON.stringify(newJobs));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitted(true);
-  };
+  const customerJobs = jobs.filter((j: any) => j.customerName === LOGGED_IN_CUSTOMER);
+  const uniqueRackets = Array.from(new Set(customerJobs.map((j: any) => j.racketModel).filter(Boolean)));
 
-  if (submitted) {
-    return (
-      <div style={{ padding: '130px 24px', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="glass-panel" style={{ padding: '40px 24px', textAlign: 'center', maxWidth: '400px' }}>
-          <div style={{ background: 'var(--primary-color)', width: '64px', height: '64px', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 24px' }}>
-            <Check size={32} color="var(--bg-gradient-bottom)" />
-          </div>
-          <h2 style={{ fontSize: '24px', marginBottom: '16px', color: 'var(--text-primary)' }}>Feedback Enviado!</h2>
-          <p style={{ color: '#b2c0cc', lineHeight: 1.5 }}>
-            Obrigado por avaliar o serviço. Isso ajuda nossa equipe a ajustar as tensões perfeitas para o seu próximo jogo!
-          </p>
-        </motion.div>
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (uniqueRackets.length > 0 && !selectedRacket) {
+      setSelectedRacket(uniqueRackets[uniqueRackets.length - 1] as string);
+    }
+  }, [uniqueRackets, selectedRacket]);
+
+  const racketJobs = customerJobs.filter((j: any) => j.racketModel === selectedRacket);
+  const displayedJobs = activeTab === 'all' ? customerJobs : racketJobs;
 
   return (
-    <div style={{ padding: '130px 24px 40px', minHeight: '100vh', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <div style={{ minHeight: '100vh', padding: '120px 5% 40px', maxWidth: '1400px', margin: '0 auto' }}>
       
-      <div style={{ width: '100%', maxWidth: '500px' }}>
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <h2 style={{ fontSize: '28px', marginBottom: '8px', color: 'var(--text-primary)', lineHeight: 1.3, paddingTop: '4px' }}>Sua Experiência</h2>
-          <p style={{ color: '#b2c0cc', fontSize: '15px' }}>Avalie o encordoamento: Babolat RPM Blast a 55/53 lbs</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="glass-panel" style={{ padding: '24px' }}>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', marginBottom: '32px' }}>
-            {KPIS.map((kpi) => (
-              <div key={kpi.id} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                   <label style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-primary)' }}>{kpi.label}</label>
-                   <span style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{ratings[kpi.id] ? `${ratings[kpi.id]}/5` : '-'}</span>
-                </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <motion.button
-                      key={star} type="button"
-                      whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }}
-                      onClick={() => handleRating(kpi.id, star)}
-                      style={{ 
-                        background: 'transparent', border: 'none', cursor: 'pointer',
-                        color: star <= ratings[kpi.id] ? 'var(--primary-color)' : 'rgba(255,255,255,0.2)'
-                      }}
-                    >
-                      <Star size={32} fill={star <= ratings[kpi.id] ? "currentColor" : "none"} strokeWidth={1.5} />
-                    </motion.button>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div style={{ marginBottom: '32px' }}>
-            <label style={{ display: 'block', marginBottom: '8px', fontSize: '15px', fontWeight: 500, color: 'var(--text-primary)' }}>Comentários Adicionais</label>
-            <textarea 
-              value={comments} 
-              onChange={(e) => setComments(e.target.value)} 
-              placeholder="Como sentiu a batida? Muito rígida? Sem controle?"
-              rows={4}
-              style={{ 
-                width: '100%', padding: '16px', borderRadius: '16px', background: 'rgba(255,255,255,0.05)', 
-                border: '1px solid var(--border-light)', color: 'white', resize: 'none', fontSize: '15px' 
-              }}
-            />
-          </div>
-
-          <motion.button 
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} 
-            className="button-primary" style={{ width: '100%', padding: '16px', fontSize: '16px' }} 
-            type="submit"
-            disabled={Object.values(ratings).some(val => val === 0)}
-          >
-            Enviar Feedback
-          </motion.button>
-          
-          {Object.values(ratings).some(val => val === 0) && (
-            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '13px', marginTop: '12px' }}>
-              Por favor, preencha todas as estrelas.
-            </p>
-          )}
-
-        </form>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
+        <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+          <ArrowLeft size={24} />
+        </button>
+        <h1 style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-primary)', margin: 0, fontFamily: 'var(--font-heading)' }}>
+          Meu Encordoamento
+        </h1>
       </div>
 
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ background: 'var(--bg-panel-solid)', borderRadius: '24px', overflow: 'hidden' }}>
+        
+        {/* Header Area */}
+        <div style={{ background: '#FFFFFF', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'space-between', alignItems: 'center' }}>
+          <h3 style={{ color: '#1a1a2e', fontSize: '20px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {activeTab === 'racket' ? (
+              <>
+                <select 
+                  value={selectedRacket}
+                  onChange={(e) => setSelectedRacket(e.target.value)}
+                  style={{ padding: '10px 16px', fontSize: '16px', fontWeight: 700, borderRadius: '8px', border: '1px solid #E5E7EB', background: '#F8F9FA', outline: 'none', cursor: 'pointer' }}
+                >
+                  {uniqueRackets.length > 0 ? (
+                    uniqueRackets.map((r: any) => <option key={r} value={r}>{r}</option>)
+                  ) : (
+                    <option value="">Sem raquetes salvas</option>
+                  )}
+                </select>
+                {selectedRacket && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>[1]</span>} 
+                {selectedRacket && <span style={{ color: '#9CA3AF', fontWeight: 500, fontSize: '15px' }}>18x20 L3</span>}
+              </>
+            ) : (
+              `Todo o Histórico de ${LOGGED_IN_CUSTOMER}`
+            )}
+          </h3>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: 'flex', gap: '32px', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+          <div 
+            onClick={() => setActiveTab('racket')} 
+            style={{ fontSize: '18px', fontWeight: activeTab === 'racket' ? 800 : 600, color: activeTab === 'racket' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
+          >
+            Encordoamentos da raquete
+          </div>
+          <div 
+            onClick={() => setActiveTab('all')} 
+            style={{ fontSize: '18px', fontWeight: activeTab === 'all' ? 800 : 600, color: activeTab === 'all' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
+          >
+            Todos meus encordoamentos
+          </div>
+        </div>
+
+        {/* Table Area */}
+        <div style={{ padding: '0 40px 40px 40px', background: '#FFFFFF', overflowX: 'auto' }}>
+          <table style={{ width: '100%', minWidth: '900px', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
+            <thead>
+              <tr style={{ color: '#6B7280', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                <th style={{ padding: '20px 12px', fontWeight: 600 }}>Data</th>
+                {activeTab === 'all' && <th style={{ padding: '20px 12px', fontWeight: 600 }}>Raquete</th>}
+                <th style={{ padding: '20px 12px', fontWeight: 600 }}>Corda / Tensão</th>
+                <th style={{ padding: '20px 12px', fontWeight: 600 }}>Encordoador</th>
+                <th style={{ padding: '20px 12px', fontWeight: 600 }}>Preço</th>
+                <th style={{ padding: '20px 12px', fontWeight: 600, textAlign: 'right' }}>Feedback</th>
+              </tr>
+            </thead>
+            <tbody>
+              {displayedJobs.map((job: any, index: number) => (
+                <tr key={job.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F9FAFB' : '#FFFFFF' }}>
+                  <td style={{ padding: '20px 12px', fontSize: '15px', color: '#374151', fontWeight: 500 }}>
+                    {job.date ? job.date.split('-').reverse().join('/') : '04/04/2026'}
+                  </td>
+                  
+                  {activeTab === 'all' && (
+                    <td style={{ padding: '20px 12px', fontSize: '14px', fontWeight: 700 }}>
+                      {job.racketModel} <br />
+                      <span style={{color: '#9CA3AF', fontWeight: 500, fontSize: '12px'}}>18x20 L3</span>
+                    </td>
+                  )}
+                  
+                  <td style={{ padding: '20px 12px', fontSize: '15px' }}>
+                    <div style={{fontWeight: 700}}>Solinco Hyper-G Green 115</div>
+                    <div style={{color: '#4B5563', fontSize: '14px'}}>@{job.tension || '55/53 lbs'}</div>
+                  </td>
+                  
+                  <td style={{ padding: '20px 12px', fontSize: '14px', color: '#6B7280', fontWeight: 500 }}>
+                    {job.stringer || 'NTC Pro Stringer'}
+                  </td>
+                  
+                  <td style={{ padding: '20px 12px', fontSize: '15px', fontWeight: 800 }}>
+                    <span style={{color: '#6B7280', fontSize: '12px', fontWeight: 600}}>BRL</span> {job.price ? job.price.toFixed(2) : '120.00'}
+                  </td>
+                  
+                  <td style={{ padding: '20px 12px', textAlign: 'right' }}>
+                    <button 
+                      onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} 
+                      style={{ 
+                        background: job.feedback?.comments || job.feedback?.rating ? '#1a1a2e' : '#10B981', 
+                        border: 'none', padding: '10px 16px', borderRadius: '8px', color: 'white', 
+                        display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+                        transition: 'opacity 0.2s'
+                      }} 
+                      onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+                      onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                    >
+                      <Smile size={18} />
+                      {job.feedback?.comments || job.feedback?.power ? 'Ver Feedback' : 'Avaliar Jogo'}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+              
+              {displayedJobs.length === 0 && (
+                <tr>
+                  <td colSpan={6} style={{ textAlign: 'center', padding: '60px', color: '#6B7280', fontSize: '16px' }}>
+                    Você não possui histórico para esta visualização.
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </motion.div>
+
+      <AnimatePresence>
+        <FeedbackModal 
+          isOpen={isFeedbackModalOpen} 
+          onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
+          job={activeFeedbackJob}
+          onSaveFeedback={(feedbackData: any) => {
+            const newJobs = jobs.map((j: any) => j.id === activeFeedbackJob.id ? { ...j, feedback: feedbackData } : j);
+            saveJobs(newJobs);
+            setIsFeedbackModalOpen(false);
+            setActiveFeedbackJob(null);
+          }}
+          readOnly={false} // Customer can freely write and edit their feedback
+        />
+      </AnimatePresence>
     </div>
   );
 };
