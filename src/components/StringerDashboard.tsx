@@ -730,9 +730,14 @@ export const StringerDashboard = () => {
                 <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer' }}><ArrowLeft size={24} /></button>
                 <h2 style={{ fontSize: '28px' }}>Base de Clientes</h2>
               </div>
-              <button className="button-primary" onClick={() => setIsCustomerModalOpen(true)} style={{ padding: '8px 24px', fontSize: '14px' }}>
-                <UserPlus size={18} /> Adicionar Cliente
-              </button>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+                  Fechar
+                </button>
+                <button className="button-primary" onClick={() => setIsCustomerModalOpen(true)} style={{ padding: '8px 24px', fontSize: '14px' }}>
+                  <UserPlus size={18} /> Adicionar Cliente
+                </button>
+              </div>
             </div>
 
             <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
