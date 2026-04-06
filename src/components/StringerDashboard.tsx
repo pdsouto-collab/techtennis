@@ -4,7 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
-
+import { AnalyticsView } from './AnalyticsView';
+import { OrdersView } from './OrdersView';
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
   { id: 'c1', name: 'Rafael Nadal', email: 'rafa@example.com', phone: '+1234567890' },
@@ -19,7 +20,7 @@ const INITIAL_JOBS = [
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details' | 'analytics' | 'orders'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
@@ -149,12 +150,30 @@ export const StringerDashboard = () => {
         </button>
         <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
           background: 'none', border: 'none', padding: '12px 0', 
-          color: 'var(--primary-color)',
-          fontWeight: 700, fontSize: '15px',
-          borderBottom: '2px solid var(--primary-color)',
+          color: view === 'dashboard' ? 'var(--primary-color)' : 'var(--text-secondary)',
+          fontWeight: view === 'dashboard' ? 700 : 500, fontSize: '15px',
+          borderBottom: view === 'dashboard' ? '2px solid var(--primary-color)' : '2px solid transparent',
           cursor: 'pointer', whiteSpace: 'nowrap'
         }}>
           Dashboard
+        </button>
+        <button onClick={() => { setView('analytics'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
+          background: 'none', border: 'none', padding: '12px 0', 
+          color: view === 'analytics' ? 'var(--primary-color)' : 'var(--text-secondary)',
+          fontWeight: view === 'analytics' ? 700 : 500, fontSize: '15px',
+          borderBottom: view === 'analytics' ? '2px solid var(--primary-color)' : '2px solid transparent',
+          cursor: 'pointer', whiteSpace: 'nowrap'
+        }}>
+          Analytics
+        </button>
+        <button onClick={() => { setView('orders'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
+          background: 'none', border: 'none', padding: '12px 0', 
+          color: view === 'orders' ? 'var(--primary-color)' : 'var(--text-secondary)',
+          fontWeight: view === 'orders' ? 700 : 500, fontSize: '15px',
+          borderBottom: view === 'orders' ? '2px solid var(--primary-color)' : '2px solid transparent',
+          cursor: 'pointer', whiteSpace: 'nowrap'
+        }}>
+          Ordens
         </button>
       </div>
 
@@ -770,7 +789,7 @@ export const StringerDashboard = () => {
                     <th style={{ padding: '16px', fontWeight: 600 }}>Email</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Phone</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Mobile</th>
-                    <th style={{ padding: '16px' }}></th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -815,6 +834,10 @@ export const StringerDashboard = () => {
             </div>
           </motion.div>
         )}
+
+        {view === 'analytics' && <AnalyticsView jobs={filteredJobs} />}
+        {view === 'orders' && <OrdersView />}
+
       </div>
 
       {/* Add Customer Modal */}
