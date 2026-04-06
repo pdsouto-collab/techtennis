@@ -1,7 +1,11 @@
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { PackageOpen, Scissors, Truck, Users, ArrowLeft, ArrowRight, Edit, Plus, DollarSign, Ticket, Printer, Grid, Trash2 } from 'lucide-react';
+import { PackageOpen, Scissors, Truck, Users, ArrowLeft, ArrowRight, Edit, Plus, DollarSign, Ticket, Printer, Grid, Trash2, Smile } from 'lucide-react';
+import { FeedbackModal } from './FeedbackModal';
 
 export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen }: any) => {
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
   if (view !== 'order_details' || !activeOrderJob) return null;
 
   const activeCustomer = customers?.find((c: any) => c.name === activeOrderJob.customerName);
@@ -175,6 +179,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 <div></div>
                 <div style={{ fontWeight: 900, fontSize: '16px' }}>{orderJob.price ? orderJob.price.toFixed(2) : '120.00'} BRL</div>
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
+                  <button onClick={() => { setActiveFeedbackJob(orderJob); setIsFeedbackModalOpen(true); }} style={{ background: '#10B981', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Avaliação / Feedback"><Smile size={16} strokeWidth={3} /></button>
                   <button onClick={() => { setActivePaymentJob(orderJob); setIsPaymentModalOpen(true); }} style={{ background: orderJob.paid ? '#6FCF97' : '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Pagamento"><DollarSign size={16} strokeWidth={3} /></button>
                   <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(orderJob, 'heart')); }} style={{ background: '#E5E7EB', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Imprimir Etiqueta Coração"><Ticket size={16} strokeWidth={3} /></button>
                   <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(orderJob, 'full')); }} style={{ background: '#E5E7EB', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Imprimir Etiqueta"><Printer size={16} strokeWidth={3} /></button>
@@ -202,6 +207,17 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
 
       </div>
 
+      <FeedbackModal 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
+        job={activeFeedbackJob}
+        onSaveFeedback={(feedbackData: any) => {
+          setJobs(jobs.map((j: any) => j.id === activeFeedbackJob.id ? { ...j, feedback: feedbackData } : j));
+          setIsFeedbackModalOpen(false);
+          setActiveFeedbackJob(null);
+        }}
+        readOnly={true} // As per prompt, the stringer is reviewing the evaluation made by the customer.
+      />
     </motion.div>
   );
 };

@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Edit, Trash2 } from 'lucide-react';
+import { X, Edit, Trash2, Smile } from 'lucide-react';
+import { FeedbackModal } from './FeedbackModal';
 
 export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs, onEdit }: any) => {
   const [activeTab, setActiveTab] = useState('racket'); // 'racket' or 'all'
   const [selectedRacket, setSelectedRacket] = useState('');
+  
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
 
   // Derive customer jobs
   const customerJobs = jobs.filter((j: any) => j.customerName === customer?.name);
@@ -129,6 +133,7 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
                     <td style={{ padding: '16px 8px', fontSize: '14px' }}>0</td>
                     <td style={{ padding: '16px 8px' }}>
                       <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                        <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: '#10B981', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Feedback"><Smile size={14} /></button>
                         <button onClick={() => onEdit(job)} style={{ background: '#4298E7', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><Edit size={14} /></button>
                         <button onClick={() => { if(window.confirm('Tem certeza que deseja excluir?')) setJobs(jobs.filter((j: any) => j.id !== job.id)); }} style={{ background: '#D93B65', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><Trash2 size={14} /></button>
                       </div>
@@ -164,6 +169,18 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
           </div>
         </div>
       </motion.div>
+
+      <FeedbackModal 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
+        job={activeFeedbackJob}
+        onSaveFeedback={(feedbackData: any) => {
+          setJobs(jobs.map((j: any) => j.id === activeFeedbackJob.id ? { ...j, feedback: feedbackData } : j));
+          setIsFeedbackModalOpen(false);
+          setActiveFeedbackJob(null);
+        }}
+        readOnly={false} // Allow customer to edit here
+      />
     </div>
   );
 };

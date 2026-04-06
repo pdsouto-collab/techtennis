@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus } from 'lucide-react';
+import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, Smile } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
+import { FeedbackModal } from './FeedbackModal';
 
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
@@ -34,6 +35,8 @@ export const StringerDashboard = () => {
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
 
   // Persistent States
   const [customers, setCustomers] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
@@ -222,6 +225,9 @@ export const StringerDashboard = () => {
                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: Solinco Hyper-G</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: '#10B981', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Feedback do Cliente">
+                              <Smile size={16} />
+                            </button>
                             <button onClick={() => setJobs(prev => prev.filter(j => j.id !== job.id))} style={{ background: '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Excluir">
                               <Trash2 size={16} />
                             </button>
@@ -250,6 +256,9 @@ export const StringerDashboard = () => {
                             </div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: '#10B981', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Feedback do Cliente">
+                              <Smile size={16} />
+                            </button>
                             <button onClick={() => {
                               const cust = customers.find(c => c.name === job.customerName);
                               if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
@@ -1285,7 +1294,20 @@ export const StringerDashboard = () => {
               </motion.div>
             </div>
           )}
-        </AnimatePresence>
+      </AnimatePresence>
+
+      {/* Feedback Modal for stringer dashboard */}
+      <FeedbackModal 
+        isOpen={isFeedbackModalOpen} 
+        onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
+        job={activeFeedbackJob}
+        onSaveFeedback={(feedbackData: any) => {
+          setJobs(jobs.map((j: any) => j.id === activeFeedbackJob.id ? { ...j, feedback: feedbackData } : j));
+          setIsFeedbackModalOpen(false);
+          setActiveFeedbackJob(null);
+        }}
+        readOnly={true} // Stringer usually just reads the feedback from dashboard
+      />
 
     </div>
   );
