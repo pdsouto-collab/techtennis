@@ -836,7 +836,7 @@ export const StringerDashboard = () => {
         )}
 
         {view === 'analytics' && <AnalyticsView jobs={filteredJobs} />}
-        {view === 'orders' && <OrdersView />}
+        {view === 'orders' && <OrdersView onAddOrder={() => { setView('new_job'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} />}
 
       </div>
 

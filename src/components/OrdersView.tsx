@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign } from 'lucide-react';
+import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = () => {
+export const OrdersView = ({ onAddOrder }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
+  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
   const panelStyle = {
     background: 'var(--bg-panel)',
@@ -26,10 +28,10 @@ export const OrdersView = () => {
             </h2>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#D93B65', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={onAddOrder} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#D93B65', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
             <Plus size={16} /> Adicionar ordem
           </button>
-          <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={() => setIsFilterModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
             <Filter size={16} /> Filtros
           </button>
         </div>
@@ -124,6 +126,8 @@ export const OrdersView = () => {
         </div>
 
       </div>
+      
+      <OrdersFilterModal isOpen={isFilterModalOpen} onClose={() => setIsFilterModalOpen(false)} onApply={() => setIsFilterModalOpen(false)} />
     </motion.div>
   );
 };
