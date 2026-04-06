@@ -793,7 +793,6 @@ export const StringerDashboard = () => {
             </div>
           </motion.div>
         )}
-
       </div>
 
       {/* Add Customer Modal */}
@@ -801,12 +800,12 @@ export const StringerDashboard = () => {
         {isCustomerModalOpen && (
           <div style={{
             position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)',
+            background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
             zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center',
             padding: '24px'
           }}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: '#5984C7', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-panel)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
               
               {/* Modal Header */}
               <div style={{ background: '#8F5FFF', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
