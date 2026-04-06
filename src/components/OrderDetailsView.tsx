@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PackageOpen, Scissors, Truck, Users, ArrowLeft, ArrowRight, Edit, Plus, DollarSign, Ticket, Printer, Grid, Trash2 } from 'lucide-react';
+import { CustomerNotesModal } from './CustomerNotesModal';
 
 export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
+  const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
 
   import('react').then(React => {
      React.useEffect(() => {
@@ -54,8 +56,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
       {/* Quick Actions Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '16px' }}>
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'rgba(155, 81, 224, 0.1)' }}>
-          <span style={{ color: '#C08DF8', fontWeight: 600, fontSize: '15px' }}>Sem notas para o cliente</span>
-          <button style={{ background: '#9B51E0', border: 'none', padding: '10px 24px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Notas</button>
+          <span style={{ color: '#C08DF8', fontWeight: 600, fontSize: '15px' }}>Ver notas deste cliente</span>
+          <button onClick={() => setIsNotesModalOpen(true)} style={{ background: '#9B51E0', border: 'none', padding: '10px 24px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Notas</button>
         </div>
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'rgba(66, 152, 231, 0.1)' }}>
           <span style={{ color: '#7EBDF7', fontWeight: 600, fontSize: '15px' }}>Sem pré-pago para o cliente</span>
@@ -255,8 +257,14 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 </div>
             </div>
           </div>
-
       </div>
+
+      <CustomerNotesModal 
+        isOpen={isNotesModalOpen} 
+        onClose={() => setIsNotesModalOpen(false)} 
+        customerName={activeOrderJob?.customerName} 
+      />
+
     </motion.div>
   );
 };
