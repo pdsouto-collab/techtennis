@@ -8,6 +8,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
+  const [customerNotes, setCustomerNotes] = useState<{ id: string, text: string, date: string }[]>([]);
 
   import('react').then(React => {
      React.useEffect(() => {
@@ -15,6 +16,9 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
            setPickupDate(activeOrderJob.pickupDate || '2026-04-04T12:30');
            setPickupNotes(activeOrderJob.pickupNotes || '');
            setIsEditingPickup(false);
+           
+           const savedNotes = localStorage.getItem('tt_customer_notes_' + activeOrderJob.customerName);
+           setCustomerNotes(savedNotes ? JSON.parse(savedNotes) : []);
         }
      }, [activeOrderJob]);
   });
@@ -55,9 +59,18 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
 
       {/* Quick Actions Row */}
       <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1.2fr 1fr', gap: '16px' }}>
-        <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'rgba(155, 81, 224, 0.1)' }}>
-          <span style={{ color: '#C08DF8', fontWeight: 600, fontSize: '15px' }}>Ver notas deste cliente</span>
-          <button onClick={() => setIsNotesModalOpen(true)} style={{ background: '#9B51E0', border: 'none', padding: '10px 24px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Notas</button>
+        <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: customerNotes.length > 0 ? 'rgba(155, 81, 224, 0.2)' : 'rgba(155, 81, 224, 0.1)' }}>
+          {customerNotes.length > 0 ? (
+             <div style={{ color: '#5C3A82' }}>
+                <div style={{ fontSize: '15px', fontWeight: 600 }}>{customerNotes[customerNotes.length - 1].text.substring(0, 30)}{customerNotes[customerNotes.length - 1].text.length > 30 ? '...' : ''}</div>
+                <div style={{ fontSize: '15px' }}>({customerNotes[customerNotes.length - 1].date})</div>
+             </div>
+          ) : (
+             <span style={{ color: '#C08DF8', fontWeight: 600, fontSize: '15px' }}>Sem notas para o cliente</span>
+          )}
+          <button onClick={() => setIsNotesModalOpen(true)} style={{ background: '#7C3AED', border: 'none', padding: '10px 24px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer', fontSize: '16px' }}>
+             Notas {customerNotes.length > 0 ? `(${customerNotes.length})` : ''}
+          </button>
         </div>
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'rgba(66, 152, 231, 0.1)' }}>
           <span style={{ color: '#7EBDF7', fontWeight: 600, fontSize: '15px' }}>Sem pré-pago para o cliente</span>
@@ -263,6 +276,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
         isOpen={isNotesModalOpen} 
         onClose={() => setIsNotesModalOpen(false)} 
         customerName={activeOrderJob?.customerName} 
+        onNotesChange={setCustomerNotes}
       />
 
     </motion.div>

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Plus, Trash2 } from 'lucide-react';
 
-export const CustomerNotesModal = ({ isOpen, onClose, customerName }: any) => {
+export const CustomerNotesModal = ({ isOpen, onClose, customerName, onNotesChange }: any) => {
   const [notes, setNotes] = useState<{ id: string, text: string, date: string }[]>(() => {
     const saved = localStorage.getItem('tt_customer_notes_' + customerName);
     return saved ? JSON.parse(saved) : [];
@@ -16,6 +16,7 @@ export const CustomerNotesModal = ({ isOpen, onClose, customerName }: any) => {
   const saveNotes = (updatedNotes: any) => {
     setNotes(updatedNotes);
     localStorage.setItem('tt_customer_notes_' + customerName, JSON.stringify(updatedNotes));
+    if (onNotesChange) onNotesChange(updatedNotes);
   };
 
   const handleAddNote = () => {
