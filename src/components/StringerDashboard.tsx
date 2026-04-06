@@ -390,8 +390,10 @@ export const StringerDashboard = () => {
                   <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações (Notes)</label>
                   <textarea rows={4} style={{ ...inputStyle, resize: 'none' }}></textarea>
                 </div>
-
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', gap: '16px' }}>
+                  <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '16px 40px', borderRadius: '24px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>
+                    Fechar
+                  </button>
                   <button type="submit" className="button-primary" style={{ padding: '16px 40px', fontSize: '16px' }}>
                     Continuar
                   </button>
