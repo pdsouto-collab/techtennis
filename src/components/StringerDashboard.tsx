@@ -6,6 +6,7 @@ import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
 import { OrdersView } from './OrdersView';
+import { SettingsView } from './SettingsView';
 // Extended Mock Data for the new functionalities
 const INITIAL_CUSTOMERS = [
   { id: 'c1', name: 'Rafael Nadal', email: 'rafa@example.com', phone: '+1234567890' },
@@ -20,7 +21,7 @@ const INITIAL_JOBS = [
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details' | 'analytics' | 'orders'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
@@ -67,9 +68,15 @@ export const StringerDashboard = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [appSettings, setAppSettings] = useState<any>(() => {
+    const saved = localStorage.getItem('tt_settings');
+    return saved ? JSON.parse(saved) : { strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'] };
+  });
+
   useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
   useEffect(() => { localStorage.setItem('tt_jobs_v2', JSON.stringify(jobs)); }, [jobs]);
   useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
+  useEffect(() => { localStorage.setItem('tt_settings', JSON.stringify(appSettings)); }, [appSettings]);
 
   // Sync state if another tab changes localStorage
   useEffect(() => {
@@ -82,6 +89,9 @@ export const StringerDashboard = () => {
       }
       if (e.key === 'tt_rackets' && e.newValue) {
         setRackets(JSON.parse(e.newValue));
+      }
+      if (e.key === 'tt_settings' && e.newValue) {
+        setAppSettings(JSON.parse(e.newValue));
       }
     };
     window.addEventListener('storage', handleStorage);
@@ -194,6 +204,15 @@ export const StringerDashboard = () => {
           cursor: 'pointer', whiteSpace: 'nowrap'
         }}>
           Ordens
+        </button>
+        <button onClick={() => { setView('settings'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
+          background: 'none', border: 'none', padding: '12px 0', 
+          color: view === 'settings' ? 'var(--primary-color)' : 'var(--text-secondary)',
+          fontWeight: view === 'settings' ? 700 : 500, fontSize: '15px',
+          borderBottom: view === 'settings' ? '2px solid var(--primary-color)' : '2px solid transparent',
+          cursor: 'pointer', whiteSpace: 'nowrap'
+        }}>
+          Configurações
         </button>
       </div>
 
@@ -436,8 +455,8 @@ export const StringerDashboard = () => {
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
                     <select style={inputStyle}>
-                      <option value="test">Test</option>
-                      <option value="loja1">Loja 1</option>
+                      <option value="">Selecione...</option>
+                      {appSettings.pickupPoints.map((p: string) => <option key={p} value={p}>{p}</option>)}
                     </select>
                   </div>
                 </div>
@@ -542,7 +561,10 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Main</label>
-                        <input type="text" placeholder="Mains" required value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle} />
+                        <select required value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle}>
+                          <option value="">Selecione...</option>
+                          {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                        </select>
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main (Kg/Lbs)</label>
@@ -704,15 +726,15 @@ export const StringerDashboard = () => {
                        <div>
                           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Encordoador</label>
                           <select style={inputStyle}>
-                             <option>Tester Ernesto</option>
-                             <option>Paulo Souto</option>
+                             <option value="">Selecione...</option>
+                             {appSettings.stringers.map((s: string) => <option key={s} value={s}>{s}</option>)}
                           </select>
                        </div>
                        <div>
                           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Máquina</label>
                           <select style={inputStyle}>
-                             <option>Babolat Star 5</option>
-                             <option>Wilson Baiardo</option>
+                             <option value="">Selecione...</option>
+                             {appSettings.machines.map((m: string) => <option key={m} value={m}>{m}</option>)}
                           </select>
                        </div>
                        <div>
@@ -882,6 +904,8 @@ export const StringerDashboard = () => {
             if (job) { setActivePickupJob(job); setIsPickupModalOpen(true); }
           }}
         />}
+
+        {view === 'settings' && <SettingsView settings={appSettings} setSettings={setAppSettings} />}
 
       </div>
 
