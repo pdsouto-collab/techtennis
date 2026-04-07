@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { PackageOpen, Scissors, Truck, Users, ArrowLeft, ArrowRight, Edit, Plus, DollarSign, Ticket, Printer, Grid, Trash2 } from 'lucide-react';
 import { CustomerNotesModal } from './CustomerNotesModal';
+import { AddPrepaidModal } from './AddPrepaidModal';
+import { PrepaidListModal } from './PrepaidListModal';
 
 export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
@@ -9,6 +11,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const [customerNotes, setCustomerNotes] = useState<{ id: string, text: string, date: string }[]>([]);
+  const [isAddPrepaidModalOpen, setIsAddPrepaidModalOpen] = useState(false);
+  const [isPrepaidListModalOpen, setIsPrepaidListModalOpen] = useState(false);
 
   import('react').then(React => {
      React.useEffect(() => {
@@ -75,8 +79,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 24px', background: 'rgba(66, 152, 231, 0.1)' }}>
           <span style={{ color: '#7EBDF7', fontWeight: 600, fontSize: '15px' }}>Sem pré-pago para o cliente</span>
           <div style={{ display: 'flex', gap: '8px' }}>
-            <button style={{ background: '#4298E7', border: 'none', width: '36px', height: '36px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>+</button>
-            <button style={{ background: '#4298E7', border: 'none', padding: '0 20px', height: '36px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Pré-pago</button>
+            <button onClick={() => setIsAddPrepaidModalOpen(true)} style={{ background: '#4298E7', border: 'none', width: '36px', height: '36px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>+</button>
+            <button onClick={() => setIsPrepaidListModalOpen(true)} style={{ background: '#4298E7', border: 'none', padding: '0 20px', height: '36px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Pré-pago</button>
           </div>
         </div>
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '16px 24px' }}>
@@ -272,13 +276,14 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
           </div>
       </div>
 
-      <CustomerNotesModal 
-        isOpen={isNotesModalOpen} 
-        onClose={() => setIsNotesModalOpen(false)} 
-        customerName={activeOrderJob?.customerName} 
-        onNotesChange={setCustomerNotes}
-      />
+      <CustomerNotesModal isOpen={isNotesModalOpen} onClose={() => setIsNotesModalOpen(false)} customerName={activeOrderJob.customerName} existingNotes={customerNotes} onSave={(notes: any) => {
+          localStorage.setItem('tt_customer_notes_' + activeOrderJob.customerName, JSON.stringify(notes));
+          setCustomerNotes(notes);
+          setIsNotesModalOpen(false);
+      }} />
 
+      <AddPrepaidModal isOpen={isAddPrepaidModalOpen} onClose={() => setIsAddPrepaidModalOpen(false)} onApply={(data: any) => { console.log('Added prepaid:', data); setIsAddPrepaidModalOpen(false); }} />
+      <PrepaidListModal isOpen={isPrepaidListModalOpen} onClose={() => setIsPrepaidListModalOpen(false)} />
     </motion.div>
   );
 };
