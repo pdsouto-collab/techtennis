@@ -860,7 +860,28 @@ export const StringerDashboard = () => {
         )}
 
         {view === 'analytics' && <AnalyticsView jobs={filteredJobs} />}
-        {view === 'orders' && <OrdersView jobs={jobs} customers={customers} onAddOrder={() => { setView('new_job'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} />}
+        {view === 'orders' && <OrdersView 
+          jobs={jobs} 
+          customers={customers} 
+          onAddOrder={() => { setView('new_job'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} 
+          onDeleteOrder={(orderCode: string) => setJobs(prev => prev.filter(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) !== orderCode))}
+          onEditOrder={(orderCode: string) => { 
+            const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
+            if (job) {
+              const cust = customers.find(c => c.name === job.customerName);
+              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
+              setView('new_job'); setNewJobStep(2);
+            }
+          }}
+          onPayment={(orderCode: string) => {
+            const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
+            if (job) { setActivePaymentJob(job); setIsPaymentModalOpen(true); }
+          }}
+          onDelivery={(orderCode: string) => {
+            const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
+            if (job) { setActivePickupJob(job); setIsPickupModalOpen(true); }
+          }}
+        />}
 
       </div>
 

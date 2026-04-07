@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign } from 'lucide-react';
+import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign, Truck } from 'lucide-react';
 import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
+export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditOrder, onPayment, onDelivery }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
 
   const panelStyle = {
     background: 'var(--bg-panel)',
@@ -53,7 +54,13 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
                 <button style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer' }}><FileJson size={18} /></button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>Pesquisar:</span>
+                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
+                  <option value="all" style={{color: 'black'}}>Todos</option>
+                  <option value="to_string" style={{color: 'black'}}>Para encordoar</option>
+                  <option value="picking_up" style={{color: 'black'}}>Pronta</option>
+                  <option value="picked_up" style={{color: 'black'}}>Entregue</option>
+                </select>
+                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)', marginLeft: '8px' }}>Pesquisar:</span>
                 <input type="text" style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
             </div>
         </div>
@@ -100,6 +107,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
                 }, {})).reverse().map((order: any) => {
                   const cust = (customers || []).find((c: any) => c.name === order.customerName);
                   if (activeTab === 'unpaid' && order.paid) return null;
+                  if (statusFilter !== 'all' && order.type !== statusFilter) return null;
                   
                   return (
                     <tr key={order.id}>
@@ -124,9 +132,12 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
                         </td>
                         <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                             <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', height: '100%' }}>
-                              <button style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                              <button style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
-                              <button style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><DollarSign size={16} /></button>
+                              <button onClick={() => onDeleteOrder?.(order.orderCode)} style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                              <button onClick={() => onEditOrder?.(order.orderCode)} style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
+                              <button onClick={() => onPayment?.(order.orderCode)} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><DollarSign size={16} /></button>
+                              {order.type === 'picking_up' && (
+                                <button onClick={() => onDelivery?.(order.orderCode)} style={{ background: '#1A202C', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Truck size={16} /></button>
+                              )}
                             </div>
                         </td>
                     </tr>
