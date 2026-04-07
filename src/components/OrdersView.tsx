@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign } from 'lucide-react';
 import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = ({ onAddOrder }: any) => {
+export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
 
@@ -76,31 +76,62 @@ export const OrdersView = ({ onAddOrder }: any) => {
                 </tr>
             </thead>
             <tbody>
-                {/* Example row based on mockups */}
-                <tr>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#374151', borderBottom: '1px solid #E5E7EB' }}>Souto Paulo</td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>04/04/2026 14:13</td>
-                    <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
-                        <span style={{ padding: '4px 12px', borderRadius: '4px', background: '#F2C94C', color: 'white', fontWeight: 600, fontSize: '12px' }}>Para Encordoar</span>
-                    </td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>04/04/2026 12:30</td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>---</td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>Gênesis 2</td>
-                    <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}></td>
-                    <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
-                        <div style={{ fontWeight: 700, color: '#374151' }}>SS2Z8HK5</div>
-                        <div style={{ color: '#6B7280', fontSize: '12px' }}>Raquetas: 1</div>
-                    </td>
-                    <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
-                        <div style={{ fontWeight: 700, color: '#374151' }}>BRL 120.00</div>
-                        <div style={{ color: '#EB5757', fontSize: '12px', fontWeight: 600 }}>Não pago</div>
-                    </td>
-                    <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB', display: 'flex', gap: '4px', justifyContent: 'flex-end', height: '100%' }}>
-                        <button style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                        <button style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
-                        <button style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><DollarSign size={16} /></button>
-                    </td>
-                </tr>
+                {Object.values((jobs || []).reduce((acc: any, job: any) => {
+                  const code = job.orderCode || job.id.substring(0,8).toUpperCase();
+                  if (!acc[code]) {
+                    acc[code] = {
+                      id: code,
+                      orderCode: code,
+                      customerName: job.customerName,
+                      date: job.date,
+                      pickupDate: job.pickupDate,
+                      type: job.type,
+                      status: job.status,
+                      paid: job.paid,
+                      price: job.price || 120,
+                      racketsCount: 0
+                    };
+                  }
+                  acc[code].racketsCount += 1;
+                  acc[code].price = (acc[code].racketsCount * (job.price || 120));
+                  // Assume if one is unpaid, order is unpaid
+                  if (!job.paid) acc[code].paid = false;
+                  return acc;
+                }, {})).reverse().map((order: any) => {
+                  const cust = (customers || []).find((c: any) => c.name === order.customerName);
+                  if (activeTab === 'unpaid' && order.paid) return null;
+                  
+                  return (
+                    <tr key={order.id}>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#374151', borderBottom: '1px solid #E5E7EB' }}>{order.customerName}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{order.date}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                            <span style={{ padding: '4px 12px', borderRadius: '4px', background: order.type === 'picking_up' ? '#6FCF97' : '#F2C94C', color: order.type === 'picking_up' ? 'var(--text-dark)' : 'white', fontWeight: 600, fontSize: '12px' }}>
+                                {order.type === 'picking_up' ? 'Pronta' : order.type === 'to_string' ? 'Para Encordoar' : 'Aguardando'}
+                            </span>
+                        </td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{order.pickupDate ? new Date(order.pickupDate).toLocaleString('pt-BR') : '---'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>---</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{cust?.originClub || 'Não informado'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>---</td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ fontWeight: 700, color: '#374151' }}>{order.orderCode}</div>
+                            <div style={{ color: '#6B7280', fontSize: '12px' }}>Raquetes: {order.racketsCount}</div>
+                        </td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ fontWeight: 700, color: '#374151' }}>BRL {order.price.toFixed(2)}</div>
+                            <div style={{ color: order.paid ? '#6FCF97' : '#EB5757', fontSize: '12px', fontWeight: 600 }}>{order.paid ? 'Pago' : 'Não pago'}</div>
+                        </td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                            <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', height: '100%' }}>
+                              <button style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
+                              <button style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
+                              <button style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><DollarSign size={16} /></button>
+                            </div>
+                        </td>
+                    </tr>
+                  )
+                })}
             </tbody>
             </table>
         </div>
