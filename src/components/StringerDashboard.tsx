@@ -1361,7 +1361,7 @@ export const StringerDashboard = () => {
                 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   <button onClick={() => {
-                    setJobs(prev => prev.filter(j => j.id !== activePickupJob.id));
+                    setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up', paid: true } : j));
                     setIsPickupModalOpen(false);
                   }} style={{ background: '#F2C94C', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                     <div style={{ marginBottom: '4px' }}>Raquete única</div>
@@ -1369,7 +1369,7 @@ export const StringerDashboard = () => {
                   </button>
 
                   <button onClick={() => {
-                    setJobs(prev => prev.filter(j => j.customerName !== activePickupJob.customerName || j.type !== 'picking_up'));
+                    setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up', paid: true } : j));
                     setIsPickupModalOpen(false);
                   }} style={{ background: '#D93B65', border: 'none', borderRadius: '8px', padding: '24px', color: 'white', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                     <div style={{ marginBottom: '4px' }}>Ordem completa</div>
@@ -1379,7 +1379,7 @@ export const StringerDashboard = () => {
                   {!activePickupJob.paid && (
                     <>
                       <button onClick={() => {
-                        setJobs(prev => prev.filter(j => j.id !== activePickupJob.id));
+                        setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up' } : j));
                         setIsPickupModalOpen(false);
                       }} style={{ background: '#FFF9E6', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                         <div style={{ marginBottom: '4px' }}>Raquete única</div>
@@ -1387,7 +1387,7 @@ export const StringerDashboard = () => {
                       </button>
 
                       <button onClick={() => {
-                        setJobs(prev => prev.filter(j => j.customerName !== activePickupJob.customerName || j.type !== 'picking_up'));
+                        setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up' } : j));
                         setIsPickupModalOpen(false);
                       }} style={{ background: '#FFF0F5', border: 'none', borderRadius: '8px', padding: '24px', color: '#D93B65', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                         <div style={{ marginBottom: '4px' }}>Ordem completa</div>

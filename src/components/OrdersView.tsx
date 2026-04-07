@@ -21,8 +21,11 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <select style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: 'transparent', fontSize: '18px', fontWeight: 700, cursor: 'pointer' }}>
-                <option>Todos</option>
+            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px 16px', borderRadius: '6px', border: 'none', background: 'transparent', fontSize: '18px', fontWeight: 700, cursor: 'pointer', color: 'var(--text-primary)' }}>
+                <option value="all" style={{color: 'black'}}>Todos</option>
+                <option value="to_string" style={{color: 'black'}}>Para encordoar</option>
+                <option value="picking_up" style={{color: 'black'}}>Pronta</option>
+                <option value="picked_up" style={{color: 'black'}}>Entregue</option>
             </select>
             <h2 style={{ fontSize: '20px', fontWeight: 600, margin: 0 }}>
                {activeTab === 'unpaid' ? 'Ordens não Pagas' : 'Todas as Ordens'}
@@ -114,8 +117,8 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
                         <td style={{ padding: '16px', fontSize: '14px', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.customerName}</td>
                         <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.date}</td>
                         <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                            <span style={{ padding: '4px 12px', borderRadius: '4px', background: order.type === 'picking_up' ? '#6FCF97' : '#F2C94C', color: order.type === 'picking_up' ? 'var(--text-dark)' : 'white', fontWeight: 600, fontSize: '12px' }}>
-                                {order.type === 'picking_up' ? 'Pronta' : order.type === 'to_string' ? 'Para Encordoar' : 'Aguardando'}
+                            <span style={{ padding: '4px 12px', borderRadius: '4px', background: order.type === 'picked_up' ? '#4298E7' : order.type === 'picking_up' ? '#6FCF97' : '#F2C94C', color: order.type === 'picking_up' ? 'var(--text-dark)' : 'white', fontWeight: 600, fontSize: '12px' }}>
+                                {order.type === 'picked_up' ? 'Entregue' : order.type === 'picking_up' ? 'Pronta' : order.type === 'to_string' ? 'Para Encordoar' : 'Aguardando'}
                             </span>
                         </td>
                         <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.pickupDate ? new Date(order.pickupDate).toLocaleString('pt-BR') : '---'}</td>
