@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Smile } from 'lucide-react';
+import { ArrowLeft, Smile, CircleDollarSign } from 'lucide-react';
 import { FeedbackModal } from './FeedbackModal';
 
 export const CustomerFeedback = () => {
@@ -144,20 +144,32 @@ export const CustomerFeedback = () => {
                   </td>
                   
                   <td style={{ padding: '20px 12px', textAlign: 'right' }}>
-                    <button 
-                      onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} 
-                      style={{ 
-                        background: job.feedback?.comments || job.feedback?.rating ? '#1a1a2e' : '#10B981', 
-                        border: 'none', padding: '10px 16px', borderRadius: '8px', color: 'white', 
-                        display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
-                        transition: 'opacity 0.2s'
-                      }} 
-                      onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
-                      onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
-                    >
-                      <Smile size={18} />
-                      {job.feedback?.comments || job.feedback?.power ? 'Ver Feedback' : 'Avaliar Jogo'}
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
+                      <div style={{
+                        display: 'flex', alignItems: 'center', gap: '6px',
+                        padding: '8px 12px', borderRadius: '8px',
+                        background: job.paid ? 'rgba(16, 185, 129, 0.1)' : 'rgba(239, 68, 68, 0.1)',
+                        color: job.paid ? '#10B981' : '#EF4444',
+                        fontWeight: 700, fontSize: '13px'
+                      }}>
+                        <CircleDollarSign size={16} />
+                        {job.paid ? 'Pago' : 'Não pago'}
+                      </div>
+                      <button 
+                        onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} 
+                        style={{ 
+                          background: job.feedback?.comments || job.feedback?.rating ? '#1a1a2e' : '#10B981', 
+                          border: 'none', padding: '10px 16px', borderRadius: '8px', color: 'white', 
+                          display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
+                          transition: 'opacity 0.2s'
+                        }} 
+                        onMouseOver={(e) => e.currentTarget.style.opacity = '0.9'}
+                        onMouseOut={(e) => e.currentTarget.style.opacity = '1'}
+                      >
+                        <Smile size={18} />
+                        {job.feedback?.comments || job.feedback?.power ? 'Ver Feedback' : 'Avaliar Jogo'}
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
