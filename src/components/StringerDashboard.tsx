@@ -28,9 +28,24 @@ export const StringerDashboard = () => {
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [activePaymentJob, setActivePaymentJob] = useState<any>(null);
   const [isPickupModalOpen, setIsPickupModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [currentOrderCode, setCurrentOrderCode] = useState<string>('');
+
+  const generateUniqueAlphanumericCode = (existingJobs: any[]) => {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    let isUnique = false;
+    while (!isUnique) {
+      code = '';
+      for (let i = 0; i < 8; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+      }
+      isUnique = !existingJobs.some((j: any) => j.orderCode === code);
+    }
+    return code;
+  };
   const [activePickupJob, setActivePickupJob] = useState<any>(null);
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
@@ -93,8 +108,12 @@ export const StringerDashboard = () => {
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
+    const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
+    if (!currentOrderCode) setCurrentOrderCode(newCode);
+
     const newJob = {
       id: Date.now().toString(),
+      orderCode: newCode,
       customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
       racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
       date: new Date().toLocaleDateString('pt-BR'),
@@ -109,6 +128,7 @@ export const StringerDashboard = () => {
       setJobSaved(false);
       setView('dashboard');
       setNewJobStep(1);
+      setCurrentOrderCode('');
       setSelectedCustomer(null);
       setCustomerQuery('');
       setSelectedJobRacket('');
@@ -582,14 +602,18 @@ export const StringerDashboard = () => {
                 </div>
 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
-                  <button type="button" onClick={() => { setView('dashboard'); setNewJobStep(1); }} style={{ padding: '16px 32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
+                  <button type="button" onClick={() => { setView('dashboard'); setNewJobStep(1); setCurrentOrderCode(''); }} style={{ padding: '16px 32px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 600 }}>
                     Fechar
                   </button>
                   <button type="button" onClick={() => {
                      const f = document.getElementById('newJobForm') as HTMLFormElement;
                      if (f && f.reportValidity()) {
+                        const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
+                        if (!currentOrderCode) setCurrentOrderCode(newCode);
+
                         const newJob = {
                           id: Date.now().toString(),
+                          orderCode: newCode,
                           customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
                           racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
                           date: new Date().toLocaleDateString('pt-BR'),

@@ -141,7 +141,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
               </div>
               <div style={{ background: 'rgba(217,59,101,0.1)', border: '1px solid rgba(217,59,101,0.2)', padding: '20px', borderRadius: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '14px', color: '#F9D0DA', marginBottom: '8px', fontWeight: 600 }}>Código da ordem</div>
-                  <div style={{ fontWeight: 800, fontSize: '18px' }}>2E0Z8HK5</div>
+                  <div style={{ fontWeight: 800, fontSize: '18px' }}>{activeOrderJob.orderCode || activeOrderJob.id?.substring(0, 8).toUpperCase() || '2E0Z8HK5'}</div>
               </div>
             </div>
         </div>
