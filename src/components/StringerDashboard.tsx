@@ -581,7 +581,10 @@ export const StringerDashboard = () => {
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px', overflow: 'hidden' }}>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Cross</label>
-                            <input type="text" placeholder="Crosses" required value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle} />
+                            <select required value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle}>
+                              <option value="">Selecione...</option>
+                              {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                            </select>
                           </div>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Cross (Kg/Lbs)</label>
