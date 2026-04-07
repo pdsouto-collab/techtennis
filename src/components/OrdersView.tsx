@@ -38,9 +38,9 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
       </div>
 
       {/* Sub Tabs */}
-      <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid #E5E7EB', paddingBottom: '12px' }}>
-        <button onClick={() => setActiveTab('unpaid')} style={{ background: 'none', border: 'none', color: activeTab === 'unpaid' ? '#6136B3' : 'var(--text-secondary)', fontWeight: activeTab === 'unpaid' ? 700 : 500, fontSize: '16px', cursor: 'pointer' }}>Ordens não Pagas</button>
-        <button onClick={() => setActiveTab('all')} style={{ background: 'none', border: 'none', color: activeTab === 'all' ? '#6136B3' : 'var(--text-secondary)', fontWeight: activeTab === 'all' ? 700 : 500, fontSize: '16px', cursor: 'pointer' }}>Todas as Ordens</button>
+      <div style={{ display: 'flex', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', paddingBottom: '12px' }}>
+        <button onClick={() => setActiveTab('unpaid')} style={{ background: 'none', border: 'none', color: activeTab === 'unpaid' ? '#F2C94C' : 'white', fontWeight: activeTab === 'unpaid' ? 700 : 500, fontSize: '16px', cursor: 'pointer' }}>Ordens não Pagas</button>
+        <button onClick={() => setActiveTab('all')} style={{ background: 'none', border: 'none', color: activeTab === 'all' ? '#F2C94C' : 'white', fontWeight: activeTab === 'all' ? 700 : 500, fontSize: '16px', cursor: 'pointer' }}>Todas as Ordens</button>
       </div>
 
       <div style={{ ...panelStyle, padding: 0, overflow: 'hidden' }}>
@@ -53,26 +53,26 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
                 <button style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer' }}><FileJson size={18} /></button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ fontSize: '14px', color: '#6B7280' }}>Pesquisar:</span>
-                <input type="text" style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #E5E7EB', background: '#F9FAFB' }} />
+                <span style={{ fontSize: '14px', color: 'rgba(255,255,255,0.7)' }}>Pesquisar:</span>
+                <input type="text" style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
             </div>
         </div>
 
         {/* Table */}
         <div style={{ overflowX: 'auto' }}>
             <table style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', textAlign: 'left' }}>
-            <thead style={{ borderBottom: '1px solid #E5E7EB', borderTop: '1px solid #E5E7EB' }}>
+            <thead style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <tr>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Name</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Data de inserção</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Status v</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Data de retirada desejada</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Data de retirada</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Clube</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Professor</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Ordem</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Preço</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}></th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Name</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de inserção</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Status v</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de retirada desejada</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de retirada</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Clube</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Professor</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Ordem</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Preço</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}></th>
                 </tr>
             </thead>
             <tbody>
@@ -103,26 +103,26 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
                   
                   return (
                     <tr key={order.id}>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#374151', borderBottom: '1px solid #E5E7EB' }}>{order.customerName}</td>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{order.date}</td>
-                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.customerName}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.date}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                             <span style={{ padding: '4px 12px', borderRadius: '4px', background: order.type === 'picking_up' ? '#6FCF97' : '#F2C94C', color: order.type === 'picking_up' ? 'var(--text-dark)' : 'white', fontWeight: 600, fontSize: '12px' }}>
                                 {order.type === 'picking_up' ? 'Pronta' : order.type === 'to_string' ? 'Para Encordoar' : 'Aguardando'}
                             </span>
                         </td>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{order.pickupDate ? new Date(order.pickupDate).toLocaleString('pt-BR') : '---'}</td>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>---</td>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>{cust?.originClub || 'Não informado'}</td>
-                        <td style={{ padding: '16px', fontSize: '14px', color: '#6B7280', borderBottom: '1px solid #E5E7EB' }}>---</td>
-                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
-                            <div style={{ fontWeight: 700, color: '#374151' }}>{order.orderCode}</div>
-                            <div style={{ color: '#6B7280', fontSize: '12px' }}>Raquetes: {order.racketsCount}</div>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.pickupDate ? new Date(order.pickupDate).toLocaleString('pt-BR') : '---'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>---</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{cust?.originClub || 'Não informado'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>---</td>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontWeight: 700, color: 'white' }}>{order.orderCode}</div>
+                            <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px' }}>Raquetes: {order.racketsCount}</div>
                         </td>
-                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
-                            <div style={{ fontWeight: 700, color: '#374151' }}>BRL {order.price.toFixed(2)}</div>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                            <div style={{ fontWeight: 700, color: 'white' }}>BRL {order.price.toFixed(2)}</div>
                             <div style={{ color: order.paid ? '#6FCF97' : '#EB5757', fontSize: '12px', fontWeight: 600 }}>{order.paid ? 'Pago' : 'Não pago'}</div>
                         </td>
-                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+                        <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                             <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', height: '100%' }}>
                               <button style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
                               <button style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
@@ -137,10 +137,10 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
         </div>
 
         {/* Pagination controls */}
-        <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '14px' }}>
+        <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: 'rgba(255,255,255,0.7)', fontSize: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               Mostrar
-              <select style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #D1D5DB', background: '#F9FAFB' }}>
+              <select style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
                 <option>10</option>
               </select>
               registros
@@ -149,9 +149,9 @@ export const OrdersView = ({ onAddOrder, jobs, customers }: any) => {
             <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
               <div>Mostrando 1 a 1 de 1 registros</div>
               <div style={{ display: 'flex', gap: '8px' }}>
-                <button style={{ background: 'none', border: 'none', color: '#9CA3AF', fontWeight: 600, cursor: 'not-allowed' }}>Anterior</button>
+                <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontWeight: 600, cursor: 'not-allowed' }}>Anterior</button>
                 <button style={{ background: '#4298E7', border: 'none', color: 'white', padding: '4px 12px', borderRadius: '4px', fontWeight: 600 }}>1</button>
-                <button style={{ background: 'none', border: 'none', color: '#9CA3AF', fontWeight: 600, cursor: 'not-allowed' }}>Próximo</button>
+                <button style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.5)', fontWeight: 600, cursor: 'not-allowed' }}>Próximo</button>
               </div>
             </div>
         </div>
