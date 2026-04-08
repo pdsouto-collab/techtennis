@@ -575,30 +575,42 @@ export const StringerDashboard = () => {
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ flex: '1 1 300px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
-                    <select required style={inputStyle} value={selectedJobRacket} onChange={(e) => {
-                          setSelectedJobRacket(e.target.value);
-                          setMainString('');
-                          setCrossString('');
-                          setTensionMain('');
-                          setTensionCross('');
-                          setIsHybrid(false);
-                          setIsStringing(true);
-                          setPreStretchMain('');
-                          setPreStretchCross('');
-                        }}>
-                      <option value="">Selecione a raquete do cliente...</option>
-                      {(() => {
-                         const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
-                         const counts: Record<string, number> = {};
-                         const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
-                         return customerRackets.map(r => {
-                             counts[r.name] = (counts[r.name] || 0) + 1;
-                             const displayName = `${r.name} [${counts[r.name]}]`;
-                             const isUsed = usedRacketIdsInOrder.includes(r.id);
-                             return <option key={r.id} value={r.id} disabled={isUsed} style={{ color: isUsed ? '#888' : 'inherit' }}>{displayName} {isUsed ? '(Já na ordem)' : ''}</option>;
-                         });
-                      })()}
-                    </select>
+                    <div style={{ display: 'flex', gap: '8px' }}>
+                      <select required style={{ ...inputStyle, flex: 1 }} value={selectedJobRacket} onChange={(e) => {
+                            setSelectedJobRacket(e.target.value);
+                            setMainString('');
+                            setCrossString('');
+                            setTensionMain('');
+                            setTensionCross('');
+                            setIsHybrid(false);
+                            setIsStringing(true);
+                            setPreStretchMain('');
+                            setPreStretchCross('');
+                          }}>
+                        <option value="">Selecione a raquete do cliente...</option>
+                        {(() => {
+                           const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
+                           const counts: Record<string, number> = {};
+                           const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
+                           return customerRackets.map(r => {
+                               counts[r.name] = (counts[r.name] || 0) + 1;
+                               const displayName = `${r.name} [${counts[r.name]}]`;
+                               const isUsed = usedRacketIdsInOrder.includes(r.id);
+                               return <option key={r.id} value={r.id} disabled={isUsed} style={{ color: isUsed ? '#888' : undefined }}>{displayName} {isUsed ? '(Já na ordem)' : ''}</option>;
+                           });
+                        })()}
+                      </select>
+                      {selectedJobRacket && (
+                        <button type="button" onClick={() => {
+                          if (window.confirm('Tem certeza que deseja apagar esta raquete do cadastro do cliente?')) {
+                            setRackets(prev => prev.filter(r => r.id !== selectedJobRacket));
+                            setSelectedJobRacket('');
+                          }
+                        }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#EB5757', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Excluir Raquete">
+                          <Trash2 size={20} />
+                        </button>
+                      )}
+                    </div>
                   </div>
                   <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
                     <Search size={18} /> Buscar Raquete
