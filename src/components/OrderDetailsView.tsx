@@ -155,7 +155,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
               {isEditingPickup ? (
                 <input 
                   type="datetime-local" 
-                  min={new Date().toISOString().slice(0, 16)}
+                  min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}
                   value={pickupDate}
                   onChange={(e) => setPickupDate(e.target.value)}
                   style={{ width: '100%', padding: '12px 16px', fontSize: '16px', borderRadius: '8px', border: '1px solid #ccc', background: '#FFFFFF', color: '#333' }}
