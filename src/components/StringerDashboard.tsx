@@ -1002,7 +1002,7 @@ export const StringerDashboard = () => {
            customers={customers} setSelectedCustomer={setSelectedCustomer} setNewJobStep={setNewJobStep}
            setActiveFilter={setActiveFilter} setIsCustomerModalOpen={setIsCustomerModalOpen}
            startEditingJob={startEditingJob} setCurrentOrderCode={setCurrentOrderCode} setEditingJobId={setEditingJobId}
-           resetForm={resetForm}
+           resetForm={resetForm} rackets={rackets}
         />
 
         {/* Customers View */}

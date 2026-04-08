@@ -5,7 +5,7 @@ import { CustomerNotesModal } from './CustomerNotesModal';
 import { AddPrepaidModal } from './AddPrepaidModal';
 import { PrepaidListModal } from './PrepaidListModal';
 
-export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, setEditingJobId, resetForm }: any) => {
+export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, setEditingJobId, resetForm, rackets }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
@@ -230,10 +230,29 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
           </div>
           
           {/* Table Rows corresponding to Order */}
-          {jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).map((orderJob: any) => (
+          {jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).map((orderJob: any) => {
+            const getRacketSuffix = () => {
+              if (!rackets || !orderJob.racketId) return '';
+              const r = rackets.find((rk: any) => rk.id === orderJob.racketId);
+              if (!r) return '';
+              const similarRackets = rackets.filter((rk: any) =>
+                r.customerId === rk.customerId &&
+                r.name.trim().toLowerCase() === rk.name.trim().toLowerCase()
+              ).sort((a: any, b: any) => parseInt(a.id) - parseInt(b.id));
+
+              const index = similarRackets.findIndex((rk: any) => rk.id === r.id);
+              return similarRackets.length > 1 && index !== -1 ? ` [${index + 1}]` : "";
+            };
+
+            const suffix = getRacketSuffix();
+
+            return (
             <div key={orderJob.id} style={{ minWidth: '1000px', display: 'grid', gridTemplateColumns: 'minmax(220px, 1.5fr) 1fr 1fr 1fr 1fr 1fr 1fr 240px', alignItems: 'center', padding: '24px 0', borderBottom: '1px solid #F3F4F6' }}>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '16px', marginBottom: '4px' }}>{orderJob.racketModel} <span style={{fontWeight: 600, color: '#888'}}>[1]</span></div>
+                  <div style={{ fontWeight: 800, fontSize: '16px', marginBottom: '4px' }}>
+                    {orderJob.racketModel} 
+                    {suffix && <span style={{fontWeight: 600, color: '#888'}}> {suffix}</span>}
+                  </div>
                   <div style={{ fontSize: '14px', color: '#888', fontWeight: 500 }}>18x20 L3</div>
                 </div>
                 <div>
@@ -270,7 +289,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                   <button onClick={() => { setActiveStringingJob(orderJob); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Painel de Encordoamento"><Grid size={16} strokeWidth={3} /></button>
                 </div>
             </div>
-          ))}
+          );
+          })}
 
           {/* Table Footer */}
           <div style={{ display: 'flex', justifyContent: 'space-between', padding: '24px 0 8px 0', alignItems: 'flex-start', borderTop: '1px solid #E5E7EB', marginTop: '16px' }}>
