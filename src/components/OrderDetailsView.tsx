@@ -5,7 +5,7 @@ import { CustomerNotesModal } from './CustomerNotesModal';
 import { AddPrepaidModal } from './AddPrepaidModal';
 import { PrepaidListModal } from './PrepaidListModal';
 
-export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob }: any) => {
+export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, setEditingJobId }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
@@ -205,6 +205,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                    if (cust) {
                       setSelectedCustomer(cust);
                    }
+                   if (setCurrentOrderCode) setCurrentOrderCode(activeOrderJob.orderCode);
+                   if (setEditingJobId) setEditingJobId(null);
                    setNewJobStep(2);
                    setView('new_job');
                 }}

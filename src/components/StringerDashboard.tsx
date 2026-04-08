@@ -260,7 +260,7 @@ export const StringerDashboard = () => {
         }}>
           Início
         </button>
-        <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} style={{
+        <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); }} style={{
           background: 'none', border: 'none', padding: '12px 0', 
           color: view === 'dashboard' ? 'var(--primary-color)' : 'var(--text-secondary)',
           fontWeight: view === 'dashboard' ? 700 : 500, fontSize: '15px',
@@ -306,14 +306,14 @@ export const StringerDashboard = () => {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <h2 style={{ fontSize: '24px', color: 'var(--text-primary)' }}>Gestão e Operação</h2>
-              <button onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setView('new_job'); }} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
+              <button onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); setView('new_job'); }} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
                 <Plus size={18} /> Novo Encordoamento
               </button>
             </div>
 
             {/* Configurable Status Tiles */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
-              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setView('new_job'); }}
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); setView('new_job'); }}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('dropping_off')}`, background: 'var(--bg-panel)' }}>
                 <PackageOpen size={24} color={getStatusColor('dropping_off')} style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recebimento</h3>
@@ -920,7 +920,7 @@ export const StringerDashboard = () => {
            setActivePaymentJob={setActivePaymentJob} setIsPaymentModalOpen={setIsPaymentModalOpen}
            customers={customers} setSelectedCustomer={setSelectedCustomer} setNewJobStep={setNewJobStep}
            setActiveFilter={setActiveFilter} setIsCustomerModalOpen={setIsCustomerModalOpen}
-           startEditingJob={startEditingJob}
+           startEditingJob={startEditingJob} setCurrentOrderCode={setCurrentOrderCode} setEditingJobId={setEditingJobId}
         />
 
         {/* Customers View */}
