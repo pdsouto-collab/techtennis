@@ -617,13 +617,13 @@ export const StringerDashboard = () => {
                          </select>
                          {svc.isActive && (
                             <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                               <div style={{ width: '120px', position: 'relative' }}>
-                                 <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>R$</span>
+                               <div style={{ width: '130px', position: 'relative' }}>
+                                 <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
                                  <input type="number" placeholder="Valor" value={svc.price || ''} onChange={e => {
                                       const newSvc = [...auxServices];
                                       newSvc[idx].price = Number(e.target.value);
                                       setAuxServices(newSvc);
-                                 }} style={{...inputStyle, paddingLeft: '48px'}} />
+                                 }} style={{...inputStyle, paddingLeft: '56px'}} />
                                </div>
                                <div style={{ flex: 1 }}>
                                  <input type="text" placeholder="Observações" value={svc.notes} onChange={e => {
@@ -662,7 +662,7 @@ export const StringerDashboard = () => {
                         <input type="number" placeholder="0.00" value={price} onChange={e => setPrice(Number(e.target.value))} style={inputStyle} />
                         {auxServices.some(s => s.isActive) && (
                           <div style={{ marginTop: '12px', fontSize: '14px', color: '#6FCF97', fontWeight: 700 }}>
-                            Total com extras: R$ {(price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
+                            Total com extras: BRL {(price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
                           </div>
                         )}
                       </div>
