@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Trash2, Plus, Edit } from 'lucide-react';
 
 export const SettingsView = ({ settings, setSettings }: any) => {
-  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers'>('strings');
+  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports'>('strings');
   
   const [newItemText, setNewItemText] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
@@ -48,6 +48,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     { id: 'pickupPoints', label: 'Ponto de Encordoamento' },
     { id: 'machines', label: 'Máquina de Encordoamento' },
     { id: 'stringers', label: 'Encordoador' },
+    { id: 'sports', label: 'Esporte' },
   ];
 
   return (

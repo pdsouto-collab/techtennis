@@ -112,6 +112,9 @@ export const StringerDashboard = () => {
   const [isHybrid, setIsHybrid] = useState(false);
   const [crossString, setCrossString] = useState('');
   const [tensionCross, setTensionCross] = useState(55);
+  const [isStringing, setIsStringing] = useState(true);
+  const [preStretchMain, setPreStretchMain] = useState('');
+  const [preStretchCross, setPreStretchCross] = useState('');
   const [price, setPrice] = useState(120);
   const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, notes: string}[]>([
     { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
@@ -144,6 +147,10 @@ export const StringerDashboard = () => {
       mainString,
       crossString,
       isHybrid,
+      racketId: selectedJobRacket,
+      isStringing,
+      preStretchMain,
+      preStretchCross,
       basePrice: price,
       price: finalPrice,
       auxServices
@@ -170,6 +177,9 @@ export const StringerDashboard = () => {
       setTensionMain(55);
       setTensionCross(55);
       setIsHybrid(false);
+      setIsStringing(true);
+      setPreStretchMain('');
+      setPreStretchCross('');
       setPrice(120);
       setAuxServices([
         { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
@@ -193,6 +203,9 @@ export const StringerDashboard = () => {
     setMainString(job.mainString || '');
     setCrossString(job.crossString || '');
     setIsHybrid(job.isHybrid || false);
+    setIsStringing(job.isStringing !== false);
+    setPreStretchMain(job.preStretchMain || '');
+    setPreStretchCross(job.preStretchCross || '');
 
     const match = job.tension?.match(/(\d+)(?:\/(\d+))?/);
     if (match) {
@@ -528,7 +541,7 @@ export const StringerDashboard = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Previsão de Entrega (Order pick up)</label>
-                    <input type="datetime-local" required style={inputStyle} />
+                    <input type="datetime-local" min={new Date().toISOString().slice(0, 16)} required style={inputStyle} />
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
@@ -560,11 +573,29 @@ export const StringerDashboard = () => {
                 <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-end', flexWrap: 'wrap', paddingBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
                   <div style={{ flex: '1 1 300px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
-                    <select required style={inputStyle} value={selectedJobRacket} onChange={(e) => setSelectedJobRacket(e.target.value)}>
+                    <select required style={inputStyle} value={selectedJobRacket} onChange={(e) => {
+                          setSelectedJobRacket(e.target.value);
+                          setMainString('');
+                          setCrossString('');
+                          setTensionMain(55);
+                          setTensionCross(55);
+                          setIsHybrid(false);
+                          setIsStringing(true);
+                          setPreStretchMain('');
+                          setPreStretchCross('');
+                        }}>
                       <option value="">Selecione a raquete do cliente...</option>
-                      {rackets.filter(r => r.customerId === selectedCustomer?.id).map(r => (
-                        <option key={r.id} value={r.id}>{r.name}</option>
-                      ))}
+                      {(() => {
+                         const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
+                         const counts: Record<string, number> = {};
+                         const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
+                         return customerRackets.map(r => {
+                             counts[r.name] = (counts[r.name] || 0) + 1;
+                             const displayName = `${r.name} [${counts[r.name]}]`;
+                             const isUsed = usedRacketIdsInOrder.includes(r.id);
+                             return <option key={r.id} value={r.id} disabled={isUsed} style={{ color: isUsed ? '#888' : 'inherit' }}>{displayName} {isUsed ? '(Já na ordem)' : ''}</option>;
+                         });
+                      })()}
                     </select>
                   </div>
                   <button type="button" onClick={() => setIsCloneRacketModalOpen(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600 }}>
@@ -584,7 +615,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Encordoamento</label>
-                      <select style={inputStyle} defaultValue="Sim">
+                      <select style={inputStyle} value={isStringing ? 'Sim' : 'Nao'} onChange={e => setIsStringing(e.target.value === 'Sim')}>
                         <option value="Sim">Sim</option>
                         <option value="Nao">Não</option>
                       </select>
@@ -643,7 +674,7 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tipo de Encordoamento</label>
-                        <select style={inputStyle}>
+                        <select disabled={!isStringing} style={inputStyle}>
                           <option>Não definido</option>
                           <option>2 nós</option>
                           <option>4 nós</option>
@@ -652,7 +683,7 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Unidade de Tensão</label>
-                        <select style={inputStyle}>
+                        <select disabled={!isStringing} style={inputStyle}>
                           <option>Lbs</option>
                           <option>Kg</option>
                         </select>
@@ -671,18 +702,18 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Main</label>
-                        <select required value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle}>
+                        <select disabled={!isStringing} required={isStringing} value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle}>
                           <option value="">Selecione...</option>
                           {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
                         </select>
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main (Kg/Lbs)</label>
-                        <input type="number" placeholder="Tensão Main" required value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
+                        <input disabled={!isStringing} type="number" placeholder="Tensão Main" required={isStringing} value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Main (%)</label>
-                        <select style={inputStyle}><option value=""></option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option></select>
+                        <input type="text" placeholder="Ex: 20%" disabled={!isStringing} value={preStretchMain} onChange={(e) => setPreStretchMain(e.target.value)} style={inputStyle} />
                       </div>
                     </div>
 
@@ -691,18 +722,18 @@ export const StringerDashboard = () => {
                         <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '16px', overflow: 'hidden' }}>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Cross</label>
-                            <select required value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle}>
+                            <select disabled={!isStringing} required={isStringing} value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle}>
                               <option value="">Selecione...</option>
                               {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
                             </select>
                           </div>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Cross (Kg/Lbs)</label>
-                            <input type="number" placeholder="Tensão Cross" required value={tensionCross} onChange={(e) => setTensionCross(Number(e.target.value))} style={inputStyle} />
+                            <input disabled={!isStringing} type="number" placeholder="Tensão Cross" required={isStringing} value={tensionCross} onChange={(e) => setTensionCross(Number(e.target.value))} style={inputStyle} />
                           </div>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Cross (%)</label>
-                            <select style={inputStyle}><option value=""></option><option value="5">5%</option><option value="10">10%</option><option value="20">20%</option></select>
+                            <input disabled={!isStringing} type="text" placeholder="Ex: 20%" value={preStretchCross} onChange={(e) => setPreStretchCross(e.target.value)} style={inputStyle} />
                           </div>
                         </motion.div>
                       )}
@@ -1262,7 +1293,9 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Esporte</label>
-                      <select style={inputStyle} defaultValue="Tênis"><option>Tênis</option><option>Beach Tennis</option></select>
+                      <select style={inputStyle} name="sport" defaultValue="Tênis">
+                         {(appSettings.sports || ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel']).map((s: string) => <option key={s} value={s}>{s}</option>)}
+                      </select>
                     </div>
                   </div>
 
