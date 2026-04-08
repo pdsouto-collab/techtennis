@@ -70,7 +70,9 @@ export const StringerDashboard = () => {
 
   const [appSettings, setAppSettings] = useState<any>(() => {
     const saved = localStorage.getItem('tt_settings');
-    return saved ? JSON.parse(saved) : { strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'] };
+    const parsed = saved ? JSON.parse(saved) : { strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'] };
+    if (!parsed.sports) parsed.sports = ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel'];
+    return parsed;
   });
 
   useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
