@@ -170,27 +170,31 @@ export const StringerDashboard = () => {
       setView('dashboard');
       setNewJobStep(1);
       setCurrentOrderCode('');
-      setEditingJobId(null);
-      setSelectedCustomer(null);
-      setCustomerQuery('');
-      setSelectedJobRacket('');
-      setMainString('');
-      setCrossString('');
-      setTensionMain('');
-      setTensionCross('');
-      setIsHybrid(false);
-      setIsStringing(true);
-      setPreStretchMain('');
-      setPreStretchCross('');
-      setPrice('');
-      setAuxServices([
-        { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
-        { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
-        { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
-        { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
-        { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
-      ]);
+      resetForm();
     }, 1500);
+  };
+
+  const resetForm = () => {
+    setEditingJobId(null);
+    setSelectedCustomer(null);
+    setCustomerQuery('');
+    setSelectedJobRacket('');
+    setMainString('');
+    setCrossString('');
+    setTensionMain('');
+    setTensionCross('');
+    setIsHybrid(false);
+    setIsStringing(true);
+    setPreStretchMain('');
+    setPreStretchCross('');
+    setPrice('');
+    setAuxServices([
+      { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
+      { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
+      { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
+      { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
+      { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+    ]);
   };
 
   const startEditingJob = (job: any, cust: any) => {
@@ -998,6 +1002,7 @@ export const StringerDashboard = () => {
            customers={customers} setSelectedCustomer={setSelectedCustomer} setNewJobStep={setNewJobStep}
            setActiveFilter={setActiveFilter} setIsCustomerModalOpen={setIsCustomerModalOpen}
            startEditingJob={startEditingJob} setCurrentOrderCode={setCurrentOrderCode} setEditingJobId={setEditingJobId}
+           resetForm={resetForm}
         />
 
         {/* Customers View */}

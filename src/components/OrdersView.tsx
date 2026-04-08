@@ -32,7 +32,11 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
       };
     }
     acc[code].racketsCount += 1;
-    acc[code].price = (acc[code].racketsCount * (job.price || 120));
+    if (acc[code].racketsCount === 1) {
+      acc[code].price = (job.price || 120);
+    } else {
+      acc[code].price += (job.price || 120);
+    }
     // Assume if one is unpaid, order is unpaid
     if (!job.paid) acc[code].paid = false;
     return acc;
