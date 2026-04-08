@@ -590,11 +590,21 @@ export const StringerDashboard = () => {
                         <option value="">Selecione a raquete do cliente...</option>
                         {(() => {
                            const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
+                           const totals: Record<string, number> = {};
+                           customerRackets.forEach(r => {
+                               const key = r.name.trim().toUpperCase();
+                               totals[key] = (totals[key] || 0) + 1;
+                           });
+                           
                            const counts: Record<string, number> = {};
                            const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
+                           
                            return customerRackets.map(r => {
-                               counts[r.name] = (counts[r.name] || 0) + 1;
-                               const displayName = `${r.name} [${counts[r.name]}]`;
+                               const key = r.name.trim().toUpperCase();
+                               counts[key] = (counts[key] || 0) + 1;
+                               const suffix = totals[key] > 1 ? ` [${counts[key]}]` : '';
+                               const displayName = `${r.name.trim()}${suffix}`;
+                               
                                const isUsed = usedRacketIdsInOrder.includes(r.id);
                                return <option key={r.id} value={r.id} disabled={isUsed} style={{ color: isUsed ? '#888' : undefined }}>{displayName} {isUsed ? '(Já na ordem)' : ''}</option>;
                            });
