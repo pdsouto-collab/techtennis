@@ -343,9 +343,7 @@ export const StringerDashboard = () => {
                             </button>
                             <button onClick={() => {
                               const cust = customers.find(c => c.name === job.customerName);
-                              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
-                              setView('new_job');
-                              setNewJobStep(2);
+                              startEditingJob(job, cust);
                             }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
                               <Edit size={16} />
                             </button>
@@ -368,9 +366,7 @@ export const StringerDashboard = () => {
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                             <button onClick={() => {
                               const cust = customers.find(c => c.name === job.customerName);
-                              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
-                              setView('new_job');
-                              setNewJobStep(2);
+                              startEditingJob(job, cust);
                             }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Editar Recebimento">
                               <Edit size={16} />
                             </button>
