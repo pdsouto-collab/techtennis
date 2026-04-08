@@ -106,6 +106,7 @@ export const StringerDashboard = () => {
   
   // Form State
   const [jobSaved, setJobSaved] = useState(false);
+  const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [mainString, setMainString] = useState('');
   const [tensionMain, setTensionMain] = useState(55);
   const [isHybrid, setIsHybrid] = useState(false);
@@ -122,16 +123,24 @@ export const StringerDashboard = () => {
     if (!currentOrderCode) setCurrentOrderCode(newCode);
 
     const newJob = {
-      id: Date.now().toString(),
+      id: editingJobId ? editingJobId : Date.now().toString(),
       orderCode: newCode,
       customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
       racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
       date: new Date().toLocaleDateString('pt-BR'),
-      tension: `${tensionMain} lbs`,
+      tension: isHybrid ? `${tensionMain}/${tensionCross} lbs` : `${tensionMain} lbs`,
       status: 'aguardando',
-      type: 'to_string' as any
+      type: 'to_string' as any,
+      mainString,
+      crossString,
+      isHybrid
     };
-    setJobs(prev => [newJob, ...prev]);
+    
+    if (editingJobId) {
+      setJobs(prev => prev.map(j => j.id === editingJobId ? { ...j, ...newJob } : j));
+    } else {
+      setJobs(prev => [newJob, ...prev]);
+    }
 
     setJobSaved(true);
     setTimeout(() => {
@@ -139,6 +148,7 @@ export const StringerDashboard = () => {
       setView('dashboard');
       setNewJobStep(1);
       setCurrentOrderCode('');
+      setEditingJobId(null);
       setSelectedCustomer(null);
       setCustomerQuery('');
       setSelectedJobRacket('');
@@ -148,6 +158,37 @@ export const StringerDashboard = () => {
       setTensionCross(55);
       setIsHybrid(false);
     }, 1500);
+  };
+
+  const startEditingJob = (job: any, cust: any) => {
+    setSelectedCustomer(cust);
+    setCustomerQuery(cust?.name || '');
+    setEditingJobId(job.id);
+    setCurrentOrderCode(job.orderCode || job.id.substring(0,8).toUpperCase());
+    
+    const racketId = rackets.find(r => r.name === job.racketModel && r.customerId === cust?.id)?.id;
+    if (racketId) setSelectedJobRacket(racketId);
+    
+    setMainString(job.mainString || '');
+    setCrossString(job.crossString || '');
+    setIsHybrid(job.isHybrid || false);
+
+    const match = job.tension?.match(/(\d+)(?:\/(\d+))?/);
+    if (match) {
+        setTensionMain(parseInt(match[1]) || 55);
+        if (match[2]) {
+          setIsHybrid(true);
+          setTensionCross(parseInt(match[2]));
+        } else {
+          setTensionCross(parseInt(match[1]) || 55);
+        }
+    } else {
+        setTensionMain(55);
+        setTensionCross(55);
+    }
+    
+    setView('new_job'); 
+    setNewJobStep(2);
   };
 
   const getStatusColor = (type: string) => {
@@ -684,7 +725,10 @@ export const StringerDashboard = () => {
                     <button onClick={() => setView('dashboard')} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Fechar</button>
                     <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'heart')); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta (coração)</button>
                     <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'full')); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta</button>
-                    <button onClick={() => { setView('new_job'); setNewJobStep(2); }} style={{ padding: '8px 16px', background: '#4298E7', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Editar Encordoamento</button>
+                    <button onClick={() => { 
+                      const cust = customers.find((c: any) => c.name === activeStringingJob.customerName);
+                      startEditingJob(activeStringingJob, cust); 
+                    }} style={{ padding: '8px 16px', background: '#4298E7', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Editar Encordoamento</button>
                     <button onClick={() => {
                         setJobs(jobs.map(j => j.id === activeStringingJob.id ? { ...j, type: 'picking_up', status: 'pronta' } : j));
                         setView('dashboard');
@@ -894,8 +938,7 @@ export const StringerDashboard = () => {
             const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
             if (job) {
               const cust = customers.find(c => c.name === job.customerName);
-              if (cust) { setSelectedCustomer(cust); setCustomerQuery(cust.name); }
-              setView('new_job'); setNewJobStep(2);
+              startEditingJob(job, cust);
             }
           }}
           onPayment={(orderCode: string) => {
