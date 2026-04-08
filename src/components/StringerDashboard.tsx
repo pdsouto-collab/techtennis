@@ -112,6 +112,14 @@ export const StringerDashboard = () => {
   const [isHybrid, setIsHybrid] = useState(false);
   const [crossString, setCrossString] = useState('');
   const [tensionCross, setTensionCross] = useState(55);
+  const [price, setPrice] = useState(120);
+  const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, notes: string}[]>([
+    { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
+    { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
+    { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
+    { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
+    { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+  ]);
 
   const filteredJobs = activeFilter === 'all' 
     ? jobs 
@@ -121,6 +129,8 @@ export const StringerDashboard = () => {
     e.preventDefault();
     const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
     if (!currentOrderCode) setCurrentOrderCode(newCode);
+
+    const finalPrice = price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
 
     const newJob = {
       id: editingJobId ? editingJobId : Date.now().toString(),
@@ -133,7 +143,10 @@ export const StringerDashboard = () => {
       type: 'to_string' as any,
       mainString,
       crossString,
-      isHybrid
+      isHybrid,
+      basePrice: price,
+      price: finalPrice,
+      auxServices
     };
     
     if (editingJobId) {
@@ -157,6 +170,14 @@ export const StringerDashboard = () => {
       setTensionMain(55);
       setTensionCross(55);
       setIsHybrid(false);
+      setPrice(120);
+      setAuxServices([
+        { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
+        { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
+        { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
+        { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
+        { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+      ]);
     }, 1500);
   };
 
@@ -185,6 +206,26 @@ export const StringerDashboard = () => {
     } else {
         setTensionMain(55);
         setTensionCross(55);
+    }
+    
+    if (job.basePrice !== undefined) {
+        setPrice(job.basePrice);
+    } else if (job.price !== undefined) {
+        setPrice(job.price);
+    } else {
+        setPrice(120);
+    }
+
+    if (job.auxServices) {
+        setAuxServices(job.auxServices);
+    } else {
+        setAuxServices([
+          { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
+          { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
+          { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
+          { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
+          { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+        ]);
     }
     
     setView('new_job'); 
@@ -563,11 +604,38 @@ export const StringerDashboard = () => {
                       <input type="checkbox" style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
                     </div>
 
-                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Trocar grip base</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Trocar overgrip</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Serviço customizado</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Compra de raquete nova</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Outros serviços</label><select style={inputStyle}><option>Não</option><option>Sim</option></select></div>
+                    {auxServices.map((svc, idx) => (
+                      <div key={svc.type}>
+                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>{svc.type}</label>
+                         <select value={svc.isActive ? "Sim" : "Não"} onChange={e => {
+                               const newSvc = [...auxServices];
+                               newSvc[idx].isActive = e.target.value === "Sim";
+                               setAuxServices(newSvc);
+                         }} style={inputStyle}>
+                            <option value="Não">Não</option>
+                            <option value="Sim">Sim</option>
+                         </select>
+                         {svc.isActive && (
+                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                               <div style={{ width: '120px', position: 'relative' }}>
+                                 <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>R$</span>
+                                 <input type="number" placeholder="Valor" value={svc.price || ''} onChange={e => {
+                                      const newSvc = [...auxServices];
+                                      newSvc[idx].price = Number(e.target.value);
+                                      setAuxServices(newSvc);
+                                 }} style={{...inputStyle, paddingLeft: '48px'}} />
+                               </div>
+                               <div style={{ flex: 1 }}>
+                                 <input type="text" placeholder="Observações" value={svc.notes} onChange={e => {
+                                      const newSvc = [...auxServices];
+                                      newSvc[idx].notes = e.target.value;
+                                      setAuxServices(newSvc);
+                                 }} style={inputStyle} />
+                               </div>
+                            </div>
+                         )}
+                      </div>
+                    ))}
                   </div>
 
                   {/* Right Column / Main Inputs */}
@@ -591,7 +659,12 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço (BRL)</label>
-                        <input type="number" placeholder="0.00" style={inputStyle} />
+                        <input type="number" placeholder="0.00" value={price} onChange={e => setPrice(Number(e.target.value))} style={inputStyle} />
+                        {auxServices.some(s => s.isActive) && (
+                          <div style={{ marginTop: '12px', fontSize: '14px', color: '#6FCF97', fontWeight: 700 }}>
+                            Total com extras: R$ {(price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
+                          </div>
+                        )}
                       </div>
                     </div>
 
