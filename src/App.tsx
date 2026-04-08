@@ -226,7 +226,7 @@ const Hero = () => {
 
 function App() {
   useEffect(() => {
-    const handleWheel = (e: WheelEvent) => {
+    const handleWheel = () => {
       if (document.activeElement?.tagName === 'INPUT' && (document.activeElement as HTMLInputElement).type === 'number') {
         (document.activeElement as HTMLElement).blur();
       }

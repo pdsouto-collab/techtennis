@@ -5,7 +5,7 @@ import { CustomerNotesModal } from './CustomerNotesModal';
 import { AddPrepaidModal } from './AddPrepaidModal';
 import { PrepaidListModal } from './PrepaidListModal';
 
-export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, setEditingJobId, resetForm, rackets }: any) => {
+export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, resetForm, rackets }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
