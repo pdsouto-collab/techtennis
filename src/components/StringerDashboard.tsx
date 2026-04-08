@@ -110,14 +110,14 @@ export const StringerDashboard = () => {
   const [jobSaved, setJobSaved] = useState(false);
   const [editingJobId, setEditingJobId] = useState<string | null>(null);
   const [mainString, setMainString] = useState('');
-  const [tensionMain, setTensionMain] = useState(55);
+  const [tensionMain, setTensionMain] = useState<number | ''>('');
   const [isHybrid, setIsHybrid] = useState(false);
   const [crossString, setCrossString] = useState('');
-  const [tensionCross, setTensionCross] = useState(55);
+  const [tensionCross, setTensionCross] = useState<number | ''>('');
   const [isStringing, setIsStringing] = useState(true);
   const [preStretchMain, setPreStretchMain] = useState('');
   const [preStretchCross, setPreStretchCross] = useState('');
-  const [price, setPrice] = useState(120);
+  const [price, setPrice] = useState<number | ''>('');
   const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, notes: string}[]>([
     { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
     { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
@@ -135,7 +135,7 @@ export const StringerDashboard = () => {
     const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
     if (!currentOrderCode) setCurrentOrderCode(newCode);
 
-    const finalPrice = price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
+    const finalPrice = Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
 
     const newJob = {
       id: editingJobId ? editingJobId : Date.now().toString(),
@@ -153,7 +153,7 @@ export const StringerDashboard = () => {
       isStringing,
       preStretchMain,
       preStretchCross,
-      basePrice: price,
+      basePrice: Number(price),
       price: finalPrice,
       auxServices
     };
@@ -176,13 +176,13 @@ export const StringerDashboard = () => {
       setSelectedJobRacket('');
       setMainString('');
       setCrossString('');
-      setTensionMain(55);
-      setTensionCross(55);
+      setTensionMain('');
+      setTensionCross('');
       setIsHybrid(false);
       setIsStringing(true);
       setPreStretchMain('');
       setPreStretchCross('');
-      setPrice(120);
+      setPrice('');
       setAuxServices([
         { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
         { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
@@ -211,16 +211,16 @@ export const StringerDashboard = () => {
 
     const match = job.tension?.match(/(\d+)(?:\/(\d+))?/);
     if (match) {
-        setTensionMain(parseInt(match[1]) || 55);
+        setTensionMain(parseInt(match[1]) || '');
         if (match[2]) {
           setIsHybrid(true);
           setTensionCross(parseInt(match[2]));
         } else {
-          setTensionCross(parseInt(match[1]) || 55);
+          setTensionCross(parseInt(match[1]) || '');
         }
     } else {
-        setTensionMain(55);
-        setTensionCross(55);
+        setTensionMain('');
+        setTensionCross('');
     }
     
     if (job.basePrice !== undefined) {
@@ -228,7 +228,7 @@ export const StringerDashboard = () => {
     } else if (job.price !== undefined) {
         setPrice(job.price);
     } else {
-        setPrice(120);
+        setPrice('');
     }
 
     if (job.auxServices) {
@@ -579,8 +579,8 @@ export const StringerDashboard = () => {
                           setSelectedJobRacket(e.target.value);
                           setMainString('');
                           setCrossString('');
-                          setTensionMain(55);
-                          setTensionCross(55);
+                          setTensionMain('');
+                          setTensionCross('');
                           setIsHybrid(false);
                           setIsStringing(true);
                           setPreStretchMain('');
@@ -692,10 +692,10 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço (BRL)</label>
-                        <input type="number" placeholder="0.00" value={price} onChange={e => setPrice(Number(e.target.value))} style={inputStyle} />
+                        <input type="number" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
                         {auxServices.some(s => s.isActive) && (
                           <div style={{ marginTop: '12px', fontSize: '14px', color: '#6FCF97', fontWeight: 700 }}>
-                            Total com extras: BRL {(price + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
+                            Total com extras: BRL {(Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
                           </div>
                         )}
                       </div>
@@ -711,7 +711,7 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Main (Kg/Lbs)</label>
-                        <input disabled={!isStringing} type="number" placeholder="Tensão Main" required={isStringing} value={tensionMain} onChange={(e) => setTensionMain(Number(e.target.value))} style={inputStyle} />
+                        <input disabled={!isStringing} type="number" placeholder="Tensão Main" required={isStringing} value={tensionMain} onChange={(e) => setTensionMain(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Main (%)</label>
@@ -731,7 +731,7 @@ export const StringerDashboard = () => {
                           </div>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tensão Cross (Kg/Lbs)</label>
-                            <input disabled={!isStringing} type="number" placeholder="Tensão Cross" required={isStringing} value={tensionCross} onChange={(e) => setTensionCross(Number(e.target.value))} style={inputStyle} />
+                            <input disabled={!isStringing} type="number" placeholder="Tensão Cross" required={isStringing} value={tensionCross} onChange={(e) => setTensionCross(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
                           </div>
                           <div>
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Pre-stretch Cross (%)</label>
