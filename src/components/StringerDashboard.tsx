@@ -801,24 +801,46 @@ export const StringerDashboard = () => {
                         const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
                         if (!currentOrderCode) setCurrentOrderCode(newCode);
 
+                        const finalPrice = Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
                         const newJob = {
                           id: Date.now().toString(),
                           orderCode: newCode,
                           customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
                           racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
                           date: new Date().toLocaleDateString('pt-BR'),
-                          tension: `${tensionMain} lbs`,
+                          tension: isHybrid ? `${tensionMain}/${tensionCross} lbs` : `${tensionMain} lbs`,
                           status: 'aguardando',
-                          type: 'to_string' as any
+                          type: 'to_string' as any,
+                          mainString,
+                          crossString,
+                          isHybrid,
+                          racketId: selectedJobRacket,
+                          isStringing,
+                          preStretchMain,
+                          preStretchCross,
+                          basePrice: Number(price),
+                          price: finalPrice,
+                          auxServices
                         };
                         setJobs(prev => [newJob, ...prev]);
                         
                         setSelectedJobRacket('');
                         setMainString('');
                         setCrossString('');
-                        setTensionMain(55);
-                        setTensionCross(55);
+                        setTensionMain('');
+                        setTensionCross('');
                         setIsHybrid(false);
+                        setIsStringing(true);
+                        setPreStretchMain('');
+                        setPreStretchCross('');
+                        setPrice('');
+                        setAuxServices([
+                          { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
+                          { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
+                          { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
+                          { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
+                          { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+                        ]);
                         
                         // Pequeno pulso visual para feedback de que a primeira foi salva
                         setJobSaved(true);
