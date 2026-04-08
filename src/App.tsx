@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Search, Menu, User, Settings } from 'lucide-react';
@@ -225,6 +225,16 @@ const Hero = () => {
 };
 
 function App() {
+  useEffect(() => {
+    const handleWheel = (e: WheelEvent) => {
+      if (document.activeElement?.tagName === 'INPUT' && (document.activeElement as HTMLInputElement).type === 'number') {
+        (document.activeElement as HTMLElement).blur();
+      }
+    };
+    document.addEventListener('wheel', handleWheel, { passive: false });
+    return () => document.removeEventListener('wheel', handleWheel);
+  }, []);
+
   return (
     <Router>
       <div className="page-container">
