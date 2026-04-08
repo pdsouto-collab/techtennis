@@ -5,7 +5,7 @@ import { CustomerNotesModal } from './CustomerNotesModal';
 import { AddPrepaidModal } from './AddPrepaidModal';
 import { PrepaidListModal } from './PrepaidListModal';
 
-export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen }: any) => {
+export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
@@ -254,7 +254,16 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                   <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(orderJob, 'heart')); }} style={{ background: '#E5E7EB', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Imprimir Etiqueta Coração"><Ticket size={16} strokeWidth={3} /></button>
                   <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(orderJob, 'full')); }} style={{ background: '#E5E7EB', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: '#6B7280', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Imprimir Etiqueta"><Printer size={16} strokeWidth={3} /></button>
                   <button onClick={() => setJobs(jobs.filter((j: any) => j.id !== orderJob.id))} style={{ background: '#FCA5A5', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: '#B42D2D', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} strokeWidth={3} /></button>
-                  <button onClick={() => { const cust = customers?.find((c: any) => c.name === orderJob.customerName); if (cust) setSelectedCustomer(cust); setNewJobStep(2); setView('new_job'); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} strokeWidth={3} /></button>
+                  <button onClick={() => { 
+                    const cust = customers?.find((c: any) => c.name === orderJob.customerName); 
+                    if (startEditingJob) {
+                        startEditingJob(orderJob, cust);
+                    } else {
+                        if (cust) setSelectedCustomer(cust); 
+                        setNewJobStep(2); 
+                        setView('new_job'); 
+                    }
+                  }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} strokeWidth={3} /></button>
                   <button onClick={() => { setActiveStringingJob(orderJob); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'var(--text-dark)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Painel de Encordoamento"><Grid size={16} strokeWidth={3} /></button>
                 </div>
             </div>
