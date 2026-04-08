@@ -380,9 +380,20 @@ export const StringerDashboard = () => {
                 {filteredJobs.length === 0 ? (
                   <div style={{ textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>Nenhum evento para exibir</div>
                 ) : (
-                  filteredJobs.map(job => (
+                  [...filteredJobs].sort((a, b) => {
+                     const da = a.pickupDate ? new Date(a.pickupDate).getTime() : Infinity;
+                     const db = b.pickupDate ? new Date(b.pickupDate).getTime() : Infinity;
+                     return da - db;
+                  }).map(job => (
                     <div key={job.id} style={{ display: 'grid', gridTemplateColumns: (activeFilter === 'to_string' || activeFilter === 'picking_up') ? 'minmax(120px, 1fr) 2fr 1fr 1fr auto' : '1fr 2fr 1fr 1fr', alignItems: 'center', padding: '16px', background: 'rgba(0,0,0,0.2)', borderRadius: '16px', gap: '16px', borderLeft: `4px solid ${getStatusColor(job.type)}` }}>
-                      <div style={{ fontWeight: 600 }}>{job.date}</div>
+                      <div>
+                        <div style={{ fontWeight: 600 }}>{job.date}</div>
+                        {job.pickupDate && (
+                           <div style={{ fontSize: '12px', color: '#F2C94C', fontWeight: 700 }}>
+                             Retirada: {new Date(job.pickupDate).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                           </div>
+                        )}
+                      </div>
                       <div>
                         <div style={{ fontWeight: 700, fontSize: '16px' }}>{job.customerName}</div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{job.racketModel}</div>
