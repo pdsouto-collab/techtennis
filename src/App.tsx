@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
+import { RacketCollection } from './components/RacketCollection';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
@@ -155,9 +156,9 @@ const Hero = () => {
               onClick={() => navigate('/stringer')}
             />
             <HomeTile 
-              title="Coleta de Raquetes" subtitle="Logística"
+              title="Coleta de Raquetes" subtitle="Controle e Extrato"
               backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/racket-collection')}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Dashboard"
@@ -193,7 +194,7 @@ const Hero = () => {
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
               backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/racket-collection')}
             />
           </>
         )}
@@ -244,6 +245,7 @@ function App() {
             <Route path="/" element={<Hero />} />
             <Route path="/stringer" element={<StringerDashboard />} />
             <Route path="/feedback" element={<CustomerFeedback />} />
+            <Route path="/racket-collection" element={<RacketCollection />} />
           </Routes>
         </main>
       </div>

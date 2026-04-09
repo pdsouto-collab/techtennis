@@ -21,11 +21,13 @@ const INITIAL_JOBS = [
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
-  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
+  const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'professors' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
   const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isProfessorModalOpen, setIsProfessorModalOpen] = useState(false);
+  const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -51,11 +53,17 @@ export const StringerDashboard = () => {
   const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
+  const [commissionedProfessorId, setCommissionedProfessorId] = useState<string>('');
 
   // Persistent States
   const [customers, setCustomers] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
     const saved = localStorage.getItem('tt_customers');
     return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
+  });
+
+  const [professors, setProfessors] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
+    const saved = localStorage.getItem('tt_professors');
+    return saved ? JSON.parse(saved) : [];
   });
 
   const [jobs, setJobs] = useState<any[]>(() => {
@@ -76,6 +84,7 @@ export const StringerDashboard = () => {
   });
 
   useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
+  useEffect(() => { localStorage.setItem('tt_professors', JSON.stringify(professors)); }, [professors]);
   useEffect(() => { localStorage.setItem('tt_jobs_v2', JSON.stringify(jobs)); }, [jobs]);
   useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
   useEffect(() => { localStorage.setItem('tt_settings', JSON.stringify(appSettings)); }, [appSettings]);
@@ -88,6 +97,9 @@ export const StringerDashboard = () => {
       }
       if (e.key === 'tt_customers' && e.newValue) {
         setCustomers(JSON.parse(e.newValue));
+      }
+      if (e.key === 'tt_professors' && e.newValue) {
+        setProfessors(JSON.parse(e.newValue));
       }
       if (e.key === 'tt_rackets' && e.newValue) {
         setRackets(JSON.parse(e.newValue));
@@ -157,6 +169,7 @@ export const StringerDashboard = () => {
       basePrice: Number(price),
       price: finalPrice,
       pickupDate,
+      commissionedProfessorId: commissionedProfessorId || null,
       auxServices
     };
     
@@ -179,6 +192,7 @@ export const StringerDashboard = () => {
   const resetForm = () => {
     setEditingJobId(null);
     setSelectedCustomer(null);
+    setCommissionedProfessorId('');
     setCustomerQuery('');
     setSelectedJobRacket('');
     setMainString('');
@@ -251,6 +265,7 @@ export const StringerDashboard = () => {
     }
     
     setPickupDate(job.pickupDate || '');
+    setCommissionedProfessorId(job.commissionedProfessorId || '');
     setView('new_job'); 
     setNewJobStep(2);
   };
@@ -362,6 +377,13 @@ export const StringerDashboard = () => {
                 <Users size={24} color="#9B51E0" style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Clientes</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Base de dados</p>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setView('professors')}
+                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid #E28743`, background: 'var(--bg-panel)' }}>
+                <Users size={24} color="#E28743" style={{ marginBottom: '12px' }} />
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Professores</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Comissionados</p>
               </motion.div>
             </div>
 
@@ -557,6 +579,24 @@ export const StringerDashboard = () => {
                   <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '29px' }}>
                     <Plus size={18} /> Novo Cliente
                   </button>
+                </div>
+
+                {/* Professor Comissionado Row */}
+                <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                  <div style={{ flex: '1 1 300px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Professor Comissionado</label>
+                    <select 
+                      value={commissionedProfessorId} 
+                      onChange={(e) => setCommissionedProfessorId(e.target.value)}
+                      required
+                      style={{ ...inputStyle, width: '100%' }}
+                    >
+                      <option value="">N/A (Nenhum)</option>
+                      {professors.map(prof => (
+                        <option key={prof.id} value={prof.id}>{prof.name}</option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
 
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
@@ -840,6 +880,7 @@ export const StringerDashboard = () => {
                           basePrice: Number(price),
                           price: finalPrice,
                           pickupDate,
+                          commissionedProfessorId: commissionedProfessorId || null,
                           auxServices
                         };
                         setJobs(prev => [newJob, ...prev]);
@@ -1092,6 +1133,54 @@ export const StringerDashboard = () => {
                   <button style={{ border: 'none', background: 'none', color: '#9CA3AF', cursor: 'not-allowed', fontWeight: 600 }}>Next</button>
                 </div>
               </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Professors View */}
+        {view === 'professors' && (
+          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0 }} className="glass-panel" style={{ padding: '32px', width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer' }}><ArrowLeft size={24} /></button>
+                <h2 style={{ fontSize: '28px' }}>Professores Comissionados</h2>
+              </div>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
+                  Fechar
+                </button>
+                <button className="button-primary" onClick={() => { setSelectedProfessor(null); setIsProfessorModalOpen(true); }} style={{ padding: '8px 24px', fontSize: '14px' }}>
+                  <UserPlus size={18} /> Novo Professor
+                </button>
+              </div>
+            </div>
+
+            <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
+                <thead>
+                  <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Name</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Email</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Phone</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {professors.map((prof: any, index: number) => (
+                    <tr key={prof.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
+                      <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{prof.name}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.email || ''}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone || ''}</td>
+                      <td style={{ padding: '16px' }}>
+                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                          <button onClick={() => setProfessors(professors.filter(p => p.id !== prof.id))} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
+                          <button onClick={() => { setSelectedProfessor(prof); setIsProfessorModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </motion.div>
         )}
@@ -1505,6 +1594,45 @@ export const StringerDashboard = () => {
             </motion.div>
           </div>
         )}
+
+          {isProfessorModalOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              style={{ position: 'fixed', inset: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(10px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
+              <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} style={{ background: 'var(--bg-panel-solid)', width: '100%', maxWidth: '500px', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
+                <form onSubmit={(e) => {
+                  e.preventDefault();
+                  const fd = new FormData(e.currentTarget);
+                  const newProf = {
+                    id: selectedProfessor ? selectedProfessor.id : Date.now().toString(),
+                    name: fd.get('name') as string,
+                    email: fd.get('email') as string,
+                    phone: fd.get('phone') as string
+                  };
+                  if (selectedProfessor) {
+                    setProfessors(professors.map(p => p.id === newProf.id ? newProf : p));
+                  } else {
+                    setProfessors([newProf, ...professors]);
+                  }
+                  setIsProfessorModalOpen(false);
+                  setSelectedProfessor(null);
+                }}>
+                  <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
+                    <h2 style={{ fontSize: '20px', color: 'white' }}>{selectedProfessor ? 'Editar Professor' : 'Novo Professor'}</h2>
+                    <button type="button" onClick={() => setIsProfessorModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X /></button>
+                  </div>
+                  <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
+                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" defaultValue={selectedProfessor?.phone || ''} style={inputStyle} /></div>
+                  </div>
+                  <div style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+                    <button type="submit" className="button-primary" style={{ padding: '12px 32px' }}>{selectedProfessor ? 'Salvar Professor' : 'Criar Professor'}</button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+
           {isPaymentModalOpen && activePaymentJob && (
             <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
               <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-panel" style={{ width: '90%', maxWidth: '800px', background: 'var(--bg-card)', borderRadius: '16px', overflow: 'hidden' }}>
