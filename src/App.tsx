@@ -188,7 +188,7 @@ const Hero = () => {
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
               backgroundImage={ernestoImg} backgroundPosition="left 35%" textPosition="right"
-              onClick={() => navigate('/stringer')}
+              onClick={() => navigate('/feedback')}
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
