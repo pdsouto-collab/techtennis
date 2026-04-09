@@ -588,7 +588,6 @@ export const StringerDashboard = () => {
                     <select 
                       value={commissionedProfessorId} 
                       onChange={(e) => setCommissionedProfessorId(e.target.value)}
-                      required
                       style={{ ...inputStyle, width: '100%' }}
                     >
                       <option value="">N/A (Nenhum)</option>
