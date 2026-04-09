@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { ArrowLeft, DollarSign, Calendar as CalendarIcon, Package } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -7,15 +7,15 @@ export const RacketCollection = () => {
   const navigate = useNavigate();
   
   // Local Storage Data
-  const [jobs, setJobs] = useState<any[]>(() => {
+  const [jobs] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_jobs_v2');
     return saved ? JSON.parse(saved) : [];
   });
-  const [professors, setProfessors] = useState<any[]>(() => {
+  const [professors] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_professors');
     return saved ? JSON.parse(saved) : [];
   });
-  const [appSettings, setAppSettings] = useState<any>(() => {
+  const [appSettings] = useState<any>(() => {
     const saved = localStorage.getItem('tt_settings');
     return saved ? JSON.parse(saved) : {};
   });
