@@ -156,6 +156,7 @@ export const StringerDashboard = () => {
       preStretchCross,
       basePrice: Number(price),
       price: finalPrice,
+      pickupDate,
       auxServices
     };
     
