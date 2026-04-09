@@ -3,26 +3,33 @@ import { motion } from 'framer-motion';
 import { Trash2, Plus, Edit } from 'lucide-react';
 
 export const SettingsView = ({ settings, setSettings }: any) => {
-  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports'>('strings');
+  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports' | 'commissions'>('strings');
   
   const [newItemText, setNewItemText] = useState('');
+  const [newCommissionPercent, setNewCommissionPercent] = useState('');
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editItemText, setEditItemText] = useState('');
+  const [editCommissionPercent, setEditCommissionPercent] = useState('');
 
   const currentList = settings[activeTab] || [];
 
   const handleAdd = () => {
     if (!newItemText.trim()) return;
+    const value = activeTab === 'commissions' 
+      ? { name: newItemText.trim(), percent: Number(newCommissionPercent) || 0 }
+      : newItemText.trim();
+
     setSettings((prev: any) => ({
       ...prev,
-      [activeTab]: [...prev[activeTab], newItemText.trim()]
+      [activeTab]: [...(prev[activeTab] || []), value]
     }));
     setNewItemText('');
+    setNewCommissionPercent('');
   };
 
   const handleDelete = (index: number) => {
     setSettings((prev: any) => {
-      const newList = [...prev[activeTab]];
+      const newList = [...(prev[activeTab] || [])];
       newList.splice(index, 1);
       return { ...prev, [activeTab]: newList };
     });
@@ -30,14 +37,23 @@ export const SettingsView = ({ settings, setSettings }: any) => {
 
   const handleEdit = (index: number) => {
     setEditingIndex(index);
-    setEditItemText(currentList[index]);
+    if (activeTab === 'commissions') {
+      setEditItemText(currentList[index].name);
+      setEditCommissionPercent(currentList[index].percent.toString());
+    } else {
+      setEditItemText(currentList[index]);
+    }
   };
 
   const saveEdit = (index: number) => {
     if (!editItemText.trim()) return;
     setSettings((prev: any) => {
-      const newList = [...prev[activeTab]];
-      newList[index] = editItemText.trim();
+      const newList = [...(prev[activeTab] || [])];
+      if (activeTab === 'commissions') {
+         newList[index] = { name: editItemText.trim(), percent: Number(editCommissionPercent) || 0 };
+      } else {
+         newList[index] = editItemText.trim();
+      }
       return { ...prev, [activeTab]: newList };
     });
     setEditingIndex(null);
@@ -49,6 +65,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     { id: 'machines', label: 'Máquina de Encordoamento' },
     { id: 'stringers', label: 'Encordoador' },
     { id: 'sports', label: 'Esporte' },
+    { id: 'commissions', label: 'Comissão Professor (%)' },
   ];
 
   return (
@@ -94,6 +111,16 @@ export const SettingsView = ({ settings, setSettings }: any) => {
             onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
             style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
           />
+          {activeTab === 'commissions' && (
+            <input 
+              type="number" 
+              value={newCommissionPercent}
+              onChange={(e) => setNewCommissionPercent(e.target.value)}
+              placeholder="Percentual (%)"
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+              style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+            />
+          )}
           <button onClick={handleAdd} style={{ padding: '0 24px', borderRadius: '8px', border: 'none', background: '#6FCF97', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Plus size={18} /> Adicionar
           </button>
@@ -104,26 +131,51 @@ export const SettingsView = ({ settings, setSettings }: any) => {
           {currentList.length === 0 ? (
             <div style={{ padding: '24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Nenhum item cadastrado.</div>
           ) : (
-            currentList.map((item: string, idx: number) => (
+            currentList.map((item: any, idx: number) => (
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                 {editingIndex === idx ? (
-                  <input 
-                    type="text"
-                    value={editItemText}
-                    autoFocus
-                    onChange={(e) => setEditItemText(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
-                    onBlur={() => saveEdit(idx)}
-                    style={{ flex: 1, marginRight: '16px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
-                  />
+                  <div style={{ display: 'flex', gap: '8px', flex: 1, marginRight: '16px' }}>
+                    <input 
+                      type="text"
+                      value={editItemText}
+                      autoFocus
+                      onChange={(e) => setEditItemText(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                      style={{ flex: 1, padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                    />
+                    {activeTab === 'commissions' && (
+                      <input 
+                        type="number"
+                        value={editCommissionPercent}
+                        onChange={(e) => setEditCommissionPercent(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                        style={{ width: '80px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                      />
+                    )}
+                  </div>
                 ) : (
-                  <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>{item}</span>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                     <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>
+                       {activeTab === 'commissions' ? item.name : item}
+                     </span>
+                     {activeTab === 'commissions' && (
+                       <span style={{ color: '#F2C94C', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(242, 201, 76, 0.1)', borderRadius: '100px' }}>
+                         {item.percent}%
+                       </span>
+                     )}
+                  </div>
                 )}
                 
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => handleEdit(idx)} style={{ background: '#4298E7', border: 'none', color: 'white', padding: '8px', borderRadius: '6px', cursor: 'pointer', display: 'flex' }}>
-                    <Edit size={16} />
-                  </button>
+                  {editingIndex === idx ? (
+                    <button onClick={() => saveEdit(idx)} style={{ background: '#6FCF97', border: 'none', color: 'var(--text-dark)', padding: '8px 16px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>
+                      Salvar
+                    </button>
+                  ) : (
+                    <button onClick={() => handleEdit(idx)} style={{ background: '#4298E7', border: 'none', color: 'white', padding: '8px', borderRadius: '6px', cursor: 'pointer', display: 'flex' }}>
+                      <Edit size={16} />
+                    </button>
+                  )}
                   <button onClick={() => handleDelete(idx)} style={{ background: '#EB5757', border: 'none', color: 'white', padding: '8px', borderRadius: '6px', cursor: 'pointer', display: 'flex' }}>
                     <Trash2 size={16} />
                   </button>
