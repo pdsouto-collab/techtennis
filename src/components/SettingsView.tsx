@@ -103,14 +103,30 @@ export const SettingsView = ({ settings, setSettings }: any) => {
 
         {/* Add New */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '32px' }}>
-          <input 
-            type="text" 
-            value={newItemText}
-            onChange={(e) => setNewItemText(e.target.value)}
-            placeholder={`Adicionar novo ${tabs.find(t => t.id === activeTab)?.label.toLowerCase()}...`}
-            onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-            style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
-          />
+          {activeTab === 'commissions' ? (
+            <select
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+            >
+              <option value="" disabled style={{ color: 'rgba(255,255,255,0.6)' }}>Selecione o serviço...</option>
+              <option value="Encordoamento">Encordoamento</option>
+              <option value="Trocar grip base">Trocar grip base</option>
+              <option value="Trocar overgrip">Trocar overgrip</option>
+              <option value="Serviço customizado">Serviço customizado</option>
+              <option value="Compra de raquete nova">Compra de raquete nova</option>
+              <option value="Outros serviços">Outros serviços</option>
+            </select>
+          ) : (
+            <input 
+              type="text" 
+              value={newItemText}
+              onChange={(e) => setNewItemText(e.target.value)}
+              placeholder={`Adicionar novo ${tabs.find(t => t.id === activeTab)?.label.toLowerCase()}...`}
+              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+              style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+            />
+          )}
           {activeTab === 'commissions' && (
             <input 
               type="number" 
@@ -135,14 +151,29 @@ export const SettingsView = ({ settings, setSettings }: any) => {
               <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                 {editingIndex === idx ? (
                   <div style={{ display: 'flex', gap: '8px', flex: 1, marginRight: '16px' }}>
-                    <input 
-                      type="text"
-                      value={editItemText}
-                      autoFocus
-                      onChange={(e) => setEditItemText(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
-                      style={{ flex: 1, padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
-                    />
+                    {activeTab === 'commissions' ? (
+                      <select
+                        value={editItemText}
+                        onChange={(e) => setEditItemText(e.target.value)}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                      >
+                        <option value="Encordoamento">Encordoamento</option>
+                        <option value="Trocar grip base">Trocar grip base</option>
+                        <option value="Trocar overgrip">Trocar overgrip</option>
+                        <option value="Serviço customizado">Serviço customizado</option>
+                        <option value="Compra de raquete nova">Compra de raquete nova</option>
+                        <option value="Outros serviços">Outros serviços</option>
+                      </select>
+                    ) : (
+                      <input 
+                        type="text"
+                        value={editItemText}
+                        autoFocus
+                        onChange={(e) => setEditItemText(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                      />
+                    )}
                     {activeTab === 'commissions' && (
                       <input 
                         type="number"
