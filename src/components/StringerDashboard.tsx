@@ -141,7 +141,10 @@ export const StringerDashboard = () => {
 
   const filteredJobs = activeFilter === 'all' 
     ? jobs 
-    : jobs.filter(job => job.type === activeFilter);
+    : jobs.filter(job => {
+        if (activeFilter === 'to_string' && job.type === 'stringing') return true;
+        return job.type === activeFilter;
+      });
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -361,7 +364,7 @@ export const StringerDashboard = () => {
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('to_string')}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('to_string')}`, background: activeFilter === 'to_string' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
                 <Scissors size={24} color={getStatusColor('to_string')} style={{ marginBottom: '12px' }} />
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Encordoar: {jobs.filter(j => j.type === 'to_string').length}</h3>
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Encordoar: {jobs.filter(j => j.type === 'to_string' || j.type === 'stringing').length}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Fila de trabalho</p>
               </motion.div>
 
@@ -447,7 +450,11 @@ export const StringerDashboard = () => {
                             <button onClick={() => { setActiveOrderJob(job); setView('order_details'); }} style={{ background: '#C25488', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Ordem">
                               <ClipboardList size={16} />
                             </button>
-                            <button onClick={() => { setActiveStringingJob(job); setView('stringing'); }} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
+                            <button onClick={() => { 
+                              setActiveStringingJob(job); 
+                              setView('stringing');
+                              setJobs(prev => prev.map(j => j.id === job.id ? { ...j, type: 'stringing' } : j));
+                            }} style={{ background: '#F2C94C', border: 'none', padding: '8px', borderRadius: '8px', color: 'var(--text-dark)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Encordoar">
                               <Grid size={16} />
                             </button>
                           </div>
