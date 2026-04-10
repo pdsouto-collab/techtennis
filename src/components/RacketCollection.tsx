@@ -59,7 +59,8 @@ export const RacketCollection = () => {
   };
 
   const filteredJobs = jobs.filter(job => {
-    if (!job.commissionedProfessorId || job.commissionedProfessorId !== selectedProfessorId) return false;
+    if (!job.commissionedProfessorId || job.commissionedProfessorId === 'none') return false;
+    if (selectedProfessorId !== 'all' && job.commissionedProfessorId !== selectedProfessorId) return false;
     
     // Date Filtering based on job.date (assuming it's a parseable standard format, e.g. YYYY-MM-DD or DD/MM/YYYY)
     // In StringerDashboard it is `new Date().toLocaleDateString('pt-BR')` which is DD/MM/YYYY
@@ -105,6 +106,7 @@ export const RacketCollection = () => {
               style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '200px' }}
             >
               <option value="">Selecione...</option>
+              <option value="all">Todos os Professores</option>
               {professors.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
           </div>
@@ -186,6 +188,9 @@ export const RacketCollection = () => {
                         <td style={{ padding: '16px 24px' }}>
                           <div style={{ fontWeight: 600, fontSize: '15px' }}>{job.customerName}</div>
                           <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>{job.racketModel}</div>
+                          {selectedProfessorId === 'all' && (
+                            <div style={{ fontSize: '12px', color: '#E28743', marginTop: '4px', fontWeight: 600 }}>Prof: {professors.find(p => p.id === job.commissionedProfessorId)?.name || 'Desconhecido'}</div>
+                          )}
                         </td>
                         <td style={{ padding: '16px 24px', fontSize: '14px', color: 'var(--text-secondary)' }}>
                            {job.pickupDate ? new Date(job.pickupDate).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : 'N/A'}
