@@ -112,6 +112,7 @@ export const CustomerFeedback = () => {
                 {activeTab === 'all' && <th style={{ padding: '20px 12px', fontWeight: 600 }}>Raquete</th>}
                 <th style={{ padding: '20px 12px', fontWeight: 600 }}>Corda / Tensão</th>
                 <th style={{ padding: '20px 12px', fontWeight: 600 }}>Encordoador</th>
+                <th style={{ padding: '20px 12px', fontWeight: 600 }}>Status</th>
                 <th style={{ padding: '20px 12px', fontWeight: 600 }}>Preço</th>
                 <th style={{ padding: '20px 12px', fontWeight: 600, textAlign: 'right' }}>Feedback</th>
               </tr>
@@ -137,6 +138,18 @@ export const CustomerFeedback = () => {
                   
                   <td style={{ padding: '20px 12px', fontSize: '14px', color: '#6B7280', fontWeight: 500 }}>
                     {job.stringer || 'NTC Pro Stringer'}
+                  </td>
+
+                  <td style={{ padding: '20px 12px', fontSize: '13px', fontWeight: 700 }}>
+                    {job.type === 'picking_up' ? (
+                       <span style={{ color: '#10B981', background: 'rgba(16, 185, 129, 0.1)', padding: '6px 10px', borderRadius: '6px' }}>Retirar</span>
+                    ) : job.type === 'to_string' ? (
+                       <span style={{ color: '#F59E0B', background: 'rgba(245, 158, 11, 0.1)', padding: '6px 10px', borderRadius: '6px' }}>Fila</span>
+                    ) : job.type === 'stringing' ? (
+                       <span style={{ color: '#3B82F6', background: 'rgba(59, 130, 246, 0.1)', padding: '6px 10px', borderRadius: '6px' }}>Execução</span>
+                    ) : (
+                       <span style={{ color: '#6B7280', background: '#F3F4F6', padding: '6px 10px', borderRadius: '6px' }}>{job.status?.toUpperCase() || 'OK'}</span>
+                    )}
                   </td>
                   
                   <td style={{ padding: '20px 12px', fontSize: '15px', fontWeight: 800 }}>
