@@ -181,8 +181,11 @@ export const RacketCollection = () => {
                     return (
                       <tr key={job.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <td style={{ padding: '16px 24px', fontSize: '14px' }}>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
                             <CalendarIcon size={14} color="var(--primary-color)" /> {job.date}
+                          </div>
+                          <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                            Ordem: <span style={{ fontWeight: 600 }}>{job.orderCode || job.id.substring(0,8).toUpperCase()}</span>
                           </div>
                         </td>
                         <td style={{ padding: '16px 24px' }}>
