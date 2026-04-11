@@ -260,7 +260,7 @@ export const ClassManagementProfessor = () => {
                   <div style={{ background: '#10B981', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(16,185,129,0.2)' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', opacity: 0.9 }}>Total Financeiro (Aulas Realizadas)</h3>
                     <div style={{ fontSize: '32px', fontWeight: 800 }}>R$ {
-                      classes.filter(c => c.professorId === selectedProfessorId && c.status === 'completed' && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
+                      classes.filter(c => c.professorId === selectedProfessorId && (c.status === 'completed' || c.willHaveReplacement) && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
                              .reduce((acc, cls) => {
                                const student = students.find(s => s.id === cls.studentId);
                                if(!student || !student.hourlyRate) return acc;
@@ -272,9 +272,9 @@ export const ClassManagementProfessor = () => {
                     }</div>
                   </div>
                   <div style={{ background: 'white', border: '1px solid #E5E7EB', padding: '24px', borderRadius: '16px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', color: 'var(--text-secondary)' }}>Horas de Aula (Realizadas)</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', color: 'var(--text-secondary)' }}>Horas de Aula (Realizadas/Retidas)</h3>
                     <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-dark)' }}>{
-                      classes.filter(c => c.professorId === selectedProfessorId && c.status === 'completed' && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
+                      classes.filter(c => c.professorId === selectedProfessorId && (c.status === 'completed' || c.willHaveReplacement) && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
                              .reduce((acc, cls) => {
                                const start = new Date(`1970-01-01T${cls.timeStart}:00`);
                                const end = new Date(`1970-01-01T${cls.timeEnd}:00`);
@@ -318,15 +318,15 @@ export const ClassManagementProfessor = () => {
                             const start = new Date(`1970-01-01T${cls.timeStart}:00`);
                             const end = new Date(`1970-01-01T${cls.timeEnd}:00`);
                             const hours = (end.getTime() - start.getTime()) / 3600000;
-                            const value = (student && student.hourlyRate && cls.status === 'completed') ? hours * student.hourlyRate : 0;
+                            const value = (student && student.hourlyRate && (cls.status === 'completed' || cls.willHaveReplacement)) ? hours * student.hourlyRate : 0;
                             
                             return (
-                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.6 : 1, color: '#1a1a2e' }}>
+                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: (cls.status !== 'completed' && !cls.willHaveReplacement) ? 0.6 : 1, color: '#1a1a2e' }}>
                                 <td style={{ padding: '12px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{student?.name || '-'}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'replacement' ? 'Reposição' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{hours.toFixed(1)}h</td>
-                                <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : '#6B7280' }}>
+                                <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: (cls.status === 'completed' || cls.willHaveReplacement) ? '#10B981' : '#6B7280' }}>
                                   R$ {value.toFixed(2)}
                                 </td>
                               </tr>

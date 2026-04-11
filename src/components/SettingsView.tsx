@@ -313,6 +313,11 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                          {item.percent}%
                        </span>
                      )}
+                     {activeTab === 'strings' && typeof item === 'string' && (
+                       <span style={{ color: '#EB5757', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(235, 87, 87, 0.1)', borderRadius: '100px' }} title="Clique no lápis para definir o preço">
+                         BRL 0.00 (Falta Preço)
+                       </span>
+                     )}
                      {activeTab === 'strings' && typeof item !== 'string' && (
                        <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(66, 152, 231, 0.1)', borderRadius: '100px' }}>
                          BRL {item.price.toFixed(2)}
