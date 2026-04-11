@@ -295,10 +295,10 @@ export const ClassManagementProfessor = () => {
                             
                             return (
                               <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.6 : 1, color: '#1a1a2e' }}>
-                                <td style={{ padding: '12px 24px', fontWeight: 600 }}>{cls.date.split('-').reverse().join('/')}</td>
-                                <td style={{ padding: '12px 24px' }}>{student?.name || '-'}</td>
-                                <td style={{ padding: '12px 24px' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
-                                <td style={{ padding: '12px 24px' }}>{hours.toFixed(1)}h</td>
+                                <td style={{ padding: '12px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
+                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{student?.name || '-'}</td>
+                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
+                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{hours.toFixed(1)}h</td>
                                 <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : 'var(--text-secondary)' }}>
                                   R$ {value.toFixed(2)}
                                 </td>

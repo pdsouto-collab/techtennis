@@ -186,7 +186,7 @@ export const ClassManagementCustomer = () => {
 
                             return (
                               <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1a1a2e' }}>
-                                <td style={{ padding: '16px 24px', fontWeight: 600 }}>{cls.date.split('-').reverse().join('/')}</td>
+                                <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '16px 24px', color: '#4B5563' }}>{cls.timeStart} às {cls.timeEnd}</td>
                                 <td style={{ padding: '16px 24px' }}>
                                   <span style={{ background: statusConfig.bg, color: statusConfig.color, padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 600 }}>
