@@ -7,6 +7,8 @@ import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
 import { ClassManagementProfessor } from './components/ClassManagementProfessor';
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
+import { CustomerSingleClass } from './components/CustomerSingleClass';
+import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import brandLogo from './assets/techtennis-logo.png';
@@ -237,7 +239,7 @@ const Hero = () => {
             <HomeTile 
               title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/professor-single-class')}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Agenda Completa"
@@ -268,7 +270,7 @@ const Hero = () => {
             <HomeTile 
               title="Buscar Aula Avulsa" subtitle="Treine Hoje"
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/customer-single-class')}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Meus Agendamentos"
@@ -306,6 +308,8 @@ function App() {
             <Route path="/racket-collection" element={<RacketCollection />} />
             <Route path="/classes-professor" element={<ClassManagementProfessor />} />
             <Route path="/classes-customer" element={<ClassManagementCustomer />} />
+            <Route path="/customer-single-class" element={<CustomerSingleClass />} />
+            <Route path="/professor-single-class" element={<ProfessorSingleClass />} />
           </Routes>
         </main>
       </div>
