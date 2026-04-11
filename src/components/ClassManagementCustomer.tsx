@@ -209,8 +209,8 @@ export const ClassManagementCustomer = () => {
                                     {statusConfig.label}
                                   </span>
                                 </td>
-                                <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : 'var(--text-secondary)' }}>
-                                  {cls.status === 'completed' ? `R$ ${value.toFixed(2)}` : '-'}
+                                <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : '#6B7280' }}>
+                                  R$ {value.toFixed(2)}
                                 </td>
                               </tr>
                             )

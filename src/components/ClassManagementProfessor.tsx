@@ -326,7 +326,7 @@ export const ClassManagementProfessor = () => {
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{student?.name || '-'}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'replacement' ? 'Reposição' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{hours.toFixed(1)}h</td>
-                                <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : 'var(--text-secondary)' }}>
+                                <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : '#6B7280' }}>
                                   R$ {value.toFixed(2)}
                                 </td>
                               </tr>
