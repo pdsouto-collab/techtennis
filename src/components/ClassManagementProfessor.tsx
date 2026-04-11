@@ -115,14 +115,14 @@ export const ClassManagementProfessor = () => {
                             }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444' }}><Trash2 size={16} /></button>
                           </div>
                         </div>
-                        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                          {student.phone && <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span>{student.phone}</span></div>}
-                          {student.isResidential && <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Condomínio / Residencial'}</span></div>}
-                          {student.level && <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>⭐ <span>{student.level}</span></div>}
+                        <div style={{ fontSize: '14px', color: '#4B5563' }}>
+                          {student.phone ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span style={{ fontWeight: 500 }}>{student.phone}</span></div> : null}
+                          {student.isResidential ? <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Condomínio / Residencial'}</span></div> : null}
+                          {student.level ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>⭐ <span style={{ fontWeight: 500 }}>{student.level}</span></div> : null}
                         </div>
                         <div style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Valor Hora/Aula:</span>
-                          <span style={{ fontWeight: 800, color: 'var(--primary-color)' }}>{student.hourlyRate ? `R$ ${student.hourlyRate.toFixed(2)}` : 'Não definido'}</span>
+                          <span style={{ fontSize: '13px', color: '#6B7280' }}>Valor Hora/Aula:</span>
+                          <span style={{ fontWeight: 800, color: '#10B981', fontSize: '16px' }}>{student.hourlyRate ? `R$ ${student.hourlyRate.toFixed(2)}` : 'Não definido'}</span>
                         </div>
                       </div>
                     ))
@@ -329,7 +329,7 @@ export const ClassManagementProfessor = () => {
                 <h2 style={{ fontSize: '24px', color: 'white', margin: 0, fontFamily: 'var(--font-heading)' }}>{activeStudent ? 'Editar Aluno' : 'Novo Aluno'}</h2>
                 <button onClick={() => setIsStudentModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={24} /></button>
               </div>
-              <form onSubmit={(e) => {
+              <form key={activeStudent ? activeStudent.id : 'new_form'} onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
                 const studentData = {
