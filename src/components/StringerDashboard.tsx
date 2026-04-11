@@ -50,7 +50,7 @@ export const StringerDashboard = () => {
     return code;
   };
   const [activePickupJob, setActivePickupJob] = useState<any>(null);
-  const [racketFormDefault, setRacketFormDefault] = useState<{name?: string, isClone?: boolean} | null>(null);
+  const [racketFormDefault, setRacketFormDefault] = useState<any | null>(null);
   const [selectedJobRacket, setSelectedJobRacket] = useState('');
   const [newJobStep, setNewJobStep] = useState<1 | 2>(1);
   const [commissionedProfessorId, setCommissionedProfessorId] = useState<string>('');
@@ -666,14 +666,25 @@ export const StringerDashboard = () => {
                         })()}
                       </select>
                       {selectedJobRacket && (
-                        <button type="button" onClick={() => {
-                          if (window.confirm('Tem certeza que deseja apagar esta raquete do cadastro do cliente?')) {
-                            setRackets(prev => prev.filter(r => r.id !== selectedJobRacket));
-                            setSelectedJobRacket('');
-                          }
-                        }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#EB5757', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Excluir Raquete">
-                          <Trash2 size={20} />
-                        </button>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <button type="button" onClick={() => {
+                            const racketToEdit = rackets.find(r => r.id === selectedJobRacket);
+                            if (racketToEdit) {
+                               setRacketFormDefault(racketToEdit);
+                               setIsRacketModalOpen(true);
+                            }
+                          }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#3A52EE', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Editar Raquete">
+                            <Edit size={20} />
+                          </button>
+                          <button type="button" onClick={() => {
+                            if (window.confirm('Tem certeza que deseja apagar esta raquete do cadastro do cliente?')) {
+                              setRackets(prev => prev.filter(r => r.id !== selectedJobRacket));
+                              setSelectedJobRacket('');
+                            }
+                          }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#EB5757', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Excluir Raquete">
+                            <Trash2 size={20} />
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -1417,13 +1428,21 @@ export const StringerDashboard = () => {
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
                   e.preventDefault(); 
                   const fd = new FormData(e.currentTarget);
-                  const newRacket = {
-                    id: 'r' + Date.now(),
-                    name: fd.get('racketName') as string,
-                    identifier: fd.get('identifier') as string,
-                    customerId: selectedCustomer?.id || ''
-                  };
-                  setRackets(prev => [...prev, newRacket]);
+                  if (racketFormDefault && racketFormDefault.id && !racketFormDefault.isClone) {
+                     setRackets(prev => prev.map(r => r.id === racketFormDefault.id ? {
+                        ...r,
+                        name: fd.get('racketName') as string,
+                        identifier: fd.get('identifier') as string,
+                     } : r));
+                  } else {
+                     const newRacket = {
+                       id: 'r' + Date.now(),
+                       name: fd.get('racketName') as string,
+                       identifier: fd.get('identifier') as string,
+                       customerId: selectedCustomer?.id || ''
+                     };
+                     setRackets(prev => [...prev, newRacket]);
+                  }
                   setIsRacketModalOpen(false); 
                 }}>
                   
@@ -1434,7 +1453,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
-                      <input type="text" name="identifier" style={inputStyle} />
+                      <input type="text" name="identifier" style={inputStyle} defaultValue={racketFormDefault?.identifier || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Padrão de cordas</label>
