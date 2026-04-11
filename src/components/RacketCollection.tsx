@@ -200,7 +200,7 @@ export const RacketCollection = () => {
                         </td>
                         <td style={{ padding: '16px 24px' }}>
                            <span style={{ fontSize: '12px', padding: '4px 8px', borderRadius: '100px', fontWeight: 600, background: job.paid ? 'rgba(111,207,151,0.1)' : 'rgba(235,87,87,0.1)', color: job.paid ? '#6FCF97' : '#EB5757' }}>
-                             {job.paid ? 'PAGA' : 'AGUARDA PGTO'}
+                             {job.paid ? 'PAGO' : 'AGUARDA PGTO'}
                            </span>
                         </td>
                         <td style={{ padding: '16px 24px', textAlign: 'right', fontWeight: 700, color: job.paid ? '#6FCF97' : 'var(--text-secondary)' }}>
