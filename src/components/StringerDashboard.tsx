@@ -129,15 +129,68 @@ export const StringerDashboard = () => {
   const [isStringing, setIsStringing] = useState(true);
   const [preStretchMain, setPreStretchMain] = useState('');
   const [preStretchCross, setPreStretchCross] = useState('');
+  const [stringingType, setStringingType] = useState('Não definido');
+  const [tensionUnit, setTensionUnit] = useState('Lbs');
   const [price, setPrice] = useState<number | ''>('');
-  const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, notes: string}[]>([
-    { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
-    { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
-    { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
-    { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
-    { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+  const [priceDiscountPercent, setPriceDiscountPercent] = useState<number | ''>('');
+  const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, discountPercent: number | '', notes: string}[]>([
+    { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
+    { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
+    { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
+    { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
+    { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
   ]);
   const [pickupDate, setPickupDate] = useState('');
+
+  // Apply Club Discount rules
+  useEffect(() => {
+     if (selectedCustomer?.originClub && appSettings.clubDiscounts) {
+        const getDiscount = (service: string) => {
+           const todayStr = new Date().toISOString().split('T')[0];
+           const originClub = selectedCustomer.originClub.trim();
+           for (const d of appSettings.clubDiscounts) {
+              if (d.club === originClub && (d.service === service || d.service === 'Todos')) {
+                 if (!d.startDate && !d.endDate) return d.percent;
+                 if (d.startDate && todayStr < d.startDate) continue;
+                 if (d.endDate && todayStr > d.endDate) continue;
+                 return d.percent;
+              }
+           }
+           return '';
+        };
+        setPriceDiscountPercent(getDiscount('Encordoamento') || '');
+        setAuxServices(prev => prev.map(s => ({ ...s, discountPercent: getDiscount(s.type) || '' })));
+     } else {
+        setPriceDiscountPercent('');
+        setAuxServices(prev => prev.map(s => ({ ...s, discountPercent: '' })));
+     }
+  }, [selectedCustomer, appSettings?.clubDiscounts]);
+
+  // Dynamic string pricing
+  useEffect(() => {
+    if (!isStringing) return;
+    let computedPrice = 0;
+    
+    const getStringPrice = (sName: string) => {
+      const sObj = appSettings.strings?.find((s: any) => (typeof s === 'string' ? s : s.name) === sName);
+      if (sObj && typeof sObj !== 'string') {
+        return sObj.price || 0;
+      }
+      return 0;
+    };
+
+    if (mainString) {
+      const mPrice = getStringPrice(mainString);
+      if (isHybrid && crossString && mainString !== crossString) {
+         const cPrice = getStringPrice(crossString);
+         computedPrice = (mPrice / 2) + (cPrice / 2);
+      } else {
+         computedPrice = mPrice;
+      }
+    }
+    
+    setPrice(computedPrice);
+  }, [mainString, crossString, isHybrid, appSettings.strings, isStringing]);
 
   const filteredJobs = activeFilter === 'all' 
     ? jobs 
@@ -146,12 +199,24 @@ export const StringerDashboard = () => {
         return job.type === activeFilter;
       });
 
+  // Calculate computed discounts and final price
+  const basePriceValue = Number(price) || 0;
+  const baseDiscountVal = Number(priceDiscountPercent) || 0;
+  const finalBasePrice = basePriceValue * (1 - baseDiscountVal / 100);
+
+  const finalAuxPrice = auxServices.filter(s => s.isActive).reduce((acc, s) => {
+    const sDiscount = Number(s.discountPercent) || 0;
+    return acc + (s.price * (1 - sDiscount / 100));
+  }, 0);
+
+  const displayFinalPrice = (finalBasePrice + finalAuxPrice).toFixed(2);
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
     const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
     if (!currentOrderCode) setCurrentOrderCode(newCode);
 
-    const finalPrice = Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
+    const finalPrice = finalBasePrice + finalAuxPrice;
 
     const newJob = {
       id: editingJobId ? editingJobId : Date.now().toString(),
@@ -167,9 +232,12 @@ export const StringerDashboard = () => {
       isHybrid,
       racketId: selectedJobRacket,
       isStringing,
+      stringingType,
+      tensionUnit,
       preStretchMain,
       preStretchCross,
       basePrice: Number(price),
+      priceDiscountPercent: priceDiscountPercent === '' ? 0 : Number(priceDiscountPercent),
       price: finalPrice,
       pickupDate,
       commissionedProfessorId: commissionedProfessorId || null,
@@ -207,12 +275,13 @@ export const StringerDashboard = () => {
     setPreStretchMain('');
     setPreStretchCross('');
     setPrice('');
+    setPriceDiscountPercent('');
     setAuxServices([
-      { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
-      { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
-      { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
-      { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
-      { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+      { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
+      { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
+      { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
+      { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
+      { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
     ]);
     setPickupDate('');
   };
@@ -254,16 +323,18 @@ export const StringerDashboard = () => {
     } else {
         setPrice('');
     }
+    
+    setPriceDiscountPercent(job.priceDiscountPercent !== undefined ? job.priceDiscountPercent : '');
 
     if (job.auxServices) {
         setAuxServices(job.auxServices);
     } else {
         setAuxServices([
-          { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
-          { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
-          { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
-          { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
-          { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
+          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
+          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
+          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
+          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
         ]);
     }
     
@@ -642,20 +713,53 @@ export const StringerDashboard = () => {
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <select required style={{ ...inputStyle, flex: 1 }} value={selectedJobRacket} onChange={(e) => {
-                            setSelectedJobRacket(e.target.value);
-                            setMainString('');
-                            setCrossString('');
-                            setTensionMain('');
-                            setTensionCross('');
-                            setIsHybrid(false);
-                            setIsStringing(true);
-                            setPreStretchMain('');
-                            setPreStretchCross('');
+                            const val = e.target.value;
+                            setSelectedJobRacket(val);
+                            if (val) {
+                               const pastJob = [...jobs].reverse().find(j => j.racketId === val && j.customerId === selectedCustomer?.id && (j.type === 'stringing' || j.type === 'done'));
+                               if (pastJob) {
+                                 setStringingType(pastJob.stringingType || 'Não definido');
+                                 setTensionUnit(pastJob.tensionUnit || 'Lbs');
+                                 setMainString(pastJob.mainString || '');
+                                 setCrossString(pastJob.crossString || '');
+                                 setTensionMain(pastJob.tensionMain || '');
+                                 setTensionCross(pastJob.tensionCross || '');
+                                 setIsHybrid(pastJob.isHybrid || false);
+                                 setPreStretchMain(pastJob.preStretchMain || '');
+                                 setPreStretchCross(pastJob.preStretchCross || '');
+                                 setIsStringing(true);
+                               } else {
+                                  setStringingType('Não definido');
+                                  setTensionUnit('Lbs');
+                                  setMainString('');
+                                  setCrossString('');
+                                  setTensionMain('');
+                                  setTensionCross('');
+                                  setIsHybrid(false);
+                                  setIsStringing(true);
+                                  setPreStretchMain('');
+                                  setPreStretchCross('');
+                               }
+                            } else {
+                               setStringingType('Não definido');
+                               setTensionUnit('Lbs');
+                               setMainString('');
+                               setCrossString('');
+                               setTensionMain('');
+                               setTensionCross('');
+                               setIsHybrid(false);
+                               setIsStringing(true);
+                               setPreStretchMain('');
+                               setPreStretchCross('');
+                            }
                           }}>
                         <option value="">Selecione a raquete do cliente...</option>
                         {(() => {
                            const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
                            const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
+                           
+                           customerRackets.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+
                            return customerRackets.map(r => {
                                const suffix = r.identifier ? ` [${r.identifier}]` : '';
                                const displayName = `${r.name.trim()}${suffix}`;
@@ -737,22 +841,26 @@ export const StringerDashboard = () => {
                             <option value="Sim">Sim</option>
                          </select>
                          {svc.isActive && (
-                            <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                               <div style={{ width: '130px', position: 'relative' }}>
-                                 <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
-                                 <input type="number" placeholder="Valor" value={svc.price || ''} onChange={e => {
-                                      const newSvc = [...auxServices];
-                                      newSvc[idx].price = Number(e.target.value);
-                                      setAuxServices(newSvc);
-                                 }} style={{...inputStyle, paddingLeft: '56px'}} />
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
+                               <div style={{ display: 'flex', gap: '8px' }}>
+                                 <div style={{ width: '130px', position: 'relative' }}>
+                                   <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
+                                   <input type="number" placeholder="Valor" value={svc.price || ''} onChange={e => {
+                                        const newSvc = [...auxServices];
+                                        newSvc[idx].price = Number(e.target.value);
+                                        setAuxServices(newSvc);
+                                   }} style={{...inputStyle, paddingLeft: '56px'}} />
+                                 </div>
+                                 <div style={{ ...inputStyle, width: '100px', background: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.5)', cursor: 'not-allowed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} title="Desconto Automático (Fixo)">
+                                   <span>{svc.discountPercent || ''}</span>
+                                   <span style={{ fontWeight: 600 }}>%</span>
+                                 </div>
                                </div>
-                               <div style={{ flex: 1 }}>
-                                 <input type="text" placeholder="Observações" value={svc.notes} onChange={e => {
-                                      const newSvc = [...auxServices];
-                                      newSvc[idx].notes = e.target.value;
-                                      setAuxServices(newSvc);
-                                 }} style={inputStyle} />
-                               </div>
+                               <input type="text" placeholder="Observações" value={svc.notes} onChange={e => {
+                                    const newSvc = [...auxServices];
+                                    newSvc[idx].notes = e.target.value;
+                                    setAuxServices(newSvc);
+                               }} style={inputStyle} />
                             </div>
                          )}
                       </div>
@@ -764,7 +872,7 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tipo de Encordoamento</label>
-                        <select disabled={!isStringing} style={inputStyle}>
+                        <select disabled={!isStringing} value={stringingType} onChange={e => setStringingType(e.target.value)} style={inputStyle}>
                           <option>Não definido</option>
                           <option>2 nós</option>
                           <option>4 nós</option>
@@ -773,17 +881,25 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Unidade de Tensão</label>
-                        <select disabled={!isStringing} style={inputStyle}>
+                        <select disabled={!isStringing} value={tensionUnit} onChange={e => setTensionUnit(e.target.value)} style={inputStyle}>
                           <option>Lbs</option>
                           <option>Kg</option>
                         </select>
                       </div>
                       <div>
-                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço (BRL)</label>
-                        <input type="number" placeholder="0.00" value={price} onChange={e => setPrice(e.target.value === '' ? '' : Number(e.target.value))} style={inputStyle} />
-                        {auxServices.some(s => s.isActive) && (
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço Base (BRL) - Final c/ desconto abatido</label>
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          <div style={{ ...inputStyle, flex: 2, background: 'rgba(0,0,0,0.2)', color: 'white', cursor: 'not-allowed', display: 'flex', alignItems: 'center' }} title="Preço Automático (Baseado na tabela de cordas)">
+                           <span>{price || '0.00'}</span>
+                          </div>
+                          <div style={{ flex: 1, ...inputStyle, background: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.5)', cursor: 'not-allowed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} title="Desconto Automático (Fixo)">
+                            <span>{priceDiscountPercent || ''}</span>
+                            <span style={{ fontWeight: 600 }}>%</span>
+                          </div>
+                        </div>
+                        {((Number(price) > 0) || auxServices.some(s => s.isActive)) && (
                           <div style={{ marginTop: '12px', fontSize: '14px', color: '#6FCF97', fontWeight: 700 }}>
-                            Total com extras: BRL {(Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0)).toFixed(2)}
+                            Total com descontos e extras aplicados: BRL {displayFinalPrice}
                           </div>
                         )}
                       </div>
@@ -794,7 +910,10 @@ export const StringerDashboard = () => {
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Main</label>
                         <select disabled={!isStringing} required={isStringing} value={mainString} onChange={(e) => setMainString(e.target.value)} style={inputStyle}>
                           <option value="">Selecione...</option>
-                          {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                          {appSettings.strings.map((s: any) => {
+                             const name = typeof s === 'string' ? s : s.name;
+                             return <option key={name} value={name}>{name}</option>
+                          })}
                         </select>
                       </div>
                       <div>
@@ -814,7 +933,10 @@ export const StringerDashboard = () => {
                             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Corda Cross</label>
                             <select disabled={!isStringing} required={isStringing} value={crossString} onChange={(e) => setCrossString(e.target.value)} style={inputStyle}>
                               <option value="">Selecione...</option>
-                              {appSettings.strings.map((s: string) => <option key={s} value={s}>{s}</option>)}
+                              {appSettings.strings.map((s: any) => {
+                                 const name = typeof s === 'string' ? s : s.name;
+                                 return <option key={name} value={name}>{name}</option>
+                              })}
                             </select>
                           </div>
                           <div>
@@ -902,12 +1024,13 @@ export const StringerDashboard = () => {
                         setPreStretchMain('');
                         setPreStretchCross('');
                         setPrice('');
+                        setPriceDiscountPercent('');
                         setAuxServices([
-                          { type: 'Trocar grip base', isActive: false, price: 0, notes: '' },
-                          { type: 'Trocar overgrip', isActive: false, price: 0, notes: '' },
-                          { type: 'Serviço customizado', isActive: false, price: 0, notes: '' },
-                          { type: 'Compra de raquete nova', isActive: false, price: 0, notes: '' },
-                          { type: 'Outros serviços', isActive: false, price: 0, notes: '' }
+                          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
+                          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
+                          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
+                          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
+                          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
                         ]);
                         
                         // Pequeno pulso visual para feedback de que a primeira foi salva
