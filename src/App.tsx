@@ -9,7 +9,6 @@ import { ClassManagementProfessor } from './components/ClassManagementProfessor'
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
-import aulasAvulsasImg from './assets/aulas-avulsas.png';
 import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => (
@@ -171,7 +170,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Aulas Avulsas" subtitle="Marketplace" fullWidth
-              backgroundImage={aulasAvulsasImg}
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => {}}
             />
           </>
@@ -182,7 +181,7 @@ const Hero = () => {
           <>
             <HomeTile 
               title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
-              backgroundImage={aulasAvulsasImg}
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
@@ -213,7 +212,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Buscar Aula Avulsa" subtitle="Treine Hoje"
-              backgroundImage={aulasAvulsasImg}
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => {}}
             />
             <HomeTile 
