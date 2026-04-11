@@ -31,6 +31,8 @@ export const ClassManagementProfessor = () => {
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [activeStudent, setActiveStudent] = useState<any>(null);
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [isBulkClass, setIsBulkClass] = useState(false);
+  const [selectedDays, setSelectedDays] = useState<number[]>([]);
   const [formIsResidential, setFormIsResidential] = useState(false);
   
   // Analytics State
@@ -134,7 +136,11 @@ export const ClassManagementProfessor = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', margin: 0 }}>Agenda de Aulas</h2>
                   <button 
-                    onClick={() => setIsClassModalOpen(true)}
+                    onClick={() => {
+                      setIsBulkClass(false);
+                      setSelectedDays([]);
+                      setIsClassModalOpen(true);
+                    }}
                     className="button-primary" style={{ padding: '10px 20px', fontSize: '15px', color: 'var(--text-dark)' }}
                     disabled={students.filter(s => s.professorId === selectedProfessorId).length === 0}
                   >
@@ -407,17 +413,72 @@ export const ClassManagementProfessor = () => {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.currentTarget);
-                const classData = {
-                  id: Date.now().toString(),
-                  professorId: selectedProfessorId,
-                  studentId: formData.get('studentId'),
-                  date: formData.get('date'),
-                  timeStart: formData.get('timeStart'),
-                  timeEnd: formData.get('timeEnd'),
-                  location: formData.get('location'),
-                  status: 'planned'
-                };
-                setClasses(prev => [...prev, classData]);
+                const timeStart = formData.get('timeStart');
+                const timeEnd = formData.get('timeEnd');
+                const location = formData.get('location');
+                const studentId = formData.get('studentId');
+
+                if (isBulkClass) {
+                  if (selectedDays.length === 0) {
+                    alert('Selecione pelo menos um dia da semana para o agendamento em lote.');
+                    return;
+                  }
+                  
+                  const startStr = formData.get('startDate') as string;
+                  const endStr = formData.get('endDate') as string;
+                  const [sy, sm, sd] = startStr.split('-').map(Number);
+                  const [ey, em, ed] = endStr.split('-').map(Number);
+                  const start = new Date(sy, sm - 1, sd);
+                  const end = new Date(ey, em - 1, ed);
+                  
+                  if (start > end) {
+                    alert('A Data Início não pode ser maior que a Data Fim.');
+                    return;
+                  }
+
+                  const newClasses: any[] = [];
+                  let curr = new Date(start);
+                  let safety = 0;
+                  while (curr <= end && safety < 366) {
+                    if (selectedDays.includes(curr.getDay())) {
+                      const y = curr.getFullYear();
+                      const m = String(curr.getMonth() + 1).padStart(2, '0');
+                      const d = String(curr.getDate()).padStart(2, '0');
+                      newClasses.push({
+                        id: Date.now().toString() + Math.random().toString(),
+                        professorId: selectedProfessorId,
+                        studentId: studentId,
+                        date: `${y}-${m}-${d}`,
+                        timeStart,
+                        timeEnd,
+                        location,
+                        status: 'planned'
+                      });
+                    }
+                    curr.setDate(curr.getDate() + 1);
+                    safety++;
+                  }
+                  
+                  if (newClasses.length === 0) {
+                    alert("Nenhuma aula foi agendada. Verifique se os dias da semana selecionados ocorrem dentro do período escolhido.");
+                    return;
+                  }
+                  
+                  setClasses(prev => [...prev, ...newClasses]);
+                } else {
+                  const classData = {
+                    id: Date.now().toString(),
+                    professorId: selectedProfessorId,
+                    studentId: studentId,
+                    date: formData.get('date'),
+                    timeStart,
+                    timeEnd,
+                    location,
+                    status: 'planned'
+                  };
+                  setClasses(prev => [...prev, classData]);
+                }
+                
                 setIsClassModalOpen(false);
               }}>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -430,10 +491,53 @@ export const ClassManagementProfessor = () => {
                       ))}
                     </select>
                   </div>
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data *</label>
-                    <input name="date" required type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white', colorScheme: 'dark' }} />
+                  
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+                    <input type="checkbox" id="bulkCheck" checked={isBulkClass} onChange={e => setIsBulkClass(e.target.checked)} style={{ accentColor: 'var(--primary-color)' }} />
+                    <label htmlFor="bulkCheck" style={{ color: 'white', cursor: 'pointer', fontSize: '14px' }}>Agendamento em Lote (Recorrente)</label>
                   </div>
+
+                  {!isBulkClass ? (
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data *</label>
+                      <input name="date" required type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white', colorScheme: 'dark' }} />
+                    </div>
+                  ) : (
+                    <>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                        <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data Início *</label>
+                          <input name="startDate" required type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white', colorScheme: 'dark' }} />
+                        </div>
+                        <div>
+                          <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Data Fim *</label>
+                          <input name="endDate" required type="date" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white', colorScheme: 'dark' }} />
+                        </div>
+                      </div>
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Dias da Semana *</label>
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          {[
+                            { label: 'Dom', val: 0 },
+                            { label: 'Seg', val: 1 },
+                            { label: 'Ter', val: 2 },
+                            { label: 'Qua', val: 3 },
+                            { label: 'Qui', val: 4 },
+                            { label: 'Sex', val: 5 },
+                            { label: 'Sáb', val: 6 },
+                          ].map(day => (
+                            <div 
+                              key={day.val} 
+                              onClick={() => setSelectedDays(prev => prev.includes(day.val) ? prev.filter(d => d !== day.val) : [...prev, day.val])}
+                              style={{ padding: '6px 12px', borderRadius: '100px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, background: selectedDays.includes(day.val) ? '#60A5FA' : 'rgba(255,255,255,0.1)', color: selectedDays.includes(day.val) ? '#1a1a2e' : 'white' }}
+                            >
+                              {day.label}
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </>
+                  )}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Início *</label>
