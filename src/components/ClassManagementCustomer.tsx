@@ -185,7 +185,7 @@ export const ClassManagementCustomer = () => {
                             if (cls.status.includes('cancelled')) statusConfig = { color: '#EF4444', bg: 'rgba(239,68,68,0.1)', label: 'Cancelada' };
 
                             return (
-                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1 }}>
+                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1a1a2e' }}>
                                 <td style={{ padding: '16px 24px', fontWeight: 600 }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '16px 24px', color: '#4B5563' }}>{cls.timeStart} às {cls.timeEnd}</td>
                                 <td style={{ padding: '16px 24px' }}>
