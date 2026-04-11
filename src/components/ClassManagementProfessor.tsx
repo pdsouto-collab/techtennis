@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ArrowLeft, Users, Calendar, BarChart2, Plus, Edit, Trash2, Check, X, MapPin } from 'lucide-react';
+import { ArrowLeft, Users, Calendar, BarChart2, Plus, Edit, Trash2, X, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -12,10 +12,6 @@ export const ClassManagementProfessor = () => {
     return saved ? JSON.parse(saved) : [];
   });
   
-  const [customers] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_customers');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   const [students, setStudents] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_class_students');
