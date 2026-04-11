@@ -31,6 +31,7 @@ export const ClassManagementProfessor = () => {
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
   const [activeStudent, setActiveStudent] = useState<any>(null);
   const [isClassModalOpen, setIsClassModalOpen] = useState(false);
+  const [formIsResidential, setFormIsResidential] = useState(false);
   
   // Analytics State
   const [activeReportFilter, setActiveReportFilter] = useState({ month: new Date().toISOString().substring(0,7), student: '' });
@@ -86,7 +87,7 @@ export const ClassManagementProfessor = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', margin: 0 }}>Meus Alunos / Clientes</h2>
                   <button 
-                    onClick={() => { setActiveStudent(null); setIsStudentModalOpen(true); }}
+                    onClick={() => { setActiveStudent(null); setFormIsResidential(false); setIsStudentModalOpen(true); }}
                     className="button-primary" style={{ padding: '10px 20px', fontSize: '15px', color: 'var(--text-dark)' }}
                   >
                     <Plus size={18} /> Novo Aluno
@@ -104,7 +105,7 @@ export const ClassManagementProfessor = () => {
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
                           <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1a1a2e' }}>{student.name}</h3>
                           <div style={{ display: 'flex', gap: '8px' }}>
-                            <button onClick={() => { setActiveStudent(student); setIsStudentModalOpen(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#60A5FA' }}><Edit size={16} /></button>
+                            <button onClick={() => { setActiveStudent(student); setFormIsResidential(student.isResidential || false); setIsStudentModalOpen(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#60A5FA' }}><Edit size={16} /></button>
                             <button onClick={() => {
                               if(window.confirm('Excluir este aluno? O histórico de aulas será mantido.')){
                                 setStudents(prev => prev.filter(s => s.id !== student.id));
@@ -113,9 +114,9 @@ export const ClassManagementProfessor = () => {
                           </div>
                         </div>
                         <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                          <div>📞 {student.phone || 'Não informado'}</div>
-                          {student.isResidential && <div style={{ color: '#10B981', fontWeight: 600, marginTop: '4px' }}>🏡 Condomínio / Residencial</div>}
-                          <div>⭐ Nível: {student.level || 'Não especificado'}</div>
+                          {student.phone && <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span>{student.phone}</span></div>}
+                          {student.isResidential && <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Condomínio / Residencial'}</span></div>}
+                          {student.level && <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>⭐ <span>{student.level}</span></div>}
                         </div>
                         <div style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>Valor Hora/Aula:</span>
@@ -332,7 +333,8 @@ export const ClassManagementProfessor = () => {
                   phone: formData.get('phone'),
                   address: formData.get('address'),
                   level: formData.get('level'),
-                  isResidential: formData.get('isResidential') === 'on',
+                  isResidential: formIsResidential,
+                  condoName: formIsResidential ? formData.get('condoName') : null,
                   hourlyRate: formData.get('hourlyRate') ? Number(formData.get('hourlyRate')) : null,
                   createdAt: activeStudent ? activeStudent.createdAt : new Date().toISOString()
                 };
@@ -357,9 +359,15 @@ export const ClassManagementProfessor = () => {
                     <input name="address" defaultValue={activeStudent?.address} type="text" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.1)', padding: '12px 16px', borderRadius: '8px' }}>
-                    <input name="isResidential" defaultChecked={activeStudent?.isResidential} type="checkbox" id="resCheckbox" style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }} />
+                    <input name="isResidential" checked={formIsResidential} onChange={(e) => setFormIsResidential(e.target.checked)} type="checkbox" id="resCheckbox" style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }} />
                     <label htmlFor="resCheckbox" style={{ color: 'white', cursor: 'pointer' }}>Aulas em Condomínio / Residencial</label>
                   </div>
+                  {formIsResidential && (
+                    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Qual Condomínio / Residencial?</label>
+                      <input name="condoName" defaultValue={activeStudent?.condoName} type="text" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} placeholder="Nome do local..." />
+                    </motion.div>
+                  )}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Nível</label>
