@@ -8,6 +8,7 @@ import { RacketCollection } from './components/RacketCollection';
 import { ClassManagementProfessor } from './components/ClassManagementProfessor';
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
+import racketCollectionImg from './assets/racket-collection.png';
 import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => (
@@ -159,7 +160,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Controle e Extrato"
-              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
               onClick={() => navigate('/racket-collection')}
             />
             <HomeTile 
@@ -195,7 +196,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
-              backgroundImage="https://images.unsplash.com/photo-1542144582-1ba004ac6b53?q=80&w=800&auto=format&fit=crop"
+              backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
               onClick={() => navigate('/racket-collection')}
             />
           </>
