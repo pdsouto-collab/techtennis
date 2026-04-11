@@ -655,19 +655,9 @@ export const StringerDashboard = () => {
                         <option value="">Selecione a raquete do cliente...</option>
                         {(() => {
                            const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
-                           const totals: Record<string, number> = {};
-                           customerRackets.forEach(r => {
-                               const key = r.name.trim().toUpperCase();
-                               totals[key] = (totals[key] || 0) + 1;
-                           });
-                           
-                           const counts: Record<string, number> = {};
                            const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
-                           
                            return customerRackets.map(r => {
-                               const key = r.name.trim().toUpperCase();
-                               counts[key] = (counts[key] || 0) + 1;
-                               const suffix = totals[key] > 1 ? ` [${counts[key]}]` : '';
+                               const suffix = r.identifier ? ` [${r.identifier}]` : '';
                                const displayName = `${r.name.trim()}${suffix}`;
                                
                                const isUsed = usedRacketIdsInOrder.includes(r.id);
@@ -1430,6 +1420,7 @@ export const StringerDashboard = () => {
                   const newRacket = {
                     id: 'r' + Date.now(),
                     name: fd.get('racketName') as string,
+                    identifier: fd.get('identifier') as string,
                     customerId: selectedCustomer?.id || ''
                   };
                   setRackets(prev => [...prev, newRacket]);
@@ -1443,7 +1434,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
-                      <input type="text" style={inputStyle} />
+                      <input type="text" name="identifier" style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Padrão de cordas</label>

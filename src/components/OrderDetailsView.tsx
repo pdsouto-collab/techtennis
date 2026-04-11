@@ -235,13 +235,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
               if (!rackets || !orderJob.racketId) return '';
               const r = rackets.find((rk: any) => rk.id === orderJob.racketId);
               if (!r) return '';
-              const similarRackets = rackets.filter((rk: any) =>
-                r.customerId === rk.customerId &&
-                r.name.trim().toLowerCase() === rk.name.trim().toLowerCase()
-              ).sort((a: any, b: any) => parseInt(a.id) - parseInt(b.id));
-
-              const index = similarRackets.findIndex((rk: any) => rk.id === r.id);
-              return similarRackets.length > 1 && index !== -1 ? ` [${index + 1}]` : "";
+              return r.identifier ? ` [${r.identifier}]` : "";
             };
 
             const suffix = getRacketSuffix();
