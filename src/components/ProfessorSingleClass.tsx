@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, CheckCircle, MessageCircle, ArrowLeft, Star, Send, Navigation, Info } from 'lucide-react';
+import { Navigation, Info, CheckCircle, Send, ArrowLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ProfessorSingleClass = () => {

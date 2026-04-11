@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Search, CheckCircle, MessageCircle, ArrowLeft, Star, Clock, AlertTriangle, Send, X } from 'lucide-react';
+import { MapPin, Search, CheckCircle, MessageCircle, ArrowLeft, Star, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const CustomerSingleClass = () => {
