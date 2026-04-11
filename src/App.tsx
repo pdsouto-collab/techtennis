@@ -5,6 +5,8 @@ import { Search, Menu, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
+import { ClassManagementProfessor } from './components/ClassManagementProfessor';
+import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
@@ -163,7 +165,7 @@ const Hero = () => {
             <HomeTile 
               title="Gestão de Aulas" subtitle="Dashboard"
               backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/classes-professor')}
             />
             <HomeTile 
               title="Aulas Avulsas" subtitle="Marketplace" fullWidth
@@ -184,7 +186,7 @@ const Hero = () => {
             <HomeTile 
               title="Gestão de Aulas" subtitle="Agenda Completa"
               backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/classes-professor')}
             />
             <HomeTile 
               title="Meu Encordoamento" subtitle="Equipamento Pessoal"
@@ -215,7 +217,7 @@ const Hero = () => {
             <HomeTile 
               title="Gestão de Aulas" subtitle="Meus Agendamentos"
               backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/classes-customer')}
             />
           </>
         )}
@@ -246,6 +248,8 @@ function App() {
             <Route path="/stringer" element={<StringerDashboard />} />
             <Route path="/feedback" element={<CustomerFeedback />} />
             <Route path="/racket-collection" element={<RacketCollection />} />
+            <Route path="/classes-professor" element={<ClassManagementProfessor />} />
+            <Route path="/classes-customer" element={<ClassManagementCustomer />} />
           </Routes>
         </main>
       </div>
