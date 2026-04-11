@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, Menu, User, Settings } from 'lucide-react';
+import { Search, User, Settings } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
@@ -11,35 +11,90 @@ import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
-const Navbar = () => (
-  <nav style={{
-    position: 'fixed',
-    top: '20px', left: '50%', transform: 'translateX(-50%)',
-    width: '90%', maxWidth: '1200px', zIndex: 50,
-    background: 'rgba(0, 145, 210, 0.15)', backdropFilter: 'blur(16px)',
-    border: '1px solid var(--border-light)',
-    borderRadius: '100px',
-    padding: '12px 32px'
-  }}>
-    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-        <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
-          <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
-            height: '72px', 
-            objectFit: 'contain',
-            mixBlendMode: 'multiply'
-          }} />
-        </Link>
-      </div>
+const Navbar = () => {
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        <Search size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
-        <User size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
-        <Menu size={24} color="var(--text-primary)" style={{ cursor: 'pointer' }} />
+  return (
+    <nav style={{
+      position: 'fixed',
+      top: '20px', left: '50%', transform: 'translateX(-50%)',
+      width: '90%', maxWidth: '1200px', zIndex: 50,
+      background: 'rgba(0, 145, 210, 0.15)', backdropFilter: 'blur(16px)',
+      border: '1px solid var(--border-light)',
+      borderRadius: '100px',
+      padding: '12px 32px'
+    }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
+          <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
+            <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
+              height: '72px', 
+              objectFit: 'contain',
+              mixBlendMode: 'multiply'
+            }} />
+          </Link>
+        </div>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
+          {isSearchOpen && (
+            <motion.input
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 200, opacity: 1 }}
+              type="text"
+              placeholder="Buscar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                   alert('Busca ativada para: ' + searchQuery);
+                   setSearchQuery('');
+                   setIsSearchOpen(false);
+                }
+              }}
+              style={{
+                padding: '6px 16px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.4)',
+                background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none'
+              }}
+              autoFocus
+              onBlur={() => !searchQuery && setIsSearchOpen(false)}
+            />
+          )}
+          <Search size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsSearchOpen(!isSearchOpen)} />
+          
+          <div style={{ position: 'relative' }}>
+            <User size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
+            {isProfileOpen && (
+              <div style={{
+                position: 'absolute', top: '40px', right: '0',
+                background: 'white', borderRadius: '12px', overflow: 'hidden',
+                boxShadow: '0 10px 40px rgba(0,0,0,0.2)', width: '180px'
+              }}>
+                <button 
+                  onClick={() => { alert('Troca de senha enviada para seu e-mail.'); setIsProfileOpen(false); }}
+                  style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', borderBottom: '1px solid #eee', fontWeight: 600, color: '#1a1a2e' }}
+                  onMouseOver={e => e.currentTarget.style.background = '#f5f5f5'}
+                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  Trocar Senha
+                </button>
+                <button 
+                  onClick={() => { alert('Deslogando do sistema...'); setIsProfileOpen(false); window.location.reload(); }}
+                  style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontWeight: 600, color: '#EF4444' }}
+                  onMouseOver={e => e.currentTarget.style.background = '#fcf0f0'}
+                  onMouseOut={e => e.currentTarget.style.background = 'transparent'}
+                >
+                  Sair (Logout)
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
       </div>
-    </div>
-  </nav>
-);
+    </nav>
+  );
+};
 
 // --- NTC Style Tile Component ---
 interface HomeTileProps {
