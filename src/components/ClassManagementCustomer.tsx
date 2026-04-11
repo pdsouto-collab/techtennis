@@ -153,6 +153,21 @@ export const ClassManagementCustomer = () => {
                           <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', opacity: 0.9 }}>Acerto do Mês</h4>
                           <div style={{ fontSize: '32px', fontWeight: 800 }}>R$ {totalCost.toFixed(2)}</div>
                         </div>
+                        {(() => {
+                          const repBalance = classes.filter(c => c.studentId === activeStudent.id).reduce((acc, c) => {
+                            if (!c.timeStart || !c.timeEnd) return acc;
+                            const h = (new Date(`1970-01-01T${c.timeEnd}:00`).getTime() - new Date(`1970-01-01T${c.timeStart}:00`).getTime()) / 3600000;
+                            if ((c.status === 'rain' || c.status.includes('cancelled')) && c.willHaveReplacement) return acc + h;
+                            if (c.status === 'replacement') return acc - h;
+                            return acc;
+                          }, 0);
+                          return (
+                            <div style={{ background: '#F59E0B', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(245,158,11,0.2)' }}>
+                              <h4 style={{ margin: '0 0 8px 0', fontSize: '14px', opacity: 0.9 }}>Horas para Reposição</h4>
+                              <div style={{ fontSize: '32px', fontWeight: 800 }}>{repBalance.toFixed(1)} hr</div>
+                            </div>
+                          );
+                        })()}
                       </>
                     )
                   })()}
@@ -179,10 +194,11 @@ export const ClassManagementCustomer = () => {
                             const hours = (end.getTime() - start.getTime()) / 3600000;
                             const value = (activeStudent.hourlyRate && cls.status === 'completed') ? hours * activeStudent.hourlyRate : 0;
                             
-                            let statusConfig = { color: '#6B7280', bg: '#F3F4F6', label: 'Desconhecido' };
+                            let statusConfig = { color: '#6B7280', bg: '#F3F4F6', label: 'Planejada' };
                             if (cls.status === 'completed') statusConfig = { color: '#10B981', bg: 'rgba(16,185,129,0.1)', label: 'Realizada' };
-                            if (cls.status === 'rain') statusConfig = { color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', label: 'Chuva (Abonada)' };
-                            if (cls.status.includes('cancelled')) statusConfig = { color: '#EF4444', bg: 'rgba(239,68,68,0.1)', label: 'Cancelada' };
+                            if (cls.status === 'replacement') statusConfig = { color: '#3B82F6', bg: 'rgba(59,130,246,0.1)', label: 'Reposição' };
+                            if (cls.status === 'rain') statusConfig = { color: '#F59E0B', bg: 'rgba(245,158,11,0.1)', label: 'Chuva' + (cls.willHaveReplacement ? ' (+Repos)' : '') };
+                            if (cls.status.includes('cancelled')) statusConfig = { color: '#EF4444', bg: 'rgba(239,68,68,0.1)', label: 'Cancelada' + (cls.willHaveReplacement ? ' (+Repos)' : '') };
 
                             return (
                               <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1a1a2e' }}>

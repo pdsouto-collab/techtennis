@@ -198,10 +198,21 @@ export const ClassManagementProfessor = () => {
                                 >
                                   <option value="planned">Planejada</option>
                                   <option value="completed">Realizada</option>
+                                  <option value="replacement">Reposição</option>
                                   <option value="cancelled_student">Canc. Aluno</option>
                                   <option value="cancelled_prof">Canc. Professor</option>
                                   <option value="rain">Chuva</option>
                                 </select>
+                                {(cls.status === 'rain' || cls.status.includes('cancelled')) && (
+                                  <div style={{ marginTop: '8px', fontSize: '12px' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                                      <input type="checkbox" checked={!!cls.willHaveReplacement} onChange={(e) => {
+                                        setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, willHaveReplacement: e.target.checked } : c));
+                                      }} style={{ accentColor: 'var(--primary-color)' }} />
+                                      Haverá Reposição
+                                    </label>
+                                  </div>
+                                )}
                               </td>
                               <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                                 <button onClick={() => {
@@ -245,7 +256,7 @@ export const ClassManagementProfessor = () => {
                 </div>
 
                 {/* Report Content */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '32px' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px' }}>
                   <div style={{ background: '#10B981', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(16,185,129,0.2)' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', opacity: 0.9 }}>Total Financeiro (Aulas Realizadas)</h3>
                     <div style={{ fontSize: '32px', fontWeight: 800 }}>R$ {
@@ -271,6 +282,22 @@ export const ClassManagementProfessor = () => {
                              }, 0).toFixed(1)
                     } hr</div>
                   </div>
+                  {(() => {
+                    const balance = classes.filter(c => c.professorId === selectedProfessorId && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
+                                           .reduce((acc, c) => {
+                                             if (!c.timeStart || !c.timeEnd) return acc;
+                                             const h = (new Date(`1970-01-01T${c.timeEnd}:00`).getTime() - new Date(`1970-01-01T${c.timeStart}:00`).getTime()) / 3600000;
+                                             if ((c.status === 'rain' || c.status.includes('cancelled')) && c.willHaveReplacement) return acc + h;
+                                             if (c.status === 'replacement') return acc - h;
+                                             return acc;
+                                           }, 0);
+                    return (
+                      <div style={{ background: '#F59E0B', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(245,158,11,0.2)' }}>
+                        <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', opacity: 0.9 }}>Horas para Reposição</h3>
+                        <div style={{ fontSize: '32px', fontWeight: 800 }}>{balance.toFixed(1)} hr</div>
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Table of report details */}
@@ -297,7 +324,7 @@ export const ClassManagementProfessor = () => {
                               <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.6 : 1, color: '#1a1a2e' }}>
                                 <td style={{ padding: '12px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{student?.name || '-'}</td>
-                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
+                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'replacement' ? 'Reposição' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
                                 <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{hours.toFixed(1)}h</td>
                                 <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: cls.status === 'completed' ? '#10B981' : 'var(--text-secondary)' }}>
                                   R$ {value.toFixed(2)}
