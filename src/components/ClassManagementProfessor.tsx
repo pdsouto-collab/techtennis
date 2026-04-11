@@ -205,7 +205,7 @@ export const ClassManagementProfessor = () => {
                                 </select>
                                 {(cls.status === 'rain' || cls.status.includes('cancelled')) && (
                                   <div style={{ marginTop: '8px', fontSize: '12px' }}>
-                                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer' }}>
+                                    <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: '#4B5563', fontWeight: 600 }}>
                                       <input type="checkbox" checked={!!cls.willHaveReplacement} onChange={(e) => {
                                         setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, willHaveReplacement: e.target.checked } : c));
                                       }} style={{ accentColor: 'var(--primary-color)' }} />
