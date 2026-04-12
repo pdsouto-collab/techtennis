@@ -299,6 +299,16 @@ function App() {
   return (
     <Router>
       <div className="page-container">
+        
+        {/* Tennis Court Background */}
+        <div className="court-lines-bg">
+          <div className="court-line-vertical-1"></div>
+          <div className="court-line-vertical-2"></div>
+          <div className="court-line-horizontal-1"></div>
+          <div className="court-line-horizontal-2"></div>
+          <div className="court-line-vertical-center"></div>
+        </div>
+
         <Navbar />
         <main>
           <Routes>
