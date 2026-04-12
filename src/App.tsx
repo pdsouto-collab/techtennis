@@ -226,9 +226,14 @@ const Hero = () => {
               onClick={() => navigate('/classes-professor')}
             />
             <HomeTile 
-              title="Aulas Avulsas" subtitle="Marketplace" fullWidth
+              title="Aulas Avulsas" subtitle="Visão Professor"
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
-              onClick={() => {}}
+              onClick={() => navigate('/professor-single-class')}
+            />
+            <HomeTile 
+              title="Buscar Aula Avulsa" subtitle="Visão Aluno"
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/customer-single-class')}
             />
           </>
         )}
@@ -300,13 +305,39 @@ function App() {
     <Router>
       <div className="page-container">
         
-        {/* Tennis Court Background */}
-        <div className="court-lines-bg">
-          <div className="court-line-vertical-1"></div>
-          <div className="court-line-vertical-2"></div>
-          <div className="court-line-horizontal-1"></div>
-          <div className="court-line-horizontal-2"></div>
-          <div className="court-line-vertical-center"></div>
+        {/* Tennis Court Background SVG */}
+        <div style={{
+          position: 'fixed',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%) rotate(-15deg)',
+          opacity: 0.15,
+          zIndex: 0,
+          pointerEvents: 'none',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '150vw',
+          height: '150vh',
+          overflow: 'hidden'
+        }}>
+          <svg viewBox="-20 -20 400 820" style={{ width: '80%', height: '150%', minWidth: '800px' }} stroke="#ffffff" strokeWidth="3" fill="none">
+             {/* Outer Boundary (Doubles) */}
+             <rect x="0" y="0" width="360" height="780" />
+             {/* Singles sidelines */}
+             <line x1="45" y1="0" x2="45" y2="780" />
+             <line x1="315" y1="0" x2="315" y2="780" />
+             {/* Net */}
+             <line x1="-20" y1="390" x2="380" y2="390" strokeWidth="6" stroke="#ffffff" opacity="0.8" />
+             {/* Service Lines */}
+             <line x1="45" y1="180" x2="315" y2="180" />
+             <line x1="45" y1="600" x2="315" y2="600" />
+             {/* Center Service Line */}
+             <line x1="180" y1="180" x2="180" y2="600" />
+             {/* Center Marks */}
+             <line x1="180" y1="0" x2="180" y2="15" />
+             <line x1="180" y1="765" x2="180" y2="780" />
+          </svg>
         </div>
 
         <Navbar />
