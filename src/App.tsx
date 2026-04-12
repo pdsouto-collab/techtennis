@@ -218,7 +218,7 @@ const Hero = () => {
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Controle e Extrato"
               backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
-              onClick={() => navigate('/racket-collection')}
+              onClick={() => navigate('/racket-collection', { state: { role: 'ENCORDOADOR' } })}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Dashboard"
@@ -259,7 +259,7 @@ const Hero = () => {
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
               backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
-              onClick={() => navigate('/racket-collection')}
+              onClick={() => navigate('/racket-collection', { state: { role: 'PROFESSOR' } })}
             />
           </>
         )}

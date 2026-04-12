@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { ArrowLeft, DollarSign, Calendar as CalendarIcon, Package } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
 export const RacketCollection = () => {
@@ -21,7 +21,17 @@ export const RacketCollection = () => {
   });
 
   // State
-  const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
+  const location = useLocation();
+  const role = location.state?.role || 'ENCORDOADOR';
+  const [selectedProfessorId, setSelectedProfessorId] = useState<string>(() => {
+    // If it's a professor, automatically select the first one as a mock logged-in user
+    if (role === 'PROFESSOR') {
+      const saved = localStorage.getItem('tt_professors');
+      const profs = saved ? JSON.parse(saved) : [];
+      return profs.length > 0 ? profs[0].id : '';
+    }
+    return '';
+  });
   
   const currentMonth = new Date().getMonth() + 1;
   const currentYear = new Date().getFullYear();
@@ -98,18 +108,20 @@ export const RacketCollection = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <label style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: 600 }}>Selecione o Professor</label>
-            <select 
-              value={selectedProfessorId} 
-              onChange={(e) => setSelectedProfessorId(e.target.value)}
-              style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '200px' }}
-            >
-              <option value="">Selecione...</option>
-              <option value="all">Todos os Professores</option>
-              {professors.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
-            </select>
-          </div>
+          {role !== 'PROFESSOR' && (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+              <label style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: 600 }}>Selecione o Professor</label>
+              <select 
+                value={selectedProfessorId} 
+                onChange={(e) => setSelectedProfessorId(e.target.value)}
+                style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '200px' }}
+              >
+                <option value="">Selecione...</option>
+                <option value="all">Todos os Professores</option>
+                {professors.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+              </select>
+            </div>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <label style={{ color: 'var(--text-secondary)', fontSize: '14px', fontWeight: 600 }}>Competência (Mês / Ano)</label>
             <div style={{ display: 'flex', gap: '8px' }}>
