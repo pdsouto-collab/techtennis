@@ -1,11 +1,12 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Calendar, Filter, Download } from 'lucide-react';
+import { Calendar, Filter, Download, X } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
 export const AnalyticsView = ({ jobs }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
+  const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
 
   const metricBoxStyle = (bg: string) => ({
     background: bg,
@@ -16,7 +17,8 @@ export const AnalyticsView = ({ jobs }: any) => {
     minHeight: '120px',
     display: 'flex',
     flexDirection: 'column' as const,
-    justifyContent: 'center'
+    justifyContent: 'center',
+    cursor: 'pointer'
   });
 
   const panelStyle = {
@@ -48,15 +50,15 @@ export const AnalyticsView = ({ jobs }: any) => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
           {/* Top 3 KPI */}
           <div style={{ display: 'flex', gap: '24px' }}>
-             <div style={metricBoxStyle('#F2C94C')}>
+             <div style={metricBoxStyle('#F2C94C')} onClick={() => setDetailModalContent('encordoamentos')}>
                 <div style={{ fontSize: '32px', fontWeight: 800 }}>{jobs?.length || 0}</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Encordoamentos</div>
              </div>
-             <div style={metricBoxStyle('#EB5757')}>
+             <div style={metricBoxStyle('#EB5757')} onClick={() => setDetailModalContent('ordens')}>
                 <div style={{ fontSize: '32px', fontWeight: 800 }}>0</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ordens</div>
              </div>
-             <div style={metricBoxStyle('#6FCF97')}>
+             <div style={metricBoxStyle('#6FCF97')} onClick={() => setDetailModalContent('ganhos')}>
                 <div style={{ fontSize: '32px', fontWeight: 800 }}>0.00 BRL</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ganhos</div>
              </div>
@@ -218,6 +220,36 @@ export const AnalyticsView = ({ jobs }: any) => {
       )}
 
     <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { console.log('Period selected:', dates); setIsPeriodModalOpen(false); }} />
+    
+    {detailModalContent && (
+      <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, color: '#333' }}>
+        <div style={{ background: 'white', width: '80%', maxWidth: '900px', borderRadius: '8px', padding: '24px', display: 'flex', flexDirection: 'column', gap: '24px', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', paddingBottom: '16px' }}>
+            <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#111827' }}>
+              {detailModalContent === 'encordoamentos' ? 'Encordoamentos' : detailModalContent === 'ordens' ? 'Ordens' : 'Ganhos'}
+            </h2>
+            <button onClick={() => setDetailModalContent(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} color="#6B7280" /></button>
+          </div>
+          
+          <div style={{ border: '1px solid #E5E7EB', borderRadius: '6px', overflow: 'hidden' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', background: '#F9FAFB', fontWeight: 600, color: '#374151', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>
+              <div style={{ flex: 1 }}>Ponto de encordoamento</div>
+              <div style={{ flex: 1, textAlign: 'right' }}>
+                {detailModalContent === 'encordoamentos' ? 'Encordoamentos' : detailModalContent === 'ordens' ? 'Ordens' : 'Ganhos'}
+              </div>
+            </div>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', fontSize: '14px', color: '#6B7280', background: 'white' }}>
+               <div style={{ flex: 1 }}>Matriz</div>
+               <div style={{ flex: 1, textAlign: 'right', fontWeight: 600 }}>
+                 {detailModalContent === 'encordoamentos' ? (jobs?.length || 0) : detailModalContent === 'ordens' ? '0' : '0.00 BRL'}
+               </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
     </motion.div>
   );
 };
