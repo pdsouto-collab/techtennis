@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus } from 'lucide-react';
+import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
@@ -24,7 +24,8 @@ export const StringerDashboard = () => {
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'professors' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up' | 'today'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
+  const [dateFilter, setDateFilter] = useState<'all'|'today'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isProfessorModalOpen, setIsProfessorModalOpen] = useState(false);
   const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
@@ -192,19 +193,49 @@ export const StringerDashboard = () => {
     setPrice(computedPrice);
   }, [mainString, crossString, isHybrid, appSettings.strings, isStringing]);
 
-  const filteredJobs = activeFilter === 'all' 
+  let filteredJobs = activeFilter === 'all' 
     ? jobs 
     : jobs.filter(job => {
         if (activeFilter === 'to_string' && job.type === 'stringing') return true;
-        if (activeFilter === 'today') {
-           if (!job.pickupDate) return false;
-           // compare just the date part avoiding time zone shifts
-           const today = new Date().toISOString().split('T')[0];
-           const jobDate = new Date(job.pickupDate).toISOString().split('T')[0];
-           return today === jobDate;
-        }
         return job.type === activeFilter;
       });
+
+  if (dateFilter === 'today') {
+      filteredJobs = filteredJobs.filter(job => {
+          if (!job.pickupDate) return false;
+          const today = new Date().toISOString().split('T')[0];
+          const jobDate = new Date(job.pickupDate).toISOString().split('T')[0];
+          return today === jobDate;
+      });
+  }
+
+  const exportDashboardData = (format: 'csv' | 'excel' | 'pdf') => {
+    if (format === 'pdf') {
+       window.print();
+       return;
+    }
+    const headers = ['Data', 'Retirada', 'Cliente', 'Raquete', 'Corda/Tensão', 'Status', 'Preço'];
+    const rows = filteredJobs.map((o: any) => [
+      o.date,
+      o.pickupDate ? new Date(o.pickupDate).toLocaleString('pt-BR') : '',
+      o.customerName,
+      o.racketModel,
+      `${o.mainString || ''} @${o.tension || ''}`,
+      o.type === 'picked_up' ? 'Entregue' : o.type === 'picking_up' ? 'Pronta' : o.type === 'to_string' ? 'Para Encordoar' : 'Aguardando',
+      (o.price || 120).toFixed(2)
+    ]);
+    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    let mimeType = 'text/csv';
+    let ext = '.csv';
+    if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
+    const blob = new Blob(['\ufeff' + csvContent], { type: `${mimeType};charset=utf-8;` });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `fila_encordoamento_${new Date().toISOString().split('T')[0]}${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   // Calculate computed discounts and final price
   const basePriceValue = Number(price) || 0;
@@ -473,12 +504,18 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '20px', fontWeight: 700 }}>
                   {activeFilter === 'all' ? 'Todos os Pedidos' : 
-                   activeFilter === 'to_string' ? 'Fila de Encordoamento' : 
-                   activeFilter === 'today' ? 'Retiradas de Hoje' : 'Prontos para Retirada'}
+                   activeFilter === 'to_string' ? 'Fila de Encordoamento' : 'Prontos para Retirada'}
+                  {dateFilter === 'today' && ' (Retiradas de Hoje)'}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => setActiveFilter('all')} style={{ background: activeFilter === 'all' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Ver Todos</button>
-                  <button onClick={() => setActiveFilter('today')} style={{ background: activeFilter === 'today' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Dia</button>
+                  <button onClick={() => setDateFilter('all')} style={{ background: dateFilter === 'all' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Ver Todos</button>
+                  <button onClick={() => setDateFilter('today')} style={{ background: dateFilter === 'today' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Dia</button>
+                  
+                  <div style={{ display: 'flex', gap: '2px', marginLeft: '12px' }}>
+                    <button onClick={() => exportDashboardData('excel')} style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '6px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar Excel"><FileSpreadsheet size={16} /></button>
+                    <button onClick={() => exportDashboardData('pdf')} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar PDF"><FileText size={16} /></button>
+                    <button onClick={() => exportDashboardData('csv')} style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '6px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar CSV"><FileJson size={16} /></button>
+                  </div>
                 </div>
               </div>
 
