@@ -18,7 +18,31 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
   const chartData = useMemo(() => {
     const grouped: any = {};
     jobs.forEach((j: any) => {
-       const key = j.date?.split('T')[0] || 'unknown'; // Grouping arbitrarily by date string
+       if (!j.date) return;
+       let d: Date;
+       if (j.date.includes('/')) {
+         const parts = j.date.split(' ')[0].split('/'); // hande DD/MM/YYYY HH:MM
+         // fallbacks
+         if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
+         else d = new Date();
+       } else {
+         d = new Date(j.date);
+       }
+       if (isNaN(d.getTime())) d = new Date(); // fallback
+
+       let key = '';
+       if (chartPeriod === 'dia') {
+          key = d.toISOString().split('T')[0];
+       } else if (chartPeriod === 'mes') {
+          key = d.toISOString().substring(0, 7); // YYYY-MM
+       } else {
+          // semana
+          const firstDayOfYear = new Date(d.getFullYear(), 0, 1);
+          const pastDaysOfYear = (d.getTime() - firstDayOfYear.getTime()) / 86400000;
+          const weekNum = Math.ceil((pastDaysOfYear + firstDayOfYear.getDay() + 1) / 7);
+          key = `${d.getFullYear()}-W${weekNum}`;
+       }
+       
        if (!grouped[key]) grouped[key] = { ordens: new Set(), encord: 0, ganhos: 0 };
        if (j.orderCode) grouped[key].ordens.add(j.orderCode);
        grouped[key].encord += 1;
