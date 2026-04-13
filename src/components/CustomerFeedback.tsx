@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Smile, CircleDollarSign } from 'lucide-react';
+import { ArrowLeft, Smile, CircleDollarSign, X } from 'lucide-react';
 import { FeedbackModal } from './FeedbackModal';
 
 export const CustomerFeedback = () => {
@@ -85,6 +85,10 @@ export const CustomerFeedback = () => {
               `Todo o Histórico de ${LOGGED_IN_CUSTOMER}`
             )}
           </h3>
+
+          <button onClick={() => navigate('/')} style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', border: 'none', padding: '10px 20px', borderRadius: '8px', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, cursor: 'pointer', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.15)'} onMouseOut={(e) => e.currentTarget.style.background = 'rgba(239, 68, 68, 0.1)'}>
+            <X size={20} /> Fechar
+          </button>
         </div>
 
         {/* Tabs */}
