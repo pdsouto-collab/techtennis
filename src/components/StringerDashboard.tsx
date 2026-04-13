@@ -24,7 +24,7 @@ export const StringerDashboard = () => {
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'professors' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up' | 'today'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isProfessorModalOpen, setIsProfessorModalOpen] = useState(false);
   const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
@@ -196,6 +196,13 @@ export const StringerDashboard = () => {
     ? jobs 
     : jobs.filter(job => {
         if (activeFilter === 'to_string' && job.type === 'stringing') return true;
+        if (activeFilter === 'today') {
+           if (!job.pickupDate) return false;
+           // compare just the date part avoiding time zone shifts
+           const today = new Date().toISOString().split('T')[0];
+           const jobDate = new Date(job.pickupDate).toISOString().split('T')[0];
+           return today === jobDate;
+        }
         return job.type === activeFilter;
       });
 
@@ -466,12 +473,12 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                 <span style={{ fontSize: '20px', fontWeight: 700 }}>
                   {activeFilter === 'all' ? 'Todos os Pedidos' : 
-                   activeFilter === 'to_string' ? 'Fila de Encordoamento' : 'Prontos para Retirada'}
+                   activeFilter === 'to_string' ? 'Fila de Encordoamento' : 
+                   activeFilter === 'today' ? 'Retiradas de Hoje' : 'Prontos para Retirada'}
                 </span>
                 <div style={{ display: 'flex', gap: '8px' }}>
-                  <button onClick={() => setActiveFilter('all')} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Ver Todos</button>
-                  <button style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Dia</button>
-                  <button style={{ background: 'rgba(255,255,255,0.2)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Lista</button>
+                  <button onClick={() => setActiveFilter('all')} style={{ background: activeFilter === 'all' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Ver Todos</button>
+                  <button onClick={() => setActiveFilter('today')} style={{ background: activeFilter === 'today' ? 'rgba(255,255,255,0.3)' : 'rgba(255,255,255,0.1)', border: 'none', padding: '6px 12px', borderRadius: '12px', color: 'white', cursor: 'pointer' }}>Dia</button>
                 </div>
               </div>
 

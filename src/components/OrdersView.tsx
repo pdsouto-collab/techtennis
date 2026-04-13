@@ -15,7 +15,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
   };
 
-  const displayedOrders = Object.values((jobs || []).reduce((acc: any, job: any) => {
+  const rawOrders = Object.values((jobs || []).reduce((acc: any, job: any) => {
     const code = job.orderCode || job.id.substring(0,8).toUpperCase();
     if (!acc[code]) {
       acc[code] = {
@@ -40,10 +40,50 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
     // Assume if one is unpaid, order is unpaid
     if (!job.paid) acc[code].paid = false;
     return acc;
-  }, {})).reverse().map((order: any) => {
+  }, {})).reverse().filter((order: any) => {
+    if (activeTab === 'unpaid' && order.paid) return false;
+    if (statusFilter !== 'all' && order.type !== statusFilter) return false;
+    return true;
+  });
+
+  const exportData = (format: 'csv' | 'excel' | 'pdf') => {
+    if (format === 'pdf') {
+      window.print();
+      return;
+    }
+    
+    // For CSV/Excel, build a simple CSV string
+    const headers = ['Nome', 'Data', 'Previsão de Retirada', 'Ordem', 'Preço', 'Status', 'Pago'];
+    const rows = rawOrders.map((o: any) => [
+      o.customerName,
+      o.date,
+      o.pickupDate ? new Date(o.pickupDate).toLocaleString('pt-BR') : '---',
+      o.orderCode,
+      o.price.toFixed(2),
+      o.type === 'picked_up' ? 'Entregue' : o.type === 'picking_up' ? 'Pronta' : o.type === 'to_string' ? 'Para Encordoar' : 'Aguardando',
+      o.paid ? 'Pago' : 'Não pago'
+    ]);
+    
+    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    let mimeType = 'text/csv';
+    let ext = '.csv';
+    
+    if (format === 'excel') {
+      mimeType = 'application/vnd.ms-excel';
+      ext = '.xls';
+    }
+    
+    const blob = new Blob(['\ufeff' + csvContent], { type: `${mimeType};charset=utf-8;` });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `ordens_${new Date().toISOString().split('T')[0]}${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const displayedOrders = rawOrders.map((order: any) => {
     const cust = (customers || []).find((c: any) => c.name === order.customerName);
-    if (activeTab === 'unpaid' && order.paid) return null;
-    if (statusFilter !== 'all' && order.type !== statusFilter) return null;
     
     return (
       <tr key={order.id}>
@@ -79,7 +119,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
           </td>
       </tr>
     )
-  }).filter(Boolean);
+  });
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: '24px', color: 'var(--text-primary)' }}>
@@ -118,9 +158,9 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
         {/* Toolbar */}
         <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <div style={{ display: 'flex', gap: '2px' }}>
-                <button style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer' }}><FileSpreadsheet size={18} /></button>
-                <button style={{ background: '#D93B65', border: 'none', color: 'white', padding: '8px 12px', cursor: 'pointer' }}><FileText size={18} /></button>
-                <button style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer' }}><FileJson size={18} /></button>
+                <button onClick={() => exportData('excel')} style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer' }} title="Gerar Excel"><FileSpreadsheet size={18} /></button>
+                <button onClick={() => exportData('pdf')} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '8px 12px', cursor: 'pointer' }} title="Gerar PDF"><FileText size={18} /></button>
+                <button onClick={() => exportData('csv')} style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer' }} title="Gerar CSV"><FileJson size={18} /></button>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)} style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.1)', color: 'white' }}>
