@@ -7,6 +7,8 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
+  const [chartMetric, setChartMetric] = useState<'ordens'|'encordoamentos'|'ganhos'>('ordens');
+  const [chartPeriod, setChartPeriod] = useState<'dia'|'semana'|'mes'>('mes');
 
   // Computed data
   const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
@@ -69,8 +71,52 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
              </div>
           </div>
 
-          <div style={panelStyle}>
-            <div style={{ width: '100%', height: '200px', background: '#F9FAFB', border: '1px dashed #D1D5DB', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>Gráfico de linha (Placeholder)</div>
+          <div style={{ ...panelStyle, padding: '16px 24px', display: 'flex', flexDirection: 'column', minHeight: '300px' }}>
+            {/* Chart Toolbar */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+              <div style={{ position: 'relative' }}>
+                <select 
+                  value={chartMetric} 
+                  onChange={(e) => setChartMetric(e.target.value as any)}
+                  style={{ border: 'none', background: 'transparent', fontSize: '15px', fontWeight: 600, color: '#374151', cursor: 'pointer', outline: 'none', appearance: 'none', paddingRight: '20px' }}>
+                  <option value="ordens">Ordens</option>
+                  <option value="encordoamentos">Encordoamentos</option>
+                  <option value="ganhos">Ganhos</option>
+                </select>
+                <div style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => setChartPeriod('dia')} style={{ background: chartPeriod === 'dia' ? '#4298E7' : 'transparent', color: chartPeriod === 'dia' ? 'white' : '#4298E7', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Dia</button>
+                <button onClick={() => setChartPeriod('semana')} style={{ background: chartPeriod === 'semana' ? '#4298E7' : 'transparent', color: chartPeriod === 'semana' ? 'white' : '#4298E7', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Semana</button>
+                <button onClick={() => setChartPeriod('mes')} style={{ background: chartPeriod === 'mes' ? '#4298E7' : 'transparent', color: chartPeriod === 'mes' ? 'white' : '#4298E7', border: 'none', padding: '6px 12px', borderRadius: '4px', fontSize: '13px', fontWeight: 600, cursor: 'pointer' }}>Mês</button>
+              </div>
+            </div>
+
+            {/* Chart Body */}
+            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+               {[4, 3, 2, 1, 0].map(val => (
+                  <div key={val} style={{ display: 'flex', alignItems: 'center', width: '100%', height: '40px' }}>
+                     <span style={{ width: '20px', fontSize: '12px', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>{val}</span>
+                     <div style={{ flex: 1, borderTop: '1px solid #F3F4F6' }}></div>
+                  </div>
+               ))}
+               
+               {/* Mock Line SVG */}
+               <svg style={{ position: 'absolute', top: 0, left: '32px', right: 0, bottom: '20px', width: 'calc(100% - 32px)', height: '100%', pointerEvents: 'none' }} preserveAspectRatio="none" viewBox="0 0 100 100">
+                  <path d="M0,80 L20,60 L40,75 L60,30 L80,50 L100,20" fill="none" stroke="#6FCF97" strokeWidth="2" strokeLinejoin="round" />
+                  <path d="M0,80 L20,60 L40,75 L60,30 L80,50 L100,20 L100,100 L0,100 Z" fill="url(#gradient)" opacity="0.2" />
+                  <defs>
+                     <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                        <stop offset="0%" stopColor="#6FCF97" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#6FCF97" stopOpacity="0" />
+                     </linearGradient>
+                  </defs>
+               </svg>
+            </div>
           </div>
 
           {/* 4 Small Metrics */}
