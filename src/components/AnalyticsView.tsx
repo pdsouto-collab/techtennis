@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, Filter, Download, X } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
@@ -14,6 +14,44 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
   const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
   const totalEarnings = jobs.reduce((acc: number, j: any) => acc + (j.price || 0), 0);
   const pickupPoints = appSettings?.pickupPoints || ['Test', 'Loja 1'];
+
+  const chartData = useMemo(() => {
+    const grouped: any = {};
+    jobs.forEach((j: any) => {
+       const key = j.date?.split('T')[0] || 'unknown'; // Grouping arbitrarily by date string
+       if (!grouped[key]) grouped[key] = { ordens: new Set(), encord: 0, ganhos: 0 };
+       if (j.orderCode) grouped[key].ordens.add(j.orderCode);
+       grouped[key].encord += 1;
+       grouped[key].ganhos += j.price || 0;
+    });
+
+    const dates = Object.keys(grouped).sort();
+    let dataPoints = [0, 0, 0, 0, 0, 0];
+
+    if (dates.length > 0) {
+      dataPoints = dates.map(d => {
+         if (chartMetric === 'ordens') return grouped[d].ordens.size;
+         if (chartMetric === 'encordoamentos') return grouped[d].encord;
+         return grouped[d].ganhos;
+      });
+    }
+
+    while (dataPoints.length < 6) dataPoints.unshift(0);
+    dataPoints = dataPoints.slice(-6); // last 6 points
+
+    let maxVal = Math.max(...dataPoints);
+    if (maxVal < 4 && chartMetric !== 'ganhos') maxVal = 4;
+    if (maxVal === 0) maxVal = 4; // fallback scale
+
+    const width = 100;
+    const path = dataPoints.map((val, idx) => {
+       const x = (idx / (dataPoints.length - 1)) * width;
+       const y = 90 - (val / maxVal) * 80; 
+       return `${idx === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join(' ');
+    
+    return { path, maxVal, dataPoints };
+  }, [jobs, chartMetric, chartPeriod]);
 
   const metricBoxStyle = (bg: string) => ({
     background: bg,
@@ -78,14 +116,14 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
                 <select 
                   value={chartMetric} 
                   onChange={(e) => setChartMetric(e.target.value as any)}
-                  style={{ border: 'none', background: 'transparent', fontSize: '15px', fontWeight: 600, color: '#374151', cursor: 'pointer', outline: 'none', appearance: 'none', paddingRight: '20px' }}>
+                  style={{ border: 'none', background: 'transparent', fontSize: '24px', fontWeight: 800, color: '#4B5563', cursor: 'pointer', outline: 'none', appearance: 'none', paddingRight: '28px', fontFamily: 'inherit' }}>
                   <option value="ordens">Ordens</option>
                   <option value="encordoamentos">Encordoamentos</option>
                   <option value="ganhos">Ganhos</option>
                 </select>
-                <div style={{ position: 'absolute', right: 0, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 1L5 5L9 1" stroke="#6B7280" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                <div style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                  <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L7 7L13 1" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
               </div>
@@ -97,24 +135,37 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
             </div>
 
             {/* Chart Body */}
-            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-               {[4, 3, 2, 1, 0].map(val => (
-                  <div key={val} style={{ display: 'flex', alignItems: 'center', width: '100%', height: '40px' }}>
-                     <span style={{ width: '20px', fontSize: '12px', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>{val}</span>
+            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginTop: '16px' }}>
+               {[chartData.maxVal, chartData.maxVal * 0.75, chartData.maxVal * 0.5, chartData.maxVal * 0.25, 0].map((val, idx) => (
+                  <div key={idx} style={{ display: 'flex', alignItems: 'center', width: '100%', height: '40px' }}>
+                     <span style={{ width: '40px', fontSize: '12px', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>
+                       {chartMetric === 'ganhos' ? val.toFixed(0) : Math.round(val)}
+                     </span>
                      <div style={{ flex: 1, borderTop: '1px solid #F3F4F6' }}></div>
                   </div>
                ))}
                
-               {/* Mock Line SVG */}
-               <svg style={{ position: 'absolute', top: 0, left: '32px', right: 0, bottom: '20px', width: 'calc(100% - 32px)', height: '100%', pointerEvents: 'none' }} preserveAspectRatio="none" viewBox="0 0 100 100">
-                  <path d="M0,80 L20,60 L40,75 L60,30 L80,50 L100,20" fill="none" stroke="#6FCF97" strokeWidth="2" strokeLinejoin="round" />
-                  <path d="M0,80 L20,60 L40,75 L60,30 L80,50 L100,20 L100,100 L0,100 Z" fill="url(#gradient)" opacity="0.2" />
+               {/* Animated svg line chart */}
+               <svg style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: '20px', width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', overflow: 'visible' }} preserveAspectRatio="none" viewBox="0 0 100 100">
                   <defs>
                      <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#6FCF97" stopOpacity="1" />
-                        <stop offset="100%" stopColor="#6FCF97" stopOpacity="0" />
+                        <stop offset="0%" stopColor="#86E09C" stopOpacity="0.4" />
+                        <stop offset="100%" stopColor="#86E09C" stopOpacity="0" />
                      </linearGradient>
                   </defs>
+                  
+                  <motion.path 
+                    initial={{ pathLength: 0, opacity: 0 }} 
+                    animate={{ pathLength: 1, opacity: 1 }} 
+                    transition={{ duration: 1, ease: 'easeOut' }}
+                    d={chartData.path} fill="none" stroke="#86E09C" strokeWidth="3.5" strokeLinejoin="round" 
+                  />
+                  <motion.path 
+                    initial={{ opacity: 0 }} 
+                    animate={{ opacity: 1 }} 
+                    transition={{ duration: 1, delay: 0.5 }}
+                    d={`${chartData.path} L100,100 L0,100 Z`} fill="url(#gradient)" 
+                  />
                </svg>
             </div>
           </div>
