@@ -1336,6 +1336,10 @@ export const StringerDashboard = () => {
             const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
             if (job) { setActivePickupJob(job); setIsPickupModalOpen(true); }
           }}
+          onViewOrder={(orderCode: string) => {
+            const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
+            if (job) { setActiveOrderJob(job); setView('order_details'); }
+          }}
         />}
 
         {view === 'settings' && <SettingsView settings={appSettings} setSettings={setAppSettings} />}

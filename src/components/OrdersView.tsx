@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign, Truck } from 'lucide-react';
 import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditOrder, onPayment, onDelivery }: any) => {
+export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditOrder, onPayment, onDelivery, onViewOrder }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -68,11 +68,12 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
           </td>
           <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               <div style={{ display: 'flex', gap: '4px', justifyContent: 'flex-end', height: '100%' }}>
-                <button onClick={() => onDeleteOrder?.(order.orderCode)} style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Trash2 size={16} /></button>
-                <button onClick={() => onEditOrder?.(order.orderCode)} style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Edit size={16} /></button>
-                <button onClick={() => onPayment?.(order.orderCode)} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><DollarSign size={16} /></button>
+                <button onClick={() => onViewOrder?.(order.orderCode)} style={{ background: '#C25488', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Detalhes da Ordem"><FileText size={16} /></button>
+                <button onClick={() => onDeleteOrder?.(order.orderCode)} style={{ background: '#EB5757', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Deletar"><Trash2 size={16} /></button>
+                <button onClick={() => onEditOrder?.(order.orderCode)} style={{ background: '#4298E7', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
+                <button onClick={() => onPayment?.(order.orderCode)} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Pagamento"><DollarSign size={16} /></button>
                 {order.type === 'picking_up' && (
-                  <button onClick={() => onDelivery?.(order.orderCode)} style={{ background: '#1A202C', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }}><Truck size={16} /></button>
+                  <button onClick={() => onDelivery?.(order.orderCode)} style={{ background: '#1A202C', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Entregar"><Truck size={16} /></button>
                 )}
               </div>
           </td>
