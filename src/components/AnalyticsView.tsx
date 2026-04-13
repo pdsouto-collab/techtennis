@@ -3,10 +3,15 @@ import { motion } from 'framer-motion';
 import { Calendar, Filter, Download, X } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
-export const AnalyticsView = ({ jobs }: any) => {
+export const AnalyticsView = ({ jobs, appSettings }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
+
+  // Computed data
+  const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
+  const totalEarnings = jobs.reduce((acc: number, j: any) => acc + (j.price || 0), 0);
+  const pickupPoints = appSettings?.pickupPoints || ['Test', 'Loja 1'];
 
   const metricBoxStyle = (bg: string) => ({
     background: bg,
@@ -55,11 +60,11 @@ export const AnalyticsView = ({ jobs }: any) => {
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Encordoamentos</div>
              </div>
              <div style={metricBoxStyle('#EB5757')} onClick={() => setDetailModalContent('ordens')}>
-                <div style={{ fontSize: '32px', fontWeight: 800 }}>0</div>
+                <div style={{ fontSize: '32px', fontWeight: 800 }}>{ordersCount}</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ordens</div>
              </div>
              <div style={metricBoxStyle('#6FCF97')} onClick={() => setDetailModalContent('ganhos')}>
-                <div style={{ fontSize: '32px', fontWeight: 800 }}>0.00 BRL</div>
+                <div style={{ fontSize: '32px', fontWeight: 800 }}>{totalEarnings.toFixed(2)} BRL</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ganhos</div>
              </div>
           </div>
@@ -239,12 +244,24 @@ export const AnalyticsView = ({ jobs }: any) => {
               </div>
             </div>
             
-            <div style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', fontSize: '14px', color: '#6B7280', background: 'white' }}>
-               <div style={{ flex: 1 }}>Matriz</div>
-               <div style={{ flex: 1, textAlign: 'right', fontWeight: 600 }}>
-                 {detailModalContent === 'encordoamentos' ? (jobs?.length || 0) : detailModalContent === 'ordens' ? '0' : '0.00 BRL'}
-               </div>
-            </div>
+            {pickupPoints.map((point: string, idx: number) => {
+              // for now, we just divide the values proportionally or show full values as placeholder
+              // since stringingPoint is not strictly recorded on jobs yet
+              const pointValue = detailModalContent === 'encordoamentos' 
+                ? (idx === 0 ? jobs.length : 0) // mockup: all goes to first point
+                : detailModalContent === 'ordens' 
+                ? (idx === 0 ? ordersCount : 0)
+                : `${(idx === 0 ? totalEarnings : 0).toFixed(2)} BRL`;
+
+              return (
+                <div key={point} style={{ display: 'flex', justifyContent: 'space-between', padding: '16px', fontSize: '14px', color: '#6B7280', background: 'white', borderBottom: idx < pickupPoints.length - 1 ? '1px solid #E5E7EB' : 'none' }}>
+                   <div style={{ flex: 1 }}>{point}</div>
+                   <div style={{ flex: 1, textAlign: 'right', fontWeight: 600 }}>
+                     {pointValue}
+                   </div>
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
