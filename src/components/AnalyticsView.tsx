@@ -116,14 +116,14 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
                 <select 
                   value={chartMetric} 
                   onChange={(e) => setChartMetric(e.target.value as any)}
-                  style={{ border: 'none', background: 'transparent', fontSize: '24px', fontWeight: 800, color: '#4B5563', cursor: 'pointer', outline: 'none', appearance: 'none', paddingRight: '28px', fontFamily: 'inherit' }}>
+                  style={{ border: 'none', background: 'transparent', fontSize: '15px', fontWeight: 700, color: '#111827', cursor: 'pointer', outline: 'none', appearance: 'none', paddingRight: '20px', fontFamily: 'inherit' }}>
                   <option value="ordens">Ordens</option>
                   <option value="encordoamentos">Encordoamentos</option>
                   <option value="ganhos">Ganhos</option>
                 </select>
-                <div style={{ position: 'absolute', right: '4px', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
-                  <svg width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M1 1L7 7L13 1" stroke="#6B7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                <div style={{ position: 'absolute', right: '0', top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }}>
+                  <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1L5 5L9 1" stroke="#111827" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
                   </svg>
                 </div>
               </div>
