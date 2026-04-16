@@ -270,7 +270,20 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      let headers: string[] = [];
      let title = '';
 
-     if (type === 'strings') {
+     if (type === 'strings_brands') {
+         title = "Marcas mais usadas (corda)";
+         headers = ["Marca", "Encordoamentos"];
+         const counts: Record<string, number> = {};
+         jobs.forEach((j:any) => {
+             if (j.mainString) {
+                 const strConf = (appSettings?.strings || []).find((s: any) => typeof s === 'object' && s.name === j.mainString);
+                 const brand = strConf?.brand || 'Desconhecida';
+                 counts[brand] = (counts[brand] || 0) + 1;
+             }
+         });
+         data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'strings') {
          title = "Modelos mais usados (corda)";
          headers = ["Modelo", "Encordoamentos"];
          const counts: Record<string, number> = {};
@@ -535,8 +548,16 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
               </div>
             </div>
             <div style={panelStyle}>
-              <h3>Marcas mais usadas (corda)</h3>
-              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <h3 style={{ margin: 0, fontSize: '18px' }}>Marcas mais usadas (corda)</h3>
+                 <button onClick={() => setActiveReport('strings_brands')} style={{ background: '#E5E7EB', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 600, color: '#374151', cursor: 'pointer', fontSize: '13px' }}>Ver Todos</button>
+              </div>
+              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#D1D5DB' }}>
+                 <span style={{ fontWeight: 700, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                   TechTennis
+                 </span>
+              </div>
             </div>
             <div style={panelStyle}>
               <h3>Marcas mais usadas (raquete)</h3>

@@ -14,6 +14,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   const [editStringPrice, setEditStringPrice] = useState('');
   const [newStringType, setNewStringType] = useState('');
   const [editStringType, setEditStringType] = useState('');
+  const [newStringBrand, setNewStringBrand] = useState('');
+  const [editStringBrand, setEditStringBrand] = useState('');
 
   const [newClub, setNewClub] = useState('');
   const [newDiscountService, setNewDiscountService] = useState('');
@@ -39,7 +41,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       value = { name: newItemText.trim(), percent: Number(newCommissionPercent) || 0 };
     } else if (activeTab === 'strings') {
       if (!newItemText.trim()) return;
-      value = { name: newItemText.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento' };
+      value = { name: newItemText.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento', brand: newStringBrand.trim() || 'Desconhecida' };
     } else if (activeTab === 'clubDiscounts') {
       if (!newClub || !newDiscountService || !newDiscountPercent) return;
       value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent), startDate: newStartDate, endDate: newEndDate };
@@ -55,6 +57,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setNewCommissionPercent('');
     setNewStringPrice('');
     setNewStringType('');
+    setNewStringBrand('');
     setNewClub('');
     setNewDiscountService('');
     setNewDiscountPercent('');
@@ -85,6 +88,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
         setEditItemText(str.name);
         setEditStringPrice(str.price.toString());
         setEditStringType(str.type || 'Monofilamento');
+        setEditStringBrand(str.brand || 'Desconhecida');
       }
     } else if (activeTab === 'clubDiscounts') {
       setEditClub(currentList[index].club);
@@ -105,7 +109,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
          newList[index] = { name: editItemText.trim(), percent: Number(editCommissionPercent) || 0 };
       } else if (activeTab === 'strings') {
          if (!editItemText.trim()) return prev;
-         newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento' };
+         newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento', brand: editStringBrand.trim() || 'Desconhecida' };
       } else if (activeTab === 'clubDiscounts') {
          if (!editClub.trim() || !editDiscountService || !editDiscountPercent) return prev;
          newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent), startDate: editStartDate, endDate: editEndDate };
@@ -234,6 +238,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                 <option value="Tripa Natural">3- Tripa Natural</option>
               </select>
               <input 
+                type="text" 
+                value={newStringBrand}
+                onChange={(e) => setNewStringBrand(e.target.value)}
+                placeholder="Marca"
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              />
+              <input 
                 type="number" 
                 value={newStringPrice}
                 onChange={(e) => setNewStringPrice(e.target.value)}
@@ -322,6 +334,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                           <option value="Tripa Natural">3- Tripa Natural</option>
                         </select>
                         <input 
+                          type="text"
+                          value={editStringBrand}
+                          onChange={(e) => setEditStringBrand(e.target.value)}
+                          placeholder="Marca"
+                          onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                          style={{ width: '100px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                        />
+                        <input 
                           type="number"
                           value={editStringPrice}
                           onChange={(e) => setEditStringPrice(e.target.value)}
@@ -337,6 +357,9 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                        <>
                          <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.5, minWidth: '150px' }}>
                            {typeof item === 'string' ? item : item.name}
+                         </span>
+                         <span style={{ color: '#9CA3AF', fontWeight: 500, fontSize: '14px', flex: 0.8 }}>
+                           {typeof item === 'string' ? 'Desconhecida' : (item.brand || 'Desconhecida')}
                          </span>
                          <span style={{ color: '#A78BFA', fontWeight: 500, fontSize: '14px', flex: 1 }}>
                            {typeof item === 'string' ? '' : item.type}
