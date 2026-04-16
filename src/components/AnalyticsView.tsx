@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, Download, AlertCircle, TrendingUp, TrendingDown, Users, ChevronRight, X, Filter } from 'lucide-react';
+import { Calendar, Download, X, Filter } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
 export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], professors = [] }: any) => {
