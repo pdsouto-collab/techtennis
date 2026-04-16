@@ -275,8 +275,17 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      let minTension = Infinity;
 
      jobs.forEach((j: any) => {
-         const main = Number(j.tensionMain || 0);
-         const cross = Number(j.tensionCross || 0);
+         let main = 0;
+         let cross = 0;
+         
+         if (j.tension) {
+             const match = j.tension.match(/(\d+)(?:\/(\d+))?/);
+             if (match) {
+                 main = Number(match[1]);
+                 cross = match[2] ? Number(match[2]) : 0; // if it's not hybrid, cross isn't tracked here, but we could use 'main' for both if we wanted. For average, let's just count 'main' twice or 'main' once. Usually if it's "50 lbs" it applies to both mains and crosses. So if no cross, let's assume cross = main so weight is correct.
+                 if (!match[2]) cross = main; 
+             }
+         }
          
          if (main > 0) {
              totalTension += main;
@@ -285,6 +294,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
              if (main < minTension) minTension = main;
          }
          
+         // Only count cross separately if it's a hybrid setup (match[2] exists) or we count both mains/crosses for every job.
+         // Wait, if it says "50 lbs", that means mains AND crosses are 50, so counting it twice or once doesn't change the average. But let's count both since they are two parameters.
          if (cross > 0) {
              totalTension += cross;
              count++;
