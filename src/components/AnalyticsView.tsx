@@ -604,7 +604,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
           {/* 4 Small Metrics */}
           <div style={{ display: 'flex', gap: '16px' }}>
             <div style={{...metricBoxStyle('#4298E7'), minHeight: '80px', padding: '16px'}}>
-              <div style={{ fontSize: '20px', fontWeight: 700 }}>0.00 m</div>
+              <div style={{ fontSize: '20px', fontWeight: 700 }}>{(jobs?.length ? jobs.length * 12 : 0).toFixed(2)} m</div>
               <div style={{ fontSize: '13px' }}>Metros de corda usados</div>
             </div>
             <div style={{...metricBoxStyle('#9B51E0'), minHeight: '80px', padding: '16px'}}>
