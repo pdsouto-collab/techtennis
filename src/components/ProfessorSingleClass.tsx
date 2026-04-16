@@ -1,13 +1,19 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navigation, Info, CheckCircle, Send, ArrowLeft } from 'lucide-react';
+import { Navigation, Info, CheckCircle, Send, ArrowLeft, DollarSign, Award, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ProfessorSingleClass = () => {
   const navigate = useNavigate();
-  const [phase, setPhase] = useState<'requests' | 'chat'>('requests');
+  const [phase, setPhase] = useState<'config' | 'requests' | 'chat'>('config');
   const [chatMessages, setChatMessages] = useState<{sender: 'me' | 'client', text: string}[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
+  
+  // States para a configuração do Perfil do Professor
+  const [price, setPrice] = useState<string>('180');
+  const [experience, setExperience] = useState<string>('12');
+  const [maxDistance, setMaxDistance] = useState<number>(15);
+  const [specialty, setSpecialty] = useState('');
 
   // Simulating requests pinging in
   const requests = [
@@ -36,20 +42,99 @@ export const ProfessorSingleClass = () => {
     }, 1500);
   };
 
+  const handleBack = () => {
+    if(phase === 'chat') setPhase('requests');
+    else if(phase === 'requests') setPhase('config');
+    else navigate('/');
+  };
+
   return (
     <div style={{ paddingTop: '100px', minHeight: '100vh', display: 'flex', justifyContent: 'center', background: 'var(--bg-dark)' }}>
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px', position: 'relative' }}>
         
         {/* Back Button */}
-        <button onClick={() => {
-          if(phase === 'chat') setPhase('requests');
-          else navigate('/');
-        }} style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '24px', fontWeight: 600 }}>
+        <button onClick={handleBack} style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '24px', fontWeight: 600 }}>
           <ArrowLeft size={20} /> Voltar
         </button>
 
         <AnimatePresence mode="wait">
-          {/* FASE 1: LISTA DE SOLICITAÇÕES */}
+          
+          {/* FASE 1: CONFIGURAÇÃO DO PERFIL */}
+          {phase === 'config' && (
+            <motion.div
+              key="config"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="glass-panel"
+              style={{ padding: '32px', borderRadius: '24px' }}
+            >
+              <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, marginBottom: '8px' }}>Seu Perfil de Aulas</h1>
+              <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Configure como os alunos verão você no radar de aulas avulsas.</p>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontWeight: 600 }}>
+                  <DollarSign size={18} color="var(--primary-color)" /> Valor por Hora (R$)
+                </label>
+                <input 
+                  type="number" 
+                  value={price}
+                  onChange={e => setPrice(e.target.value)}
+                  placeholder="Ex: 150"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', color: 'white', outline: 'none', fontSize: '16px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontWeight: 600 }}>
+                  <Award size={18} color="var(--primary-color)" /> Anos de Experiência
+                </label>
+                <input 
+                  type="number" 
+                  value={experience}
+                  onChange={e => setExperience(e.target.value)}
+                  placeholder="Ex: 5"
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', color: 'white', outline: 'none', fontSize: '16px' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '24px' }}>
+                <label style={{ color: 'white', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '12px', fontWeight: 600 }}>
+                   <MapPin size={18} color="var(--primary-color)" /> Raio Máximo de Atendimento ({maxDistance} km)
+                </label>
+                <input 
+                  type="range" 
+                  min="5" 
+                  max="50" 
+                  step="5" 
+                  value={maxDistance} 
+                  onChange={e => setMaxDistance(Number(e.target.value))} 
+                  style={{ width: '100%', accentColor: 'var(--primary-color)' }}
+                />
+                <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6B7280', fontSize: '13px', marginTop: '8px' }}>
+                  <span>5km</span>
+                  <span>25km</span>
+                  <span>50km</span>
+                </div>
+              </div>
+
+              <div style={{ marginBottom: '32px' }}>
+                <label style={{ color: 'white', display: 'block', marginBottom: '12px', fontWeight: 600 }}>Especialidade / Foco (Opcional)</label>
+                <textarea 
+                  placeholder="Ex: Foco em performance, correção biomecânica, treinos táticos..."
+                  value={specialty}
+                  onChange={e => setSpecialty(e.target.value)}
+                  style={{ width: '100%', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '16px', color: 'white', outline: 'none', resize: 'vertical', minHeight: '100px' }}
+                />
+              </div>
+
+              <button onClick={() => setPhase('requests')} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
+                <Navigation size={22} /> Ficar Online no Radar
+              </button>
+            </motion.div>
+          )}
+
+          {/* FASE 2: LISTA DE SOLICITAÇÕES (RADAR) */}
           {phase === 'requests' && (
             <motion.div
               key="requests"
@@ -61,7 +146,7 @@ export const ProfessorSingleClass = () => {
                  <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Radar de Aulas</h1>
                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '6px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%' }} className="pulse-dot"></div>
-                    Buscando
+                    Online ({maxDistance}km)
                  </div>
               </div>
 
@@ -98,11 +183,17 @@ export const ProfessorSingleClass = () => {
                     </div>
                   </motion.div>
                 ))}
+
+                {requests.length === 0 && (
+                  <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                    Buscando alunos na sua região...
+                  </div>
+                )}
               </div>
             </motion.div>
           )}
 
-          {/* FASE 2: CHAT */}
+          {/* FASE 3: CHAT */}
           {phase === 'chat' && (
             <motion.div
               key="chat"

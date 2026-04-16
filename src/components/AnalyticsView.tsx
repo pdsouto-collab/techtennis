@@ -3,12 +3,13 @@ import { motion } from 'framer-motion';
 import { Calendar, Filter, Download, X } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
-export const AnalyticsView = ({ jobs, appSettings }: any) => {
+export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = [] }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
   const [chartMetric, setChartMetric] = useState<'ordens'|'encordoamentos'|'ganhos'>('ordens');
   const [chartPeriod, setChartPeriod] = useState<'dia'|'semana'|'mes'>('mes');
+  const [activeReport, setActiveReport] = useState<string|null>(null);
 
   // Computed data
   const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
@@ -95,6 +96,113 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
     borderRadius: '8px',
     padding: '24px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+  };
+
+  const getReportData = (type: string) => {
+     let data: any[] = [];
+     let headers: string[] = [];
+     let title = '';
+
+     if (type === 'strings') {
+         title = "Modelos mais usados (corda)";
+         headers = ["Modelo", "Encordoamentos"];
+         const counts: Record<string, number> = {};
+         jobs.forEach((j:any) => {
+             if (j.mainString) {
+                 const str = j.isHybrid && j.crossString ? `${j.mainString} / ${j.crossString}` : j.mainString;
+                 counts[str] = (counts[str] || 0) + 1;
+             }
+         });
+         data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'rackets') {
+         title = "Modelos mais usados (raquete)";
+         headers = ["Modelo", "Raquetes"];
+         const counts: Record<string, number> = {};
+         jobs.forEach((j:any) => {
+             if (j.racketModel) {
+                 counts[j.racketModel] = (counts[j.racketModel] || 0) + 1;
+             }
+         });
+         data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'stringers') {
+         title = "Encordoamentos por encordoador";
+         headers = ["Encordoador", "Encordoamentos", "Ganhos"];
+         const stats: Record<string, { count: number, earnings: number }> = {};
+         jobs.forEach((j:any) => {
+             const str = j.stringerName || 'Desconhecido';
+             if (!stats[str]) stats[str] = { count: 0, earnings: 0 };
+             stats[str].count += 1;
+             stats[str].earnings += (j.price || 0);
+         });
+         data = Object.entries(stats).map(([name, s]) => ({ col1: name, col2: s.count, col3: `BRL ${s.earnings.toFixed(2)}` }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'professors') {
+         title = "Encordoamentos por professor";
+         headers = ["Professor indicado", "Encordoamentos", "Ganhos"];
+         const stats: Record<string, { count: number, earnings: number }> = {};
+         jobs.forEach((j:any) => {
+             if (j.commissionedProfessorId) {
+                 const p = professors.find((p:any) => p.id === j.commissionedProfessorId);
+                 const name = p ? p.name : 'Desconhecido';
+                 if (!stats[name]) stats[name] = { count: 0, earnings: 0 };
+                 stats[name].count += 1; // 1 per job = 1 per racket
+                 stats[name].earnings += (j.price || 0);
+             }
+         });
+         data = Object.entries(stats).map(([name, s]) => ({ col1: name, col2: s.count, col3: `BRL ${s.earnings.toFixed(2)}` }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'clubs') {
+         title = "Encordoamentos por clube";
+         headers = ["Clube indicado", "Encordoamentos", "Ganhos"];
+         const stats: Record<string, { count: number, earnings: number }> = {};
+         jobs.forEach((j:any) => {
+             let club = "Sem Clube";
+             const cust = customers.find((c:any) => c.name === j.customerName);
+             if (cust && cust.originClub) {
+                 club = cust.originClub;
+             }
+             if (!stats[club]) stats[club] = { count: 0, earnings: 0 };
+             stats[club].count += 1;
+             stats[club].earnings += (j.price || 0);
+         });
+         data = Object.entries(stats).map(([name, s]) => ({ col1: name, col2: s.count, col3: `BRL ${s.earnings.toFixed(2)}` }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'top_customers_stringings') {
+         title = "Top clientes (encordoamentos)";
+         headers = ["Cliente", "Encordoamentos"];
+         const counts: Record<string, number> = {};
+         jobs.forEach((j:any) => {
+             const name = j.customerName || 'Desconhecido';
+             counts[name] = (counts[name] || 0) + 1;
+         });
+         data = Object.entries(counts).map(([name, count]) => ({ col1: name, col2: count }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'top_customers_orders') {
+         title = "Top clientes (ordens)";
+         headers = ["Cliente", "Ordens"];
+         const stats: Record<string, Set<string>> = {};
+         jobs.forEach((j:any) => {
+             const name = j.customerName || 'Desconhecido';
+             if (!stats[name]) stats[name] = new Set();
+             if (j.orderCode) stats[name].add(j.orderCode);
+         });
+         data = Object.entries(stats).map(([name, set]) => ({ col1: name, col2: set.size }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'top_customers_earnings') {
+         title = "Top clientes (ganhos)";
+         headers = ["Cliente", "Ganhos"];
+         const counts: Record<string, number> = {};
+         jobs.forEach((j:any) => {
+             const name = j.customerName || 'Desconhecido';
+             counts[name] = (counts[name] || 0) + (j.price || 0);
+         });
+         data = Object.entries(counts).map(([name, val]) => ({ col1: name, col2: `BRL ${val.toFixed(2)}`, raw: val }));
+         data.sort((a,b) => b.raw - a.raw);
+     }
+
+     return { title, headers, data };
   };
 
   return (
@@ -244,38 +352,38 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
 
           {/* Top Models and Stringers */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('strings')}>
               <h3>Modelos mais usados (corda)</h3>
-              <div style={{ marginTop: '16px', color: '#4298E7', fontWeight: 600 }}>Nenhum dado</div>
+              <div style={{ marginTop: '16px', color: '#4298E7', fontWeight: 600 }}>Clique para ver detalhes</div>
             </div>
-            <div style={{...panelStyle, background: 'rgba(155, 81, 224, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(155, 81, 224, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('rackets')}>
               <h3>Modelos mais usados (raquete)</h3>
-              <div style={{ marginTop: '16px', color: '#9B51E0', fontWeight: 600 }}>Nenhum dado</div>
+              <div style={{ marginTop: '16px', color: '#9B51E0', fontWeight: 600 }}>Clique para ver detalhes</div>
             </div>
           </div>
 
           {/* Ranking Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('stringers')}>
               <h4>Por encordoador</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.05)'}}>
+            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.05)', cursor: 'pointer'}} onClick={() => setActiveReport('professors')}>
               <h4>Por professor</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.02)'}}>
+            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.02)', cursor: 'pointer'}} onClick={() => setActiveReport('clubs')}>
               <h4>Por clube</h4>
             </div>
           </div>
 
           {/* Top Customers Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(242, 201, 76, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(242, 201, 76, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_stringings')}>
               <h4>Top clientes (encordoamentos)</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(235, 87, 87, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(235, 87, 87, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_orders')}>
               <h4>Top clientes (ordens)</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(111, 207, 151, 0.1)'}}>
+            <div style={{...panelStyle, background: 'rgba(111, 207, 151, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_earnings')}>
               <h4>Top clientes (ganhos)</h4>
             </div>
           </div>
@@ -387,6 +495,57 @@ export const AnalyticsView = ({ jobs, appSettings }: any) => {
         </div>
       </div>
     )}
+
+    {activeReport && (() => {
+       const report = getReportData(activeReport);
+       return (
+         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, color: '#333' }}>
+           <div style={{ background: 'white', width: '90%', maxWidth: '1000px', maxHeight: '80vh', overflow: 'hidden', borderRadius: '8px', display: 'flex', flexDirection: 'column', boxShadow: '0 10px 25px rgba(0,0,0,0.2)' }}>
+             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB', padding: '24px' }}>
+               <h2 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: '#111827' }}>
+                 {report.title}
+               </h2>
+               <button onClick={() => setActiveReport(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}><X size={24} color="#6B7280" /></button>
+             </div>
+             
+             <div style={{ overflowY: 'auto', padding: '24px' }}>
+               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', border: '1px solid #F3F4F6' }}>
+                 <thead style={{ background: '#F9FAFB' }}>
+                   <tr>
+                     {report.headers.map((h, i) => <th key={i} style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151', borderBottom: '1px solid #E5E7EB' }}>{h}</th>)}
+                   </tr>
+                 </thead>
+                 <tbody>
+                   {report.data.length === 0 ? (
+                     <tr>
+                       <td colSpan={report.headers.length} style={{ padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
+                         Nenhum dado disponível na tabela
+                       </td>
+                     </tr>
+                   ) : (
+                     report.data.map((row, i) => (
+                       <tr key={i}>
+                         <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col1}</td>
+                         {row.col2 !== undefined && <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col2}</td>}
+                         {row.col3 !== undefined && <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col3}</td>}
+                       </tr>
+                     ))
+                   )}
+                 </tbody>
+               </table>
+               
+               <div style={{ marginTop: '16px', display: 'flex', justifyContent: 'space-between', color: '#6B7280', fontSize: '14px' }}>
+                 <div>Mostrando {report.data.length} de {report.data.length} registros</div>
+                 <div style={{ display: 'flex', gap: '8px' }}>
+                   <button style={{ background: 'none', border: 'none', color: '#D1D5DB', fontWeight: 600 }}>Anterior</button>
+                   <button style={{ background: 'none', border: 'none', color: '#D1D5DB', fontWeight: 600 }}>Próximo</button>
+                 </div>
+               </div>
+             </div>
+           </div>
+         </div>
+       );
+    })()}
 
     </motion.div>
   );

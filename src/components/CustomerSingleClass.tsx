@@ -73,7 +73,7 @@ export const CustomerSingleClass = () => {
                 <input 
                   type="range" 
                   min="5" 
-                  max="30" 
+                  max="50" 
                   step="5" 
                   value={radius} 
                   onChange={e => setRadius(Number(e.target.value))} 
@@ -81,8 +81,8 @@ export const CustomerSingleClass = () => {
                 />
                 <div style={{ display: 'flex', justifyContent: 'space-between', color: '#6B7280', fontSize: '13px', marginTop: '8px' }}>
                   <span>5km</span>
-                  <span>15km</span>
-                  <span>30km</span>
+                  <span>25km</span>
+                  <span>50km</span>
                 </div>
               </div>
 
