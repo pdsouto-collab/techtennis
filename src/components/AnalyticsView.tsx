@@ -1,11 +1,16 @@
 import { useState, useMemo } from 'react';
-import { motion } from 'framer-motion';
-import { Calendar, Filter, Download, X } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Calendar, Download, AlertCircle, TrendingUp, TrendingDown, Users, ChevronRight, X, Filter } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
 export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], professors = [] }: any) => {
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState<'overview'|'stringings'>('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
+  const [isStringingsFilterOpen, setIsStringingsFilterOpen] = useState(false);
+  const [stringingsSearch, setStringingsSearch] = useState('');
+  const [stringingsFilters, setStringingsFilters] = useState({
+      customer: '', club: '', coach: '', stringer: '', machine: '', racket: '', strings: ''
+  });
   const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
   const [chartMetric, setChartMetric] = useState<'ordens'|'encordoamentos'|'ganhos'>('ordens');
   const [chartPeriod, setChartPeriod] = useState<'dia'|'semana'|'mes'>('mes');
@@ -31,6 +36,54 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        return d >= sDate && d <= eDate;
     });
   }, [rawJobs, periodFilter]);
+
+  const filteredStringings = useMemo(() => {
+     let res = jobs;
+     if (stringingsSearch) {
+         const q = stringingsSearch.toLowerCase();
+         res = res.filter((j: any) => 
+            (j.customerName || '').toLowerCase().includes(q) ||
+            (j.racketModel || '').toLowerCase().includes(q)
+         );
+     }
+     if (stringingsFilters.customer) res = res.filter((j:any) => (j.customerName || '').toLowerCase().includes(stringingsFilters.customer.toLowerCase()));
+     if (stringingsFilters.racket) res = res.filter((j:any) => (j.racketModel || '').toLowerCase().includes(stringingsFilters.racket.toLowerCase()));
+     if (stringingsFilters.strings) res = res.filter((j:any) => (j.mainString || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || (j.crossString || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || (j.tension || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()));
+     if (stringingsFilters.club) res = res.filter((j:any) => {
+         const c = customers.find((c:any) => c.name === j.customerName);
+         return c && (c.originClub || '').toLowerCase().includes(stringingsFilters.club.toLowerCase());
+     });
+     if (stringingsFilters.coach) res = res.filter((j:any) => {
+         const p = professors.find((p:any) => p.id === j.commissionedProfessorId);
+         return p && (p.name || '').toLowerCase().includes(stringingsFilters.coach.toLowerCase());
+     });
+     if (stringingsFilters.stringer) res = res.filter((j:any) => (j.stringerName || '').toLowerCase().includes(stringingsFilters.stringer.toLowerCase()));
+     if (stringingsFilters.machine) res = res.filter((j:any) => (j.machineName || '').toLowerCase().includes(stringingsFilters.machine.toLowerCase()));
+
+     return res;
+  }, [jobs, stringingsSearch, stringingsFilters, customers, professors]);
+
+  const exportToStringingsCSV = () => {
+      const headers = ['Cliente', 'Data', 'Raquete', 'Mains', 'Crosses', 'Clube', 'Professor', 'Encordoador', 'Maquina', 'Preço'];
+      const rows = filteredStringings.map((j: any) => [
+          j.customerName || '',
+          j.date || j.pickupDate || '',
+          j.racketModel || '',
+          j.mainString ? `${j.mainString} ${j.tension?.split('/')[0] || ''}` : (j.tension || ''),
+          j.crossString ? `${j.crossString} ${j.tension?.split('/')[1] || ''}` : '',
+          customers.find((c:any) => c.name === j.customerName)?.originClub || '',
+          professors.find((p:any) => p.id === j.commissionedProfessorId)?.name || '',
+          j.stringerName || '',
+          j.machineName || '',
+          j.price || 0
+      ]);
+      const csvContent = [headers.join(','), ...rows.map((r: any[]) => r.map((cell: any) => `"${cell}"`).join(','))].join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'encordoamentos.csv';
+      link.click();
+  };
 
   // Computed data
   const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
@@ -489,9 +542,11 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <h2 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Analytics {periodFilter ? `(${periodFilter.startDate.split('-').reverse().join('/')} - ${periodFilter.endDate.split('-').reverse().join('/')})` : ''}</h2>
-        <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '10px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
-          <Calendar size={18} /> Período
-        </button>
+        {activeTab !== 'stringings' && (
+           <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '10px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+             <Calendar size={18} /> Período
+           </button>
+        )}
       </div>
 
       {/* Sub Tabs */}
@@ -745,23 +800,20 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
         <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>Raquetes encordoadas (Hoje)</h3>
+            <h3 style={{ fontSize: '20px', fontWeight: 700, margin: 0 }}>Raquetes encordoadas ({periodFilter ? 'Período' : 'Hoje'})</h3>
             <div style={{ display: 'flex', gap: '12px' }}>
-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => setIsStringingsFilterOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
                 <Filter size={16} /> Filtros
-              </button>
-              <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
-                <Calendar size={16} /> Período
               </button>
             </div>
           </div>
 
           <div style={{ ...panelStyle, padding: 0, overflow: 'hidden' }}>
             <div style={{ padding: '16px', borderBottom: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between' }}>
-              <button style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6FCF97', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={exportToStringingsCSV} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6FCF97', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
                 <Download size={16} /> Exportar
               </button>
-              <input type="text" placeholder="Pesquisar..." style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
+              <input type="text" placeholder="Pesquisar..." value={stringingsSearch} onChange={e => setStringingsSearch(e.target.value)} style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #D1D5DB' }} />
             </div>
             <div style={{ overflowX: 'auto' }}>
               <table style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -772,39 +824,42 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Raquete</th>
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Mains</th>
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Crosses</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>HZ</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>DT</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>CH</th>
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Clube</th>
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Professor</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Encordoador</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Máquina</th>
                     <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Preço</th>
-                    <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: '#374151' }}>Horas de jogo</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td colSpan={14} style={{ padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
-                      Nenhum dado disponível na tabela
-                    </td>
-                  </tr>
+                  {filteredStringings.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} style={{ padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px' }}>
+                        Nenhum dado disponível
+                      </td>
+                    </tr>
+                  ) : filteredStringings.map((j: any, i: number) => (
+                    <tr key={i} style={{ borderBottom: '1px solid #E5E7EB' }}>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.customerName || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.date || j.pickupDate || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.racketModel || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.mainString ? `${j.mainString} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.crossString ? `${j.crossString} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{customers.find((c:any) => c.name === j.customerName)?.originClub || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{professors.find((p:any) => p.id === j.commissionedProfessorId)?.name || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.price ? `R$ ${j.price}` : '-'}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
             <div style={{ padding: '16px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', color: '#6B7280', fontSize: '14px' }}>
-              <div>Mostrando 0 a 0 de 0 registros</div>
-              <div style={{ display: 'flex', gap: '8px' }}>
-                <button style={{ background: 'none', border: 'none', color: '#9CA3AF', fontWeight: 600 }}>Anterior</button>
-                <button style={{ background: 'none', border: 'none', color: '#9CA3AF', fontWeight: 600 }}>Próximo</button>
-              </div>
+              <div>Mostrando {filteredStringings.length} de {filteredStringings.length} registros</div>
             </div>
           </div>
 
         </div>
       )}
 
-    <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { console.log('Period selected:', dates); setPeriodFilter(dates); setIsPeriodModalOpen(false); }} />
+    <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { setPeriodFilter(dates); setIsPeriodModalOpen(false); }} />
     
     {detailModalContent && (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, color: '#333' }}>
@@ -897,6 +952,59 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          </div>
        );
     })()}
+    <AnimatePresence>
+      {isStringingsFilterOpen && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+            style={{ width: '100%', maxWidth: '500px', background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 20px 40px rgba(0,0,0,0.2)' }}>
+            
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '24px', borderBottom: '1px solid #E5E7EB' }}>
+              <h2 style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: '#111827' }}>Filtros</h2>
+              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6B7280' }}>
+                <X size={24} />
+              </button>
+            </div>
+
+            <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '60vh', overflowY: 'auto' }}>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Customer</label>
+                <input type="text" value={stringingsFilters.customer} onChange={e => setStringingsFilters({...stringingsFilters, customer: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Referrer club</label>
+                <input type="text" value={stringingsFilters.club} onChange={e => setStringingsFilters({...stringingsFilters, club: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Referrer coach</label>
+                <input type="text" value={stringingsFilters.coach} onChange={e => setStringingsFilters({...stringingsFilters, coach: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Stringer</label>
+                <input type="text" value={stringingsFilters.stringer} onChange={e => setStringingsFilters({...stringingsFilters, stringer: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Machine</label>
+                <input type="text" value={stringingsFilters.machine} onChange={e => setStringingsFilters({...stringingsFilters, machine: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Racket</label>
+                <input type="text" value={stringingsFilters.racket} onChange={e => setStringingsFilters({...stringingsFilters, racket: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Strings</label>
+                <input type="text" value={stringingsFilters.strings} onChange={e => setStringingsFilters({...stringingsFilters, strings: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '24px', borderTop: '1px solid #E5E7EB', background: '#F9FAFB' }}>
+              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#E5E7EB', color: '#374151', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Close</button>
+              <button onClick={() => setStringingsFilters({ customer: '', club: '', coach: '', stringer: '', machine: '', racket: '', strings: '' })} style={{ background: '#FCD34D', color: '#92400E', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Reset</button>
+              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#4298E7', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Apply</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
 
     </motion.div>
   );
