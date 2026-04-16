@@ -457,7 +457,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
 
       {/* Dashboard View */}
       {activeTab === 'overview' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '64px' }}>
           {/* Top 3 KPI */}
           <div style={{ display: 'flex', gap: '24px' }}>
              <div style={metricBoxStyle('#F2C94C')} onClick={() => setDetailModalContent('encordoamentos')}>
@@ -658,39 +658,39 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
 
           {/* Top Models and Stringers */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('strings')}>
-              <h3>Modelos mais usados (corda)</h3>
-              <div style={{ marginTop: '16px', color: '#4298E7', fontWeight: 600 }}>Clique para ver detalhes</div>
+            <div style={{...panelStyle, background: '#4298E7', color: 'white', cursor: 'pointer', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(66, 152, 231, 0.3)' }} onClick={() => setActiveReport('strings')}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>Modelos mais usados (corda)</h3>
+              <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '14px' }}>Clique para ver detalhes</div>
             </div>
-            <div style={{...panelStyle, background: 'rgba(155, 81, 224, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('rackets')}>
-              <h3>Modelos mais usados (raquete)</h3>
-              <div style={{ marginTop: '16px', color: '#9B51E0', fontWeight: 600 }}>Clique para ver detalhes</div>
+            <div style={{...panelStyle, background: '#9B51E0', color: 'white', cursor: 'pointer', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(155, 81, 224, 0.3)' }} onClick={() => setActiveReport('rackets')}>
+              <h3 style={{ margin: 0, fontSize: '18px' }}>Modelos mais usados (raquete)</h3>
+              <div style={{ marginTop: '12px', color: 'rgba(255,255,255,0.8)', fontWeight: 600, fontSize: '14px' }}>Clique para ver detalhes</div>
             </div>
           </div>
 
           {/* Ranking Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(66, 152, 231, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('stringers')}>
-              <h4>Por encordoador</h4>
+            <div style={{...panelStyle, background: '#2D9CDB', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(45, 156, 219, 0.3)' }} onClick={() => setActiveReport('stringers')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Por encordoador</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.05)', cursor: 'pointer'}} onClick={() => setActiveReport('professors')}>
-              <h4>Por professor</h4>
+            <div style={{...panelStyle, background: '#F2C94C', color: '#111827', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(242, 201, 76, 0.3)' }} onClick={() => setActiveReport('professors')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Por professor</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(0, 0, 0, 0.02)', cursor: 'pointer'}} onClick={() => setActiveReport('clubs')}>
-              <h4>Por clube</h4>
+            <div style={{...panelStyle, background: '#27AE60', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)' }} onClick={() => setActiveReport('clubs')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Por clube</h4>
             </div>
           </div>
 
           {/* Top Customers Row */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
-            <div style={{...panelStyle, background: 'rgba(242, 201, 76, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_stringings')}>
-              <h4>Top clientes (encordoamentos)</h4>
+            <div style={{...panelStyle, background: '#F2994A', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(242, 153, 74, 0.3)' }} onClick={() => setActiveReport('top_customers_stringings')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (encordoamentos)</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(235, 87, 87, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_orders')}>
-              <h4>Top clientes (ordens)</h4>
+            <div style={{...panelStyle, background: '#EB5757', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(235, 87, 87, 0.3)' }} onClick={() => setActiveReport('top_customers_orders')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ordens)</h4>
             </div>
-            <div style={{...panelStyle, background: 'rgba(111, 207, 151, 0.1)', cursor: 'pointer'}} onClick={() => setActiveReport('top_customers_earnings')}>
-              <h4>Top clientes (ganhos)</h4>
+            <div style={{...panelStyle, background: '#6FCF97', color: '#111827', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(111, 207, 151, 0.3)' }} onClick={() => setActiveReport('top_customers_earnings')}>
+              <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ganhos)</h4>
             </div>
           </div>
         </div>
