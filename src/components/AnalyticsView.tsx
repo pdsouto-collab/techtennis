@@ -117,10 +117,11 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
     if (maxVal < 4 && chartMetric !== 'ganhos') maxVal = 4;
     if (maxVal === 0) maxVal = 4;
 
-    const width = 100;
+    const width = 1000;
+    const height = 200;
     const path = points.map((p, idx) => {
        const x = (idx / (points.length - 1)) * width;
-       const y = 100 - (p.val / maxVal) * 80 - 10; 
+       const y = height - (p.val / maxVal) * (height * 0.8) - (height * 0.1); 
        return `${idx === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join(' ');
     
@@ -463,12 +464,12 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                  })}
                  
                  {/* SVG Line */}
-                 <svg style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: 0, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', overflow: 'visible' }} preserveAspectRatio="none" viewBox="0 0 100 100">
+                 <svg style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: 0, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', overflow: 'visible' }} preserveAspectRatio="none" viewBox="0 0 1000 200">
                     <motion.path 
                       initial={{ pathLength: 0, opacity: 0 }} 
                       animate={{ pathLength: 1, opacity: 1 }} 
                       transition={{ duration: 1, ease: 'easeOut' }}
-                      d={chartData.path} fill="none" stroke="#4298E7" strokeWidth="3" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
+                      d={chartData.path} fill="none" stroke="#4298E7" strokeWidth="3" strokeLinejoin="round" 
                     />
                  </svg>
 
