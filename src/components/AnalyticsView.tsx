@@ -231,6 +231,24 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      ];
   }, [jobs, appSettings]);
 
+  const topBrands = useMemo(() => {
+     const counts: Record<string, number> = {};
+     const stringsConfig = appSettings?.strings || [];
+     
+     jobs.forEach((j: any) => {
+         if (j.mainString) {
+             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === j.mainString);
+             const brand = strConf?.brand || 'Desconhecida';
+             counts[brand] = (counts[brand] || 0) + 1;
+         }
+     });
+     
+     return Object.entries(counts)
+       .map(([name, count]) => ({ name, count }))
+       .sort((a,b) => b.count - a.count)
+       .slice(0, 5);
+  }, [jobs, appSettings]);
+
   const renderCircleDonut = (items: { label: string, value: number, color: string }[]) => {
     const total = items.reduce((acc, i) => acc + i.value, 0) || 1;
     let currentOffset = 0;
@@ -553,11 +571,26 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                  <h3 style={{ margin: 0, fontSize: '18px' }}>Marcas mais usadas (corda)</h3>
                  <button onClick={() => setActiveReport('strings_brands')} style={{ background: '#E5E7EB', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 600, color: '#374151', cursor: 'pointer', fontSize: '13px' }}>Ver Todos</button>
               </div>
-              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#D1D5DB' }}>
-                 <span style={{ fontWeight: 700, fontSize: '20px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                   TechTennis
-                 </span>
+              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', padding: '16px', overflowY: 'auto' }}>
+                 {topBrands.length === 0 ? (
+                    <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#9CA3AF', fontSize: '14px' }}>
+                      Nenhum dado
+                    </div>
+                 ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {topBrands.map((brand, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: idx < topBrands.length - 1 ? '1px solid #E5E7EB' : 'none' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <span style={{ color: '#9CA3AF', fontWeight: 700, fontSize: '14px' }}>{idx + 1}</span>
+                              <span style={{ color: '#111827', fontWeight: 600, fontSize: '14px' }}>{brand.name}</span>
+                           </div>
+                           <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '14px', background: 'rgba(66, 152, 231, 0.1)', padding: '4px 8px', borderRadius: '4px' }}>
+                             {brand.count}
+                           </span>
+                        </div>
+                      ))}
+                    </div>
+                 )}
               </div>
             </div>
             <div style={panelStyle}>
