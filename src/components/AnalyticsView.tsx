@@ -249,6 +249,25 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        .slice(0, 5);
   }, [jobs, appSettings]);
 
+  const topRacketBrands = useMemo(() => {
+     const counts: Record<string, number> = {};
+     const savedRackets = localStorage.getItem('tt_rackets');
+     const rackets = savedRackets ? JSON.parse(savedRackets) : [];
+     
+     jobs.forEach((j: any) => {
+         if (j.racketModel) {
+             const matchedRacket = rackets.find((r: any) => r.name === j.racketModel);
+             const brand = (matchedRacket && matchedRacket.brand) ? matchedRacket.brand : 'Desconhecida';
+             counts[brand] = (counts[brand] || 0) + 1;
+         }
+     });
+     
+     return Object.entries(counts)
+       .map(([name, count]) => ({ name, count }))
+       .sort((a,b) => b.count - a.count)
+       .slice(0, 5);
+  }, [jobs]);
+
   const renderCircleDonut = (items: { label: string, value: number, color: string }[]) => {
     const total = items.reduce((acc, i) => acc + i.value, 0) || 1;
     let currentOffset = 0;
@@ -310,6 +329,21 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
              if (j.mainString) {
                  const str = j.isHybrid && j.crossString ? `${j.mainString} / ${j.crossString}` : j.mainString;
                  counts[str] = (counts[str] || 0) + 1;
+             }
+         });
+         data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
+         data.sort((a,b) => b.col2 - a.col2);
+     } else if (type === 'rackets_brands') {
+         title = "Marcas mais usadas (raquete)";
+         headers = ["Marca", "Encordoamentos"];
+         const counts: Record<string, number> = {};
+         const savedRackets = localStorage.getItem('tt_rackets');
+         const rackets = savedRackets ? JSON.parse(savedRackets) : [];
+         jobs.forEach((j:any) => {
+             if (j.racketModel) {
+                 const matchedRacket = rackets.find((r: any) => r.name === j.racketModel);
+                 const brand = (matchedRacket && matchedRacket.brand) ? matchedRacket.brand : 'Desconhecida';
+                 counts[brand] = (counts[brand] || 0) + 1;
              }
          });
          data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
@@ -594,8 +628,31 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
               </div>
             </div>
             <div style={panelStyle}>
-              <h3>Marcas mais usadas (raquete)</h3>
-              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px' }} />
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                 <h3 style={{ margin: 0, fontSize: '18px' }}>Marcas mais usadas (raquete)</h3>
+                 <button onClick={() => setActiveReport('rackets_brands')} style={{ background: '#E5E7EB', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 600, color: '#374151', cursor: 'pointer', fontSize: '13px' }}>Ver Todos</button>
+              </div>
+              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', padding: '16px', overflowY: 'auto' }}>
+                 {topRacketBrands.length === 0 ? (
+                    <div style={{ height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', color: '#9CA3AF', fontSize: '14px' }}>
+                      Nenhum dado
+                    </div>
+                 ) : (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                      {topRacketBrands.map((brand, idx) => (
+                        <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '12px', borderBottom: idx < topRacketBrands.length - 1 ? '1px solid #E5E7EB' : 'none' }}>
+                           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                              <span style={{ color: '#9CA3AF', fontWeight: 700, fontSize: '14px' }}>{idx + 1}</span>
+                              <span style={{ color: '#111827', fontWeight: 600, fontSize: '14px' }}>{brand.name}</span>
+                           </div>
+                           <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '14px', background: 'rgba(66, 152, 231, 0.1)', padding: '4px 8px', borderRadius: '4px' }}>
+                             {brand.count}
+                           </span>
+                        </div>
+                      ))}
+                    </div>
+                 )}
+              </div>
             </div>
           </div>
 

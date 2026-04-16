@@ -1603,12 +1603,14 @@ export const StringerDashboard = () => {
                      setRackets(prev => prev.map(r => r.id === racketFormDefault.id ? {
                         ...r,
                         name: fd.get('racketName') as string,
+                        brand: fd.get('brand') as string,
                         identifier: fd.get('identifier') as string,
                      } : r));
                   } else {
                      const newRacket = {
                        id: 'r' + Date.now(),
                        name: fd.get('racketName') as string,
+                       brand: fd.get('brand') as string,
                        identifier: fd.get('identifier') as string,
                        customerId: selectedCustomer?.id || ''
                      };
@@ -1621,6 +1623,10 @@ export const StringerDashboard = () => {
                     <div style={{ gridColumn: 'span 2' }}>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Raquete</label>
                       <input name="racketName" type="text" placeholder="Nome da Raquete" required style={inputStyle} defaultValue={racketFormDefault?.name || ''} />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Marca da Raquete</label>
+                      <input name="brand" type="text" placeholder="Ex: Wilson" style={inputStyle} defaultValue={racketFormDefault?.brand || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
