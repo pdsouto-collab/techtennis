@@ -268,6 +268,40 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        .slice(0, 5);
   }, [jobs]);
 
+  const tensionStats = useMemo(() => {
+     let totalTension = 0;
+     let count = 0;
+     let maxTension = 0;
+     let minTension = Infinity;
+
+     jobs.forEach((j: any) => {
+         const main = Number(j.tensionMain || 0);
+         const cross = Number(j.tensionCross || 0);
+         
+         if (main > 0) {
+             totalTension += main;
+             count++;
+             if (main > maxTension) maxTension = main;
+             if (main < minTension) minTension = main;
+         }
+         
+         if (cross > 0) {
+             totalTension += cross;
+             count++;
+             if (cross > maxTension) maxTension = cross;
+             if (cross < minTension) minTension = cross;
+         }
+     });
+
+     if (minTension === Infinity) minTension = 0;
+
+     return {
+        avg: count > 0 ? (totalTension / count) : 0,
+        max: maxTension,
+        min: minTension
+     };
+  }, [jobs]);
+
   const renderCircleDonut = (items: { label: string, value: number, color: string }[]) => {
     const total = items.reduce((acc, i) => acc + i.value, 0) || 1;
     let currentOffset = 0;
@@ -563,15 +597,15 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
               <div style={{ fontSize: '13px' }}>Metros de corda usados</div>
             </div>
             <div style={{...metricBoxStyle('#9B51E0'), minHeight: '80px', padding: '16px'}}>
-              <div style={{ fontSize: '20px', fontWeight: 700 }}>0.00 Kg</div>
+              <div style={{ fontSize: '20px', fontWeight: 700 }}>{tensionStats.avg.toFixed(2)} Lbs</div>
               <div style={{ fontSize: '13px' }}>Tensão média</div>
             </div>
             <div style={{...metricBoxStyle('#EB5757'), minHeight: '80px', padding: '16px'}}>
-              <div style={{ fontSize: '20px', fontWeight: 700 }}>0.00 Kg</div>
+              <div style={{ fontSize: '20px', fontWeight: 700 }}>{tensionStats.max.toFixed(2)} Lbs</div>
               <div style={{ fontSize: '13px' }}>Maior tensão</div>
             </div>
             <div style={{...metricBoxStyle('#6FCF97'), minHeight: '80px', padding: '16px'}}>
-              <div style={{ fontSize: '20px', fontWeight: 700 }}>0.00 Kg</div>
+              <div style={{ fontSize: '20px', fontWeight: 700 }}>{tensionStats.min.toFixed(2)} Lbs</div>
               <div style={{ fontSize: '13px' }}>Menor tensão</div>
             </div>
           </div>
