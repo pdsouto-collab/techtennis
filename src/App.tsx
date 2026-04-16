@@ -312,7 +312,7 @@ function App() {
           left: '50%',
           transform: 'translate(-50%, -50%) rotate(-15deg)',
           opacity: 0.15,
-          zIndex: 0,
+          zIndex: -1,
           pointerEvents: 'none',
           display: 'flex',
           justifyContent: 'center',
