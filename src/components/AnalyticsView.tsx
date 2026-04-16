@@ -805,6 +805,9 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
               <button onClick={() => setIsStringingsFilterOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#4298E7', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
                 <Filter size={16} /> Filtros
               </button>
+              <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '8px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
+                <Calendar size={16} /> Período
+              </button>
             </div>
           </div>
 
@@ -851,7 +854,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                 </tbody>
               </table>
             </div>
-            <div style={{ padding: '16px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', color: '#6B7280', fontSize: '14px' }}>
+            <div style={{ padding: '16px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', color: '#FFFFFF', fontSize: '14px' }}>
               <div>Mostrando {filteredStringings.length} de {filteredStringings.length} registros</div>
             </div>
           </div>
@@ -967,39 +970,39 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
 
             <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '20px', maxHeight: '60vh', overflowY: 'auto' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Customer</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Cliente</label>
                 <input type="text" value={stringingsFilters.customer} onChange={e => setStringingsFilters({...stringingsFilters, customer: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Referrer club</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Clube de origem</label>
                 <input type="text" value={stringingsFilters.club} onChange={e => setStringingsFilters({...stringingsFilters, club: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Referrer coach</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Professor</label>
                 <input type="text" value={stringingsFilters.coach} onChange={e => setStringingsFilters({...stringingsFilters, coach: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Stringer</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Encordoador</label>
                 <input type="text" value={stringingsFilters.stringer} onChange={e => setStringingsFilters({...stringingsFilters, stringer: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Machine</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Máquina</label>
                 <input type="text" value={stringingsFilters.machine} onChange={e => setStringingsFilters({...stringingsFilters, machine: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Racket</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Raquete</label>
                 <input type="text" value={stringingsFilters.racket} onChange={e => setStringingsFilters({...stringingsFilters, racket: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
               <div>
-                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Strings</label>
+                <label style={{ display: 'block', fontSize: '14px', color: '#374151', marginBottom: '8px' }}>Cordas</label>
                 <input type="text" value={stringingsFilters.strings} onChange={e => setStringingsFilters({...stringingsFilters, strings: e.target.value})} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: '1px solid #D1D5DB', background: 'white', fontSize: '15px' }} />
               </div>
             </div>
 
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', padding: '24px', borderTop: '1px solid #E5E7EB', background: '#F9FAFB' }}>
-              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#E5E7EB', color: '#374151', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Close</button>
-              <button onClick={() => setStringingsFilters({ customer: '', club: '', coach: '', stringer: '', machine: '', racket: '', strings: '' })} style={{ background: '#FCD34D', color: '#92400E', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Reset</button>
-              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#4298E7', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Apply</button>
+              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#E5E7EB', color: '#374151', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Fechar</button>
+              <button onClick={() => setStringingsFilters({ customer: '', club: '', coach: '', stringer: '', machine: '', racket: '', strings: '' })} style={{ background: '#FCD34D', color: '#92400E', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Limpar</button>
+              <button onClick={() => setIsStringingsFilterOpen(false)} style={{ background: '#4298E7', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '8px', fontWeight: 600, fontSize: '15px', cursor: 'pointer' }}>Aplicar</button>
             </div>
           </motion.div>
         </div>
