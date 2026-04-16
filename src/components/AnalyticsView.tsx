@@ -3,13 +3,34 @@ import { motion } from 'framer-motion';
 import { Calendar, Filter, Download, X } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
-export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = [] }: any) => {
+export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], professors = [] }: any) => {
   const [activeTab, setActiveTab] = useState('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [detailModalContent, setDetailModalContent] = useState<'encordoamentos' | 'ordens' | 'ganhos' | null>(null);
   const [chartMetric, setChartMetric] = useState<'ordens'|'encordoamentos'|'ganhos'>('ordens');
   const [chartPeriod, setChartPeriod] = useState<'dia'|'semana'|'mes'>('mes');
   const [activeReport, setActiveReport] = useState<string|null>(null);
+  const [periodFilter, setPeriodFilter] = useState<{ startDate: string, endDate: string } | null>(null);
+
+  const jobs = useMemo(() => {
+    if (!periodFilter) return rawJobs || [];
+    const sDate = new Date(periodFilter.startDate + 'T00:00:00Z');
+    const eDate = new Date(periodFilter.endDate + 'T23:59:59Z');
+    
+    return (rawJobs || []).filter((j: any) => {
+       if (!j.date) return false;
+       let d: Date;
+       if (j.date.includes('/')) {
+         const parts = j.date.split(' ')[0].split('/');
+         if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
+         else d = new Date();
+       } else {
+         d = new Date(j.date);
+       }
+       if (isNaN(d.getTime())) return false;
+       return d >= sDate && d <= eDate;
+    });
+  }, [rawJobs, periodFilter]);
 
   // Computed data
   const ordersCount = new Set(jobs.map((j: any) => j.orderCode).filter(Boolean)).size || 0;
@@ -96,6 +117,98 @@ export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = 
     borderRadius: '8px',
     padding: '24px',
     boxShadow: '0 2px 4px rgba(0,0,0,0.05)',
+  };
+
+  const costCenters = useMemo(() => {
+     let stringing = 0, grip = 0, overgrip = 0, custom = 0, others = 0, racket = 0;
+     jobs.forEach((j: any) => {
+         const baseStrPrice = j.basePrice || 0;
+         const strDiscount = (j.priceDiscountPercent || 0) / 100;
+         stringing += baseStrPrice * (1 - strDiscount);
+         
+         if (Array.isArray(j.auxServices)) {
+            j.auxServices.forEach((aux: any) => {
+               if (aux.isActive) {
+                   const auxPrice = aux.price || 0;
+                   const auxDisc = aux.discountPercent ? aux.discountPercent / 100 : 0;
+                   const finalAux = auxPrice * (1 - auxDisc);
+                   switch (aux.type) {
+                     case 'Trocar grip base': grip += finalAux; break;
+                     case 'Trocar overgrip': overgrip += finalAux; break;
+                     case 'Serviço customizado': custom += finalAux; break;
+                     case 'Compra de raquete nova': racket += finalAux; break;
+                     case 'Outros serviços': others += finalAux; break;
+                   }
+               }
+            });
+         }
+     });
+
+     return [
+       { label: 'Encordoamento', value: stringing, color: '#4298E7' },
+       { label: 'Overgrip', value: overgrip, color: '#6FCF97' },
+       { label: 'Grip', value: grip, color: '#F2C94C' },
+       { label: 'Customização', value: custom, color: '#EB5757' },
+       { label: 'Outros serviços', value: others, color: '#9B51E0' },
+       { label: 'Raquete nova', value: racket, color: '#111827' },
+     ];
+  }, [jobs]);
+
+  const genderStats = useMemo(() => {
+     let males = 0, females = 0, uninformed = 0;
+     jobs.forEach((j: any) => {
+         const custName = j.customerName;
+         const c = customers.find((c: any) => c.name === custName);
+         if (!c || !c.gender || c.gender === 'N' || c.gender === '') {
+             uninformed++;
+         } else if (c.gender === 'M') {
+             males++;
+         } else if (c.gender === 'F') {
+             females++;
+         } else {
+             uninformed++;
+         }
+     });
+     return [
+       { label: 'Masculino', value: males, color: '#4298E7' },
+       { label: 'Feminino', value: females, color: '#6FCF97' },
+       { label: 'Não informado', value: uninformed, color: '#F2C94C' }
+     ];
+  }, [jobs, customers]);
+
+  const renderCircleDonut = (items: { label: string, value: number, color: string }[]) => {
+    const total = items.reduce((acc, i) => acc + i.value, 0) || 1;
+    let currentOffset = 0;
+    const circumference = 2 * Math.PI * 40;
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', height: '100%', padding: '16px' }}>
+        <svg viewBox="0 0 100 100" style={{ transform: 'rotate(-90deg)', width: '120px', height: '120px', flexShrink: 0 }}>
+          {total === items.reduce((acc, i) => acc + i.value, 0) && items.map((item, i) => {
+             if (item.value === 0) return null;
+             const percent = item.value / total;
+             const dashArray = `${percent * circumference} ${circumference}`;
+             const offset = -currentOffset * circumference;
+             currentOffset += percent;
+             return <circle key={i} cx="50" cy="50" r="40" fill="none" stroke={item.color} strokeWidth="20" strokeDasharray={dashArray} strokeDashoffset={offset} />;
+          })}
+          {(items.reduce((acc, i) => acc + i.value, 0) === 0) && <circle cx="50" cy="50" r="40" fill="none" stroke="#E5E7EB" strokeWidth="20" />}
+        </svg>
+        <div style={{ marginLeft: '16px', display: 'flex', flexDirection: 'column', gap: '8px', flex: 1, overflowY: 'auto', maxHeight: '130px' }}>
+           {items.map((item, i) => (
+             <div key={i} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div style={{ width: '8px', height: '8px', borderRadius: '50%', background: item.color }} />
+                  <span style={{ color: '#4B5563', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '100px' }}>{item.label}</span>
+                </div>
+                <span style={{ fontWeight: 600, color: '#111827' }}>
+                  {items.reduce((acc, count) => acc + count.value, 0) > 0 ? (item.value / total * 100).toFixed(1) : 0}%
+                </span>
+             </div>
+           ))}
+        </div>
+      </div>
+    );
   };
 
   const getReportData = (type: string) => {
@@ -210,7 +323,7 @@ export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = 
       
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Analytics (Últimos 7 dias)</h2>
+        <h2 style={{ fontSize: '24px', fontWeight: 700, margin: 0 }}>Analytics {periodFilter ? `(${periodFilter.startDate.split('-').reverse().join('/')} - ${periodFilter.endDate.split('-').reverse().join('/')})` : ''}</h2>
         <button onClick={() => setIsPeriodModalOpen(true)} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#6136B3', color: 'white', padding: '10px 16px', borderRadius: '6px', border: 'none', fontWeight: 600, cursor: 'pointer' }}>
           <Calendar size={18} /> Período
         </button>
@@ -326,11 +439,15 @@ export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = 
           <div style={{ display: 'flex', gap: '24px' }}>
             <div style={{...panelStyle, flex: 1.5}}>
               <h3>Centros de custo</h3>
-              <div style={{ height: '150px', background: '#F9FAFB', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>Gráfico Rosca</div>
+              <div style={{ height: '170px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px' }}>
+                 {renderCircleDonut(costCenters)}
+              </div>
             </div>
             <div style={{...panelStyle, flex: 1}}>
               <h3>Encordoamentos por gênero</h3>
-              <div style={{ height: '150px', background: '#F9FAFB', marginTop: '16px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#9CA3AF' }}>Gráfico Rosca</div>
+              <div style={{ height: '170px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px' }}>
+                 {renderCircleDonut(genderStats)}
+              </div>
             </div>
           </div>
 
@@ -453,7 +570,7 @@ export const AnalyticsView = ({ jobs, appSettings, customers = [], professors = 
         </div>
       )}
 
-    <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { console.log('Period selected:', dates); setIsPeriodModalOpen(false); }} />
+    <PeriodModal isOpen={isPeriodModalOpen} onClose={() => setIsPeriodModalOpen(false)} onApply={(dates: any) => { console.log('Period selected:', dates); setPeriodFilter(dates); setIsPeriodModalOpen(false); }} />
     
     {detailModalContent && (
       <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', justifyContent: 'center', alignItems: 'center', zIndex: 1000, color: '#333' }}>
