@@ -23,14 +23,15 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
     const eDate = new Date(periodFilter.endDate + 'T23:59:59Z');
     
     return (rawJobs || []).filter((j: any) => {
-       if (!j.date) return false;
+       const dateStr = j.date || j.pickupDate || j.createdAt;
+       if (!dateStr) return false;
        let d: Date;
-       if (j.date.includes('/')) {
-         const parts = j.date.split(' ')[0].split('/');
+       if (dateStr.includes('/')) {
+         const parts = dateStr.split(' ')[0].split('/');
          if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
          else d = new Date();
        } else {
-         d = new Date(j.date);
+         d = new Date(dateStr);
        }
        if (isNaN(d.getTime())) return false;
        return d >= sDate && d <= eDate;
@@ -93,14 +94,15 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
   const chartData = useMemo(() => {
     const grouped: any = {};
     jobs.forEach((j: any) => {
-       if (!j.date) return;
+       const dateStr = j.date || j.pickupDate || j.createdAt;
+       if (!dateStr) return;
        let d: Date;
-       if (j.date.includes('/')) {
-         const parts = j.date.split(' ')[0].split('/'); // hande DD/MM/YYYY HH:MM
+       if (dateStr.includes('/')) {
+         const parts = dateStr.split(' ')[0].split('/');
          if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
          else d = new Date();
        } else {
-         d = new Date(j.date);
+         d = new Date(dateStr);
        }
        if (isNaN(d.getTime())) d = new Date(); // fallback
 
