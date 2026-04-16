@@ -332,34 +332,35 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                     )}
                   </div>
                 ) : (
-                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
-                     <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>
-                       {activeTab === 'commissions' || activeTab === 'strings' ? (typeof item === 'string' ? item : item.name) : activeTab === 'clubDiscounts' ? `${item.club} - ${item.service}` : item}
-                     </span>
-                     {activeTab === 'commissions' && (
-                       <span style={{ color: '#F2C94C', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(242, 201, 76, 0.1)', borderRadius: '100px' }}>
-                         {item.percent}%
-                       </span>
-                     )}
-                     {activeTab === 'strings' && typeof item === 'string' && (
-                       <span style={{ color: '#EB5757', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(235, 87, 87, 0.1)', borderRadius: '100px' }} title="Clique no lápis para definir o preço">
-                         BRL 0.00 (Falta Preço)
-                       </span>
-                     )}
-                     {activeTab === 'strings' && typeof item !== 'string' && (
-                       <div style={{ display: 'flex', gap: '8px' }}>
-                         {item.type && <span style={{ color: '#9B51E0', fontWeight: 600, fontSize: '13px', padding: '4px 8px', background: 'rgba(155, 81, 224, 0.1)', borderRadius: '100px' }}>
-                           {item.type}
-                         </span>}
-                         <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(66, 152, 231, 0.1)', borderRadius: '100px' }}>
-                           BRL {item.price.toFixed(2)}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flex: 1, paddingRight: '16px' }}>
+                     {activeTab === 'strings' ? (
+                       <>
+                         <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.5, minWidth: '150px' }}>
+                           {typeof item === 'string' ? item : item.name}
                          </span>
-                       </div>
-                     )}
-                     {activeTab === 'clubDiscounts' && (
-                       <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(111, 207, 151, 0.1)', borderRadius: '100px' }}>
-                         -{item.percent}% {item.startDate ? `(${item.startDate.split('-').reverse().join('/')} até ${item.endDate.split('-').reverse().join('/')})` : '(Sempre)'}
-                       </span>
+                         <span style={{ color: '#A78BFA', fontWeight: 500, fontSize: '14px', flex: 1 }}>
+                           {typeof item === 'string' ? '' : item.type}
+                         </span>
+                         <span style={{ color: '#60A5FA', fontWeight: 500, fontSize: '14px', flex: 1 }}>
+                           BRL {typeof item === 'string' ? '0.00' : item.price.toFixed(2)}
+                         </span>
+                       </>
+                     ) : (
+                       <>
+                         <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>
+                           {activeTab === 'commissions' ? (typeof item === 'string' ? item : item.name) : activeTab === 'clubDiscounts' ? `${item.club} - ${item.service}` : item}
+                         </span>
+                         {activeTab === 'commissions' && (
+                           <span style={{ color: '#F2C94C', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(242, 201, 76, 0.1)', borderRadius: '100px' }}>
+                             {item.percent}%
+                           </span>
+                         )}
+                         {activeTab === 'clubDiscounts' && (
+                           <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(111, 207, 151, 0.1)', borderRadius: '100px' }}>
+                             -{item.percent}% {item.startDate ? `(${item.startDate.split('-').reverse().join('/')} até ${item.endDate.split('-').reverse().join('/')})` : '(Sempre)'}
+                           </span>
+                         )}
+                       </>
                      )}
                   </div>
                 )}
