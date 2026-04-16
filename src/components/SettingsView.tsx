@@ -12,6 +12,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   const [editCommissionPercent, setEditCommissionPercent] = useState('');
   const [newStringPrice, setNewStringPrice] = useState('');
   const [editStringPrice, setEditStringPrice] = useState('');
+  const [newStringType, setNewStringType] = useState('');
+  const [editStringType, setEditStringType] = useState('');
 
   const [newClub, setNewClub] = useState('');
   const [newDiscountService, setNewDiscountService] = useState('');
@@ -37,7 +39,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       value = { name: newItemText.trim(), percent: Number(newCommissionPercent) || 0 };
     } else if (activeTab === 'strings') {
       if (!newItemText.trim()) return;
-      value = { name: newItemText.trim(), price: Number(newStringPrice) || 0 };
+      value = { name: newItemText.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento' };
     } else if (activeTab === 'clubDiscounts') {
       if (!newClub || !newDiscountService || !newDiscountPercent) return;
       value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent), startDate: newStartDate, endDate: newEndDate };
@@ -52,6 +54,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setNewItemText('');
     setNewCommissionPercent('');
     setNewStringPrice('');
+    setNewStringType('');
     setNewClub('');
     setNewDiscountService('');
     setNewDiscountPercent('');
@@ -77,9 +80,11 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       if (typeof str === 'string') {
         setEditItemText(str);
         setEditStringPrice('0');
+        setEditStringType('Monofilamento');
       } else {
         setEditItemText(str.name);
         setEditStringPrice(str.price.toString());
+        setEditStringType(str.type || 'Monofilamento');
       }
     } else if (activeTab === 'clubDiscounts') {
       setEditClub(currentList[index].club);
@@ -100,7 +105,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
          newList[index] = { name: editItemText.trim(), percent: Number(editCommissionPercent) || 0 };
       } else if (activeTab === 'strings') {
          if (!editItemText.trim()) return prev;
-         newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0 };
+         newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento' };
       } else if (activeTab === 'clubDiscounts') {
          if (!editClub.trim() || !editDiscountService || !editDiscountPercent) return prev;
          newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent), startDate: editStartDate, endDate: editEndDate };
@@ -217,14 +222,26 @@ export const SettingsView = ({ settings, setSettings }: any) => {
             />
           )}
           {activeTab === 'strings' && (
-            <input 
-              type="number" 
-              value={newStringPrice}
-              onChange={(e) => setNewStringPrice(e.target.value)}
-              placeholder="Preço (BRL)"
-              onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
-              style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
-            />
+            <>
+              <select
+                value={newStringType}
+                onChange={(e) => setNewStringType(e.target.value)}
+                style={{ width: '180px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              >
+                <option value="" disabled style={{ color: 'rgba(255,255,255,0.6)' }}>Tipo...</option>
+                <option value="Multifilamento">1- Multifilamento</option>
+                <option value="Monofilamento">2- Monofilamento</option>
+                <option value="Tripa Natural">3- Tripa Natural</option>
+              </select>
+              <input 
+                type="number" 
+                value={newStringPrice}
+                onChange={(e) => setNewStringPrice(e.target.value)}
+                placeholder="Preço (BRL)"
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              />
+            </>
           )}
           <button onClick={handleAdd} style={{ padding: '0 24px', borderRadius: '8px', border: 'none', background: '#6FCF97', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
             <Plus size={18} /> Adicionar
@@ -294,13 +311,24 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                       />
                     )}
                     {activeTab === 'strings' && (
-                      <input 
-                        type="number"
-                        value={editStringPrice}
-                        onChange={(e) => setEditStringPrice(e.target.value)}
-                        onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
-                        style={{ width: '80px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
-                      />
+                      <>
+                        <select
+                          value={editStringType}
+                          onChange={(e) => setEditStringType(e.target.value)}
+                          style={{ width: '150px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                        >
+                          <option value="Multifilamento">1- Multifilamento</option>
+                          <option value="Monofilamento">2- Monofilamento</option>
+                          <option value="Tripa Natural">3- Tripa Natural</option>
+                        </select>
+                        <input 
+                          type="number"
+                          value={editStringPrice}
+                          onChange={(e) => setEditStringPrice(e.target.value)}
+                          onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                          style={{ width: '80px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                        />
+                      </>
                     )}
                   </div>
                 ) : (
@@ -319,9 +347,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                        </span>
                      )}
                      {activeTab === 'strings' && typeof item !== 'string' && (
-                       <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(66, 152, 231, 0.1)', borderRadius: '100px' }}>
-                         BRL {item.price.toFixed(2)}
-                       </span>
+                       <div style={{ display: 'flex', gap: '8px' }}>
+                         {item.type && <span style={{ color: '#9B51E0', fontWeight: 600, fontSize: '13px', padding: '4px 8px', background: 'rgba(155, 81, 224, 0.1)', borderRadius: '100px' }}>
+                           {item.type}
+                         </span>}
+                         <span style={{ color: '#4298E7', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(66, 152, 231, 0.1)', borderRadius: '100px' }}>
+                           BRL {item.price.toFixed(2)}
+                         </span>
+                       </div>
                      )}
                      {activeTab === 'clubDiscounts' && (
                        <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(111, 207, 151, 0.1)', borderRadius: '100px' }}>
