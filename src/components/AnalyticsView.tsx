@@ -468,7 +468,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                       initial={{ pathLength: 0, opacity: 0 }} 
                       animate={{ pathLength: 1, opacity: 1 }} 
                       transition={{ duration: 1, ease: 'easeOut' }}
-                      d={chartData.path} fill="none" stroke="#4298E7" strokeWidth="2.5" strokeLinejoin="round" 
+                      d={chartData.path} fill="none" stroke="#4298E7" strokeWidth="3" strokeLinejoin="round" vectorEffect="non-scaling-stroke"
                     />
                  </svg>
 
@@ -494,7 +494,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                  {chartData.points.map((p, idx) => {
                     const left = `${(idx / (chartData.points.length - 1)) * 100}%`;
                     return (
-                       <div key={idx} style={{ position: 'absolute', left, top: 0, transform: 'translateX(-50%)', fontSize: '11px', color: '#9CA3AF', whiteSpace: 'nowrap' }}>
+                       <div key={idx} style={{ position: 'absolute', left, top: 0, transform: 'translateX(-50%)', fontSize: '11px', color: 'white', whiteSpace: 'nowrap' }}>
                           {p.label}
                        </div>
                     );
