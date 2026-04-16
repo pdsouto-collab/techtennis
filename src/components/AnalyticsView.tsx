@@ -204,6 +204,32 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      ];
   }, [jobs, customers]);
 
+  const stringTypes = useMemo(() => {
+     let multifilamento = 0, monofilamento = 0, tripa = 0;
+     const stringsConfig = appSettings?.strings || [];
+     
+     jobs.forEach((j: any) => {
+         if (j.mainString) {
+             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === j.mainString);
+             let type = strConf?.type;
+             
+             if (!type && stringsConfig.includes(j.mainString)) {
+                 type = 'Monofilamento';
+             }
+
+             if (type === 'Multifilamento') multifilamento++;
+             else if (type === 'Monofilamento') monofilamento++;
+             else if (type === 'Tripa Natural') tripa++;
+         }
+     });
+
+     return [
+       { label: 'Monofilamento', value: monofilamento, color: '#4298E7' },
+       { label: 'Multifilamento', value: multifilamento, color: '#9B51E0' },
+       { label: 'Tripa Natural', value: tripa, color: '#F2C94C' }
+     ];
+  }, [jobs, appSettings]);
+
   const renderCircleDonut = (items: { label: string, value: number, color: string }[]) => {
     const total = items.reduce((acc, i) => acc + i.value, 0) || 1;
     let currentOffset = 0;
@@ -504,7 +530,9 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '24px' }}>
             <div style={panelStyle}>
               <h3>Tipos de cordas</h3>
-              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px' }} />
+              <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px' }}>
+                 {renderCircleDonut(stringTypes)}
+              </div>
             </div>
             <div style={panelStyle}>
               <h3>Marcas mais usadas (corda)</h3>
