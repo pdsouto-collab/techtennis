@@ -44,7 +44,6 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        let d: Date;
        if (j.date.includes('/')) {
          const parts = j.date.split(' ')[0].split('/'); // hande DD/MM/YYYY HH:MM
-         // fallbacks
          if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
          else d = new Date();
        } else {
@@ -71,32 +70,61 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        grouped[key].ganhos += j.price || 0;
     });
 
-    const dates = Object.keys(grouped).sort();
-    let dataPoints = [0, 0, 0, 0, 0, 0];
-
-    if (dates.length > 0) {
-      dataPoints = dates.map(d => {
-         if (chartMetric === 'ordens') return grouped[d].ordens.size;
-         if (chartMetric === 'encordoamentos') return grouped[d].encord;
-         return grouped[d].ganhos;
-      });
+    let dates = Object.keys(grouped).sort();
+    
+    if (chartPeriod === 'dia' && dates.length > 0) {
+      const first = new Date(dates[0]);
+      const last = new Date(dates[dates.length - 1]);
+      const filled = [];
+      const curr = new Date(first);
+      while (curr <= last && filled.length < 30) {
+         filled.push(curr.toISOString().split('T')[0]);
+         curr.setDate(curr.getDate() + 1);
+      }
+      dates = filled;
+    } else if (dates.length === 0) {
+      if (chartPeriod === 'dia') {
+         dates = [new Date().toISOString().split('T')[0]];
+      } else {
+         dates = ['N/A'];
+      }
     }
 
-    while (dataPoints.length < 6) dataPoints.unshift(0);
-    dataPoints = dataPoints.slice(-6); // last 6 points
+    if (dates.length > 15 && chartPeriod === 'dia') {
+       dates = dates.slice(-15); 
+    }
 
-    let maxVal = Math.max(...dataPoints);
+    let points = dates.map(d => {
+       const g = grouped[d] || { ordens: new Set(), encord: 0, ganhos: 0 };
+       let val = 0;
+       if (chartMetric === 'ordens') val = g.ordens ? g.ordens.size : 0;
+       else if (chartMetric === 'encordoamentos') val = g.encord || 0;
+       else val = g.ganhos || 0;
+
+       let label = d;
+       if (chartPeriod === 'dia' && d.includes('-')) {
+          const parts = d.split('-');
+          if (parts.length === 3) label = `${parts[2]}/${parts[1]}`; 
+       }
+       return { label, val };
+    });
+
+    if (points.length < 2) {
+       points.unshift({ label: '-', val: 0 });
+    }
+
+    let maxVal = Math.max(...points.map(p => p.val));
     if (maxVal < 4 && chartMetric !== 'ganhos') maxVal = 4;
-    if (maxVal === 0) maxVal = 4; // fallback scale
+    if (maxVal === 0) maxVal = 4;
 
     const width = 100;
-    const path = dataPoints.map((val, idx) => {
-       const x = (idx / (dataPoints.length - 1)) * width;
-       const y = 90 - (val / maxVal) * 80; 
+    const path = points.map((p, idx) => {
+       const x = (idx / (points.length - 1)) * width;
+       const y = 100 - (p.val / maxVal) * 80 - 10; 
        return `${idx === 0 ? 'M' : 'L'}${x.toFixed(2)},${y.toFixed(2)}`;
     }).join(' ');
     
-    return { path, maxVal, dataPoints };
+    return { path, maxVal, points };
   }, [jobs, chartMetric, chartPeriod]);
 
   const metricBoxStyle = (bg: string) => ({
@@ -380,38 +408,59 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             </div>
 
             {/* Chart Body */}
-            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', marginTop: '16px' }}>
-               {[chartData.maxVal, chartData.maxVal * 0.75, chartData.maxVal * 0.5, chartData.maxVal * 0.25, 0].map((val, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', width: '100%', height: '40px' }}>
-                     <span style={{ width: '40px', fontSize: '12px', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>
-                       {chartMetric === 'ganhos' ? val.toFixed(0) : Math.round(val)}
-                     </span>
-                     <div style={{ flex: 1, borderTop: '1px solid #F3F4F6' }}></div>
-                  </div>
-               ))}
-               
-               {/* Animated svg line chart */}
-               <svg style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: '20px', width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', overflow: 'visible' }} preserveAspectRatio="none" viewBox="0 0 100 100">
-                  <defs>
-                     <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#86E09C" stopOpacity="0.4" />
-                        <stop offset="100%" stopColor="#86E09C" stopOpacity="0" />
-                     </linearGradient>
-                  </defs>
-                  
-                  <motion.path 
-                    initial={{ pathLength: 0, opacity: 0 }} 
-                    animate={{ pathLength: 1, opacity: 1 }} 
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                    d={chartData.path} fill="none" stroke="#86E09C" strokeWidth="3.5" strokeLinejoin="round" 
-                  />
-                  <motion.path 
-                    initial={{ opacity: 0 }} 
-                    animate={{ opacity: 1 }} 
-                    transition={{ duration: 1, delay: 0.5 }}
-                    d={`${chartData.path} L100,100 L0,100 Z`} fill="url(#gradient)" 
-                  />
-               </svg>
+            <div style={{ position: 'relative', flex: 1, display: 'flex', flexDirection: 'column', marginTop: '32px' }}>
+               {/* Horizontal Grid lines */}
+               <div style={{ position: 'relative', height: '220px' }}>
+                 {[chartData.maxVal, chartData.maxVal * 0.75, chartData.maxVal * 0.5, chartData.maxVal * 0.25, 0].map((val, idx) => {
+                    const bottom = `${(val / chartData.maxVal) * 80 + 10}%`;
+                    return (
+                      <div key={idx} style={{ position: 'absolute', left: 0, right: 0, bottom, display: 'flex', alignItems: 'center', transform: 'translateY(50%)' }}>
+                         <span style={{ width: '40px', fontSize: '12px', color: '#9CA3AF', textAlign: 'right', paddingRight: '12px' }}>
+                           {chartMetric === 'ganhos' ? val.toFixed(0) : Math.round(val)}
+                         </span>
+                         <div style={{ flex: 1, borderTop: '1px solid #F3F4F6' }}></div>
+                      </div>
+                    )
+                 })}
+                 
+                 {/* SVG Line */}
+                 <svg style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: 0, width: 'calc(100% - 40px)', height: '100%', pointerEvents: 'none', overflow: 'visible' }} preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <motion.path 
+                      initial={{ pathLength: 0, opacity: 0 }} 
+                      animate={{ pathLength: 1, opacity: 1 }} 
+                      transition={{ duration: 1, ease: 'easeOut' }}
+                      d={chartData.path} fill="none" stroke="#4298E7" strokeWidth="2.5" strokeLinejoin="round" 
+                    />
+                 </svg>
+
+                 {/* Square nodes */}
+                 <div style={{ position: 'absolute', top: 0, left: '40px', right: 0, bottom: 0, pointerEvents: 'none' }}>
+                    {chartData.points.map((p, idx) => {
+                       const left = `${(idx / (chartData.points.length - 1)) * 100}%`;
+                       const bottom = `${(p.val / chartData.maxVal) * 80 + 10}%`; 
+                       return (
+                         <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + (idx * 0.05) }} key={idx} 
+                              style={{ position: 'absolute', left, bottom, transform: 'translate(-50%, 50%)', 
+                                      background: '#4298E7', color: 'white', fontSize: '11px', 
+                                      padding: '2px 5px', borderRadius: '4px', fontWeight: 'bold', zIndex: 10 }}>
+                            {chartMetric === 'ganhos' ? p.val.toFixed(0) : p.val}
+                         </motion.div>
+                       )
+                    })}
+                 </div>
+               </div>
+
+               {/* X axis labels */}
+               <div style={{ position: 'relative', height: '24px', marginLeft: '40px', marginTop: '16px' }}>
+                 {chartData.points.map((p, idx) => {
+                    const left = `${(idx / (chartData.points.length - 1)) * 100}%`;
+                    return (
+                       <div key={idx} style={{ position: 'absolute', left, top: 0, transform: 'translateX(-50%)', fontSize: '11px', color: '#9CA3AF', whiteSpace: 'nowrap' }}>
+                          {p.label}
+                       </div>
+                    );
+                 })}
+               </div>
             </div>
           </div>
 
