@@ -309,7 +309,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      let title = '';
 
      if (type === 'strings_brands') {
-         title = "Marcas mais usadas (corda)";
+         title = "Cordas mais usadas";
          headers = ["Marca", "Encordoamentos"];
          const counts: Record<string, number> = {};
          jobs.forEach((j:any) => {
@@ -334,7 +334,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          data = Object.entries(counts).map(([model, count]) => ({ col1: model, col2: count }));
          data.sort((a,b) => b.col2 - a.col2);
      } else if (type === 'rackets_brands') {
-         title = "Marcas mais usadas (raquete)";
+         title = "Raquetes mais usadas";
          headers = ["Marca", "Encordoamentos"];
          const counts: Record<string, number> = {};
          const savedRackets = localStorage.getItem('tt_rackets');
@@ -602,7 +602,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             </div>
             <div style={panelStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 <h3 style={{ margin: 0, fontSize: '18px' }}>Marcas mais usadas (corda)</h3>
+                 <h3 style={{ margin: 0, fontSize: '18px', whiteSpace: 'nowrap' }}>Cordas mais usadas</h3>
                  <button onClick={() => setActiveReport('strings_brands')} style={{ background: '#E5E7EB', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 600, color: '#374151', cursor: 'pointer', fontSize: '13px' }}>Ver Todos</button>
               </div>
               <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', padding: '16px', overflowY: 'auto' }}>
@@ -629,7 +629,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             </div>
             <div style={panelStyle}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                 <h3 style={{ margin: 0, fontSize: '18px' }}>Marcas mais usadas (raquete)</h3>
+                 <h3 style={{ margin: 0, fontSize: '18px', whiteSpace: 'nowrap' }}>Raquetes mais usadas</h3>
                  <button onClick={() => setActiveReport('rackets_brands')} style={{ background: '#E5E7EB', border: 'none', padding: '6px 16px', borderRadius: '4px', fontWeight: 600, color: '#374151', cursor: 'pointer', fontSize: '13px' }}>Ver Todos</button>
               </div>
               <div style={{ height: '200px', background: '#F9FAFB', marginTop: '16px', borderRadius: '8px', padding: '16px', overflowY: 'auto' }}>
