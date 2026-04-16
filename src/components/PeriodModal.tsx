@@ -119,11 +119,7 @@ export const PeriodModal = ({ isOpen, onClose, onApply }: any) => {
             </button>
           </div>
 
-          <div style={{ marginTop: '16px', marginBottom: '32px' }}>
-             <button style={{ background: 'none', border: 'none', color: '#4298E7', fontSize: '15px', fontWeight: 600, cursor: 'pointer', padding: 0 }}>
-               Adicionar período de comparação
-             </button>
-          </div>
+
 
           <div style={{ borderTop: '1px solid #E5E7EB', margin: '32px 0 24px 0' }} />
 
