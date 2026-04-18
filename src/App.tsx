@@ -242,9 +242,9 @@ const Hero = () => {
         {profile === 'PROFESSOR' && (
           <>
             <HomeTile 
-              title="Aulas Avulsas" subtitle="Novas Solicitações" fullWidth
-              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
-              onClick={() => navigate('/professor-single-class')}
+              title="Coleta de Raquetes" subtitle="Apoio aos Alunos" fullWidth
+              backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
+              onClick={() => navigate('/racket-collection', { state: { role: 'PROFESSOR' } })}
             />
             <HomeTile 
               title="Gestão de Aulas" subtitle="Agenda Completa"
@@ -257,9 +257,9 @@ const Hero = () => {
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
-              title="Coleta de Raquetes" subtitle="Apoio aos Alunos"
-              backgroundImage={racketCollectionImg} backgroundPosition="center 30%"
-              onClick={() => navigate('/racket-collection', { state: { role: 'PROFESSOR' } })}
+              title="Aulas Avulsas" subtitle="Novas Solicitações"
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/professor-single-class')}
             />
           </>
         )}
