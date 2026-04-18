@@ -368,22 +368,34 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                            BRL {typeof item === 'string' ? '0.00' : item.price.toFixed(2)}
                          </span>
                        </>
-                     ) : (
+                     ) : activeTab === 'commissions' ? (
                        <>
-                         <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>
-                           {activeTab === 'commissions' ? (typeof item === 'string' ? item : item.name) : activeTab === 'clubDiscounts' ? `${item.club} - ${item.service}` : item}
+                         <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.5, minWidth: '150px' }}>
+                           {typeof item === 'string' ? item : item.name}
                          </span>
-                         {activeTab === 'commissions' && (
-                           <span style={{ color: '#F2C94C', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(242, 201, 76, 0.1)', borderRadius: '100px' }}>
-                             {item.percent}%
-                           </span>
-                         )}
-                         {activeTab === 'clubDiscounts' && (
-                           <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '13px', padding: '4px 8px', background: 'rgba(111, 207, 151, 0.1)', borderRadius: '100px' }}>
-                             -{item.percent}% {item.startDate ? `(${item.startDate.split('-').reverse().join('/')} até ${item.endDate.split('-').reverse().join('/')})` : '(Sempre)'}
-                           </span>
-                         )}
+                         <span style={{ color: '#F2C94C', fontWeight: 700, fontSize: '14px', flex: 1 }}>
+                           {item.percent}%
+                         </span>
                        </>
+                     ) : activeTab === 'clubDiscounts' ? (
+                       <>
+                         <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.2, minWidth: '120px' }}>
+                           {item.club}
+                         </span>
+                         <span style={{ color: '#9CA3AF', fontWeight: 500, fontSize: '14px', flex: 1.5, minWidth: '150px' }}>
+                           {item.service}
+                         </span>
+                         <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '14px', flex: 0.6 }}>
+                           -{item.percent}%
+                         </span>
+                         <span style={{ color: '#A78BFA', fontWeight: 500, fontSize: '14px', flex: 1.5 }}>
+                           {item.startDate ? `${item.startDate.split('-').reverse().join('/')} até ${item.endDate.split('-').reverse().join('/')}` : 'Sempre'}
+                         </span>
+                       </>
+                     ) : (
+                       <span style={{ color: 'white', fontWeight: 500, fontSize: '15px' }}>
+                         {item}
+                       </span>
                      )}
                   </div>
                 )}
