@@ -273,14 +273,14 @@ const Hero = () => {
               onClick={() => navigate('/feedback')}
             />
             <HomeTile 
-              title="Buscar Aula Avulsa" subtitle="Treine Hoje"
-              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
-              onClick={() => navigate('/customer-single-class')}
-            />
-            <HomeTile 
               title="Gestão de Aulas" subtitle="Meus Agendamentos"
               backgroundImage="https://images.unsplash.com/photo-1554068865-24cecd4e34b8?q=80&w=800&auto=format&fit=crop"
               onClick={() => navigate('/classes-customer')}
+            />
+            <HomeTile 
+              title="Buscar Aula Avulsa" subtitle="Treine Hoje"
+              backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/customer-single-class')}
             />
           </>
         )}
