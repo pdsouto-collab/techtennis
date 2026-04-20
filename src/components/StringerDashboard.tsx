@@ -150,9 +150,9 @@ export const StringerDashboard = () => {
      if (selectedCustomer?.originClub && appSettings.clubDiscounts) {
         const getDiscount = (service: string) => {
            const todayStr = new Date().toISOString().split('T')[0];
-           const originClub = selectedCustomer.originClub.trim();
+           const originClub = (selectedCustomer.originClub || '').trim().toLowerCase();
            for (const d of appSettings.clubDiscounts) {
-              if (d.club === originClub && (d.service === service || d.service === 'Todos')) {
+              if (d.club && d.club.trim().toLowerCase() === originClub && (d.service === service || d.service === 'Todos')) {
                  if (!d.startDate && !d.endDate) return d;
                  if (d.startDate && todayStr < d.startDate) continue;
                  if (d.endDate && todayStr > d.endDate) continue;
@@ -1105,9 +1105,9 @@ export const StringerDashboard = () => {
                         setPrice('');
                         
                         // Re-aplica regras de desconto do clube (se aplicável), senão zera
-                        let initDiscountPercent = '';
-                        let initDiscountValue = '';
-                        let initAux = [
+                        let initDiscountPercent: number | '' = '';
+                        let initDiscountValue: number | '' = '';
+                        let initAux: { type: string, isActive: boolean, price: number, discountPercent: number | '', discountValue: number | '', notes: string }[] = [
                           { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
@@ -1118,9 +1118,9 @@ export const StringerDashboard = () => {
                         if (selectedCustomer?.originClub && appSettings.clubDiscounts) {
                            const getDiscount = (service: string) => {
                               const todayStr = new Date().toISOString().split('T')[0];
-                              const originClub = selectedCustomer.originClub.trim();
+                              const originClub = (selectedCustomer.originClub || '').trim().toLowerCase();
                               for (const d of appSettings.clubDiscounts) {
-                                 if (d.club === originClub && (d.service === service || d.service === 'Todos')) {
+                                 if (d.club && d.club.trim().toLowerCase() === originClub && (d.service === service || d.service === 'Todos')) {
                                     if (!d.startDate && !d.endDate) return d;
                                     if (d.startDate && todayStr < d.startDate) continue;
                                     if (d.endDate && todayStr > d.endDate) continue;
@@ -1136,7 +1136,7 @@ export const StringerDashboard = () => {
                            }
                            initAux = initAux.map(s => {
                              const d = getDiscount(s.type);
-                             return { ...s, discountPercent: d ? d.percent : '', discountValue: d ? d.value : '' };
+                             return { ...s, discountPercent: d ? d.percent : '', discountValue: d ? d.value : '' } as { type: string, isActive: boolean, price: number, discountPercent: number | '', discountValue: number | '', notes: string };
                            });
                         }
                         
