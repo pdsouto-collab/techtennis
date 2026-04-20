@@ -134,12 +134,13 @@ export const StringerDashboard = () => {
   const [tensionUnit, setTensionUnit] = useState('Lbs');
   const [price, setPrice] = useState<number | ''>('');
   const [priceDiscountPercent, setPriceDiscountPercent] = useState<number | ''>('');
-  const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, discountPercent: number | '', notes: string}[]>([
-    { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
-    { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
-    { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
-    { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
-    { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
+  const [priceDiscountValue, setPriceDiscountValue] = useState<number | ''>('');
+  const [auxServices, setAuxServices] = useState<{type: string, isActive: boolean, price: number, discountPercent: number | '', discountValue: number | '', notes: string}[]>([
+    { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+    { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+    { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+    { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+    { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
   ]);
   const [pickupDate, setPickupDate] = useState('');
 
@@ -151,19 +152,25 @@ export const StringerDashboard = () => {
            const originClub = selectedCustomer.originClub.trim();
            for (const d of appSettings.clubDiscounts) {
               if (d.club === originClub && (d.service === service || d.service === 'Todos')) {
-                 if (!d.startDate && !d.endDate) return d.percent;
+                 if (!d.startDate && !d.endDate) return d;
                  if (d.startDate && todayStr < d.startDate) continue;
                  if (d.endDate && todayStr > d.endDate) continue;
-                 return d.percent;
+                 return d;
               }
            }
-           return '';
+           return null;
         };
-        setPriceDiscountPercent(getDiscount('Encordoamento') || '');
-        setAuxServices(prev => prev.map(s => ({ ...s, discountPercent: getDiscount(s.type) || '' })));
+        const mainD = getDiscount('Encordoamento');
+        setPriceDiscountPercent(mainD ? mainD.percent : '');
+        setPriceDiscountValue(mainD ? mainD.value : '');
+        setAuxServices(prev => prev.map(s => {
+           const d = getDiscount(s.type);
+           return { ...s, discountPercent: d ? d.percent : '', discountValue: d ? d.value : '' };
+        }));
      } else {
         setPriceDiscountPercent('');
-        setAuxServices(prev => prev.map(s => ({ ...s, discountPercent: '' })));
+        setPriceDiscountValue('');
+        setAuxServices(prev => prev.map(s => ({ ...s, discountPercent: '', discountValue: '' })));
      }
   }, [selectedCustomer, appSettings?.clubDiscounts]);
 
@@ -240,11 +247,13 @@ export const StringerDashboard = () => {
   // Calculate computed discounts and final price
   const basePriceValue = Number(price) || 0;
   const baseDiscountVal = Number(priceDiscountPercent) || 0;
-  const finalBasePrice = basePriceValue * (1 - baseDiscountVal / 100);
+  const baseDiscountAmt = Number(priceDiscountValue) || 0;
+  const finalBasePrice = (basePriceValue * (1 - baseDiscountVal / 100)) - baseDiscountAmt;
 
   const finalAuxPrice = auxServices.filter(s => s.isActive).reduce((acc, s) => {
     const sDiscount = Number(s.discountPercent) || 0;
-    return acc + (s.price * (1 - sDiscount / 100));
+    const sDiscountVal = Number(s.discountValue) || 0;
+    return acc + ((s.price * (1 - sDiscount / 100)) - sDiscountVal);
   }, 0);
 
   const displayFinalPrice = (finalBasePrice + finalAuxPrice).toFixed(2);
@@ -276,6 +285,7 @@ export const StringerDashboard = () => {
       preStretchCross,
       basePrice: Number(price),
       priceDiscountPercent: priceDiscountPercent === '' ? 0 : Number(priceDiscountPercent),
+      priceDiscountValue: priceDiscountValue === '' ? 0 : Number(priceDiscountValue),
       price: finalPrice,
       pickupDate,
       commissionedProfessorId: commissionedProfessorId || null,
@@ -314,12 +324,13 @@ export const StringerDashboard = () => {
     setPreStretchCross('');
     setPrice('');
     setPriceDiscountPercent('');
+    setPriceDiscountValue('');
     setAuxServices([
-      { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
-      { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
-      { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
-      { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
-      { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
+      { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+      { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+      { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+      { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+      { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
     ]);
     setPickupDate('');
   };
@@ -363,16 +374,17 @@ export const StringerDashboard = () => {
     }
     
     setPriceDiscountPercent(job.priceDiscountPercent !== undefined ? job.priceDiscountPercent : '');
+    setPriceDiscountValue(job.priceDiscountValue !== undefined ? job.priceDiscountValue : '');
 
     if (job.auxServices) {
         setAuxServices(job.auxServices);
     } else {
         setAuxServices([
-          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
-          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
-          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
-          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
-          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
+          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
         ]);
     }
     
@@ -895,9 +907,23 @@ export const StringerDashboard = () => {
                                         setAuxServices(newSvc);
                                    }} style={{...inputStyle, paddingLeft: '56px'}} />
                                  </div>
-                                 <div style={{ ...inputStyle, width: '100px', background: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.5)', cursor: 'not-allowed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} title="Desconto Automático (Fixo)">
-                                   <span>{svc.discountPercent || ''}</span>
-                                   <span style={{ fontWeight: 600 }}>%</span>
+                                 <div style={{ display: 'flex', gap: '4px' }}>
+                                    <div style={{ width: '90px', position: 'relative' }}>
+                                      <span style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
+                                      <input type="number" placeholder="Desc" value={svc.discountValue || ''} onChange={e => {
+                                           const newSvc = [...auxServices];
+                                           newSvc[idx].discountValue = e.target.value === '' ? '' : Number(e.target.value);
+                                           setAuxServices(newSvc);
+                                      }} style={{...inputStyle, paddingLeft: '48px'}} title="Desconto BRL" />
+                                    </div>
+                                    <div style={{ width: '80px', position: 'relative' }}>
+                                      <input type="number" placeholder="%" value={svc.discountPercent || ''} onChange={e => {
+                                           const newSvc = [...auxServices];
+                                           newSvc[idx].discountPercent = e.target.value === '' ? '' : Number(e.target.value);
+                                           setAuxServices(newSvc);
+                                      }} style={{...inputStyle, paddingRight: '28px'}} title="Desconto %" />
+                                      <span style={{ position: 'absolute', right: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>%</span>
+                                    </div>
                                  </div>
                                </div>
                                <input type="text" placeholder="Observações" value={svc.notes} onChange={e => {
@@ -936,9 +962,15 @@ export const StringerDashboard = () => {
                           <div style={{ ...inputStyle, flex: 2, background: 'rgba(0,0,0,0.2)', color: 'white', cursor: 'not-allowed', display: 'flex', alignItems: 'center' }} title="Preço Automático (Baseado na tabela de cordas)">
                            <span>{price || '0.00'}</span>
                           </div>
-                          <div style={{ flex: 1, ...inputStyle, background: 'rgba(0,0,0,0.2)', color: 'rgba(255,255,255,0.5)', cursor: 'not-allowed', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }} title="Desconto Automático (Fixo)">
-                            <span>{priceDiscountPercent || ''}</span>
-                            <span style={{ fontWeight: 600 }}>%</span>
+                          <div style={{ flex: 1, display: 'flex', gap: '8px' }}>
+                            <div style={{ flex: 1, position: 'relative' }}>
+                              <span style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
+                              <input type="number" placeholder="Desc" value={priceDiscountValue || ''} onChange={e => setPriceDiscountValue(e.target.value === '' ? '' : Number(e.target.value))} style={{...inputStyle, paddingLeft: '50px'}} title="Desconto Base (BRL)" />
+                            </div>
+                            <div style={{ width: '80px', position: 'relative' }}>
+                              <input type="number" placeholder="%" value={priceDiscountPercent || ''} onChange={e => setPriceDiscountPercent(e.target.value === '' ? '' : Number(e.target.value))} style={{...inputStyle, paddingRight: '28px'}} title="Desconto Base (%)" />
+                              <span style={{ position: 'absolute', right: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>%</span>
+                            </div>
                           </div>
                         </div>
                         {((Number(price) > 0) || auxServices.some(s => s.isActive)) && (
@@ -1069,12 +1101,13 @@ export const StringerDashboard = () => {
                         setPreStretchCross('');
                         setPrice('');
                         setPriceDiscountPercent('');
+                        setPriceDiscountValue('');
                         setAuxServices([
-                          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', notes: '' },
-                          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', notes: '' },
-                          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', notes: '' },
-                          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', notes: '' },
-                          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', notes: '' }
+                          { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+                          { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+                          { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+                          { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
+                          { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
                         ]);
                         
                         // Pequeno pulso visual para feedback de que a primeira foi salva

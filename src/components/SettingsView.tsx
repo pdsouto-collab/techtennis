@@ -20,12 +20,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   const [newClub, setNewClub] = useState('');
   const [newDiscountService, setNewDiscountService] = useState('');
   const [newDiscountPercent, setNewDiscountPercent] = useState('');
+  const [newDiscountValue, setNewDiscountValue] = useState('');
   const [newStartDate, setNewStartDate] = useState('');
   const [newEndDate, setNewEndDate] = useState('');
 
   const [editClub, setEditClub] = useState('');
   const [editDiscountService, setEditDiscountService] = useState('');
   const [editDiscountPercent, setEditDiscountPercent] = useState('');
+  const [editDiscountValue, setEditDiscountValue] = useState('');
   const [editStartDate, setEditStartDate] = useState('');
   const [editEndDate, setEditEndDate] = useState('');
 
@@ -43,8 +45,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       if (!newItemText.trim()) return;
       value = { name: newItemText.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento', brand: newStringBrand.trim() || 'Desconhecida' };
     } else if (activeTab === 'clubDiscounts') {
-      if (!newClub || !newDiscountService || !newDiscountPercent) return;
-      value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent), startDate: newStartDate, endDate: newEndDate };
+      if (!newClub || !newDiscountService || (!newDiscountPercent && !newDiscountValue)) return;
+      value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent) || 0, value: Number(newDiscountValue) || 0, startDate: newStartDate, endDate: newEndDate };
     } else {
       if (!newItemText.trim()) return;
     }
@@ -61,6 +63,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setNewClub('');
     setNewDiscountService('');
     setNewDiscountPercent('');
+    setNewDiscountValue('');
     setNewStartDate('');
     setNewEndDate('');
   };
@@ -93,7 +96,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     } else if (activeTab === 'clubDiscounts') {
       setEditClub(currentList[index].club);
       setEditDiscountService(currentList[index].service);
-      setEditDiscountPercent(currentList[index].percent.toString());
+      setEditDiscountPercent(currentList[index].percent?.toString() || '');
+      setEditDiscountValue(currentList[index].value?.toString() || '');
       setEditStartDate(currentList[index].startDate || '');
       setEditEndDate(currentList[index].endDate || '');
     } else {
@@ -111,8 +115,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
          if (!editItemText.trim()) return prev;
          newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento', brand: editStringBrand.trim() || 'Desconhecida' };
       } else if (activeTab === 'clubDiscounts') {
-         if (!editClub.trim() || !editDiscountService || !editDiscountPercent) return prev;
-         newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent), startDate: editStartDate, endDate: editEndDate };
+         if (!editClub.trim() || !editDiscountService || (!editDiscountPercent && !editDiscountValue)) return prev;
+         newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent) || 0, value: Number(editDiscountValue) || 0, startDate: editStartDate, endDate: editEndDate };
       } else {
          if (!editItemText.trim()) return prev;
          newList[index] = editItemText.trim();
@@ -183,7 +187,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                  <option value="Compra de raquete nova">Compra de raquete nova</option>
                  <option value="Outros serviços">Outros serviços</option>
               </select>
-              <input type="number" value={newDiscountPercent} onChange={(e) => setNewDiscountPercent(e.target.value)} placeholder="Desc. %" style={{ width: '90px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }} />
+              <input type="number" value={newDiscountPercent} onChange={(e) => setNewDiscountPercent(e.target.value)} placeholder="Desc. %" style={{ width: '80px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }} />
+              <input type="number" value={newDiscountValue} onChange={(e) => setNewDiscountValue(e.target.value)} placeholder="Desc. BRL" style={{ width: '100px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }} />
               <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                 <input type="date" value={newStartDate} onChange={(e) => setNewStartDate(e.target.value)} style={{ width: '130px', padding: '12px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'rgb(148, 163, 184)' }} title="Data Início" />
                 <span style={{ color: 'white' }}>-</span>
@@ -284,6 +289,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                            <option value="Outros serviços">Outros serviços</option>
                         </select>
                         <input type="number" value={editDiscountPercent} onChange={(e) => setEditDiscountPercent(e.target.value)} placeholder="%" style={{ width: '70px', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
+                        <input type="number" value={editDiscountValue} onChange={(e) => setEditDiscountValue(e.target.value)} placeholder="BRL" style={{ width: '80px', padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'white' }} />
                         <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
                           <input type="date" value={editStartDate} onChange={(e) => setEditStartDate(e.target.value)} style={{ width: '120px', padding: '8px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'rgb(148, 163, 184)' }} />
                           <span style={{ color: 'white' }}>-</span>
@@ -386,7 +392,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                            {item.service}
                          </span>
                          <span style={{ color: '#6FCF97', fontWeight: 700, fontSize: '14px', flex: 0.6 }}>
-                           -{item.percent}%
+                           {item.percent ? `-${item.percent}%` : ''} {item.value ? `(BRL -${item.value})` : ''}
                          </span>
                          <span style={{ color: '#A78BFA', fontWeight: 500, fontSize: '14px', flex: 1.5 }}>
                            {item.startDate ? `${item.startDate.split('-').reverse().join('/')} até ${item.endDate.split('-').reverse().join('/')}` : 'Sempre'}
