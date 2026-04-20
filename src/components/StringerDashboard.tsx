@@ -1679,20 +1679,37 @@ export const StringerDashboard = () => {
                 <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
                   e.preventDefault(); 
                   const fd = new FormData(e.currentTarget);
+                  const racketName = fd.get('racketName') as string;
+                  const identifier = fd.get('identifier') as string;
+                  const brand = fd.get('brand') as string;
+                  const customerId = selectedCustomer?.id || '';
+
+                  const isDuplicate = rackets.some(r => 
+                    r.customerId === customerId &&
+                    r.name.trim().toLowerCase() === racketName.trim().toLowerCase() &&
+                    (r.identifier || '').trim().toLowerCase() === (identifier || '').trim().toLowerCase() &&
+                    (!racketFormDefault || r.id !== racketFormDefault.id || racketFormDefault.isClone)
+                  );
+
+                  if (isDuplicate) {
+                    alert('Não é possível salvar: o cliente já possui uma raquete com este mesmo Nome e Identificador!');
+                    return; // Prevent saving
+                  }
+
                   if (racketFormDefault && racketFormDefault.id && !racketFormDefault.isClone) {
                      setRackets(prev => prev.map(r => r.id === racketFormDefault.id ? {
                         ...r,
-                        name: fd.get('racketName') as string,
-                        brand: fd.get('brand') as string,
-                        identifier: fd.get('identifier') as string,
+                        name: racketName,
+                        brand: brand,
+                        identifier: identifier,
                      } : r));
                   } else {
                      const newRacket = {
                        id: 'r' + Date.now(),
-                       name: fd.get('racketName') as string,
-                       brand: fd.get('brand') as string,
-                       identifier: fd.get('identifier') as string,
-                       customerId: selectedCustomer?.id || ''
+                       name: racketName,
+                       brand: brand,
+                       identifier: identifier,
+                       customerId: customerId
                      };
                      setRackets(prev => [...prev, newRacket]);
                   }
