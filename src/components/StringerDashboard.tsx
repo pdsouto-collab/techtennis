@@ -146,6 +146,7 @@ export const StringerDashboard = () => {
 
   // Apply Club Discount rules
   useEffect(() => {
+     if (editingJobId) return; // Não sobrescreve descontos ao editar uma job
      if (selectedCustomer?.originClub && appSettings.clubDiscounts) {
         const getDiscount = (service: string) => {
            const todayStr = new Date().toISOString().split('T')[0];
@@ -1065,7 +1066,7 @@ export const StringerDashboard = () => {
                         const newCode = currentOrderCode || generateUniqueAlphanumericCode(jobs);
                         if (!currentOrderCode) setCurrentOrderCode(newCode);
 
-                        const finalPrice = Number(price) + auxServices.filter(s => s.isActive).reduce((acc, s) => acc + s.price, 0);
+                        const finalPriceAux = finalBasePrice + finalAuxPrice;
                         const newJob = {
                           id: Date.now().toString(),
                           orderCode: newCode,
@@ -1083,7 +1084,9 @@ export const StringerDashboard = () => {
                           preStretchMain,
                           preStretchCross,
                           basePrice: Number(price),
-                          price: finalPrice,
+                          priceDiscountPercent: priceDiscountPercent === '' ? 0 : Number(priceDiscountPercent),
+                          priceDiscountValue: priceDiscountValue === '' ? 0 : Number(priceDiscountValue),
+                          price: finalPriceAux,
                           pickupDate,
                           commissionedProfessorId: commissionedProfessorId || null,
                           auxServices
@@ -1100,15 +1103,46 @@ export const StringerDashboard = () => {
                         setPreStretchMain('');
                         setPreStretchCross('');
                         setPrice('');
-                        setPriceDiscountPercent('');
-                        setPriceDiscountValue('');
-                        setAuxServices([
+                        
+                        // Re-aplica regras de desconto do clube (se aplicável), senão zera
+                        let initDiscountPercent = '';
+                        let initDiscountValue = '';
+                        let initAux = [
                           { type: 'Trocar grip base', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Trocar overgrip', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Serviço customizado', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Compra de raquete nova', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' },
                           { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
-                        ]);
+                        ];
+
+                        if (selectedCustomer?.originClub && appSettings.clubDiscounts) {
+                           const getDiscount = (service: string) => {
+                              const todayStr = new Date().toISOString().split('T')[0];
+                              const originClub = selectedCustomer.originClub.trim();
+                              for (const d of appSettings.clubDiscounts) {
+                                 if (d.club === originClub && (d.service === service || d.service === 'Todos')) {
+                                    if (!d.startDate && !d.endDate) return d;
+                                    if (d.startDate && todayStr < d.startDate) continue;
+                                    if (d.endDate && todayStr > d.endDate) continue;
+                                    return d;
+                                 }
+                              }
+                              return null;
+                           };
+                           const mainD = getDiscount('Encordoamento');
+                           if (mainD) {
+                             initDiscountPercent = mainD.percent;
+                             initDiscountValue = mainD.value;
+                           }
+                           initAux = initAux.map(s => {
+                             const d = getDiscount(s.type);
+                             return { ...s, discountPercent: d ? d.percent : '', discountValue: d ? d.value : '' };
+                           });
+                        }
+                        
+                        setPriceDiscountPercent(initDiscountPercent);
+                        setPriceDiscountValue(initDiscountValue);
+                        setAuxServices(initAux);
                         
                         // Pequeno pulso visual para feedback de que a primeira foi salva
                         setJobSaved(true);
