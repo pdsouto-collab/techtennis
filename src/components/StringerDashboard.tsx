@@ -898,8 +898,8 @@ export const StringerDashboard = () => {
                          </select>
                          {svc.isActive && (
                             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginTop: '8px' }}>
-                               <div style={{ display: 'flex', gap: '8px' }}>
-                                 <div style={{ width: '130px', position: 'relative' }}>
+                               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                                 <div style={{ flex: '1 1 120px', position: 'relative' }}>
                                    <span style={{ position: 'absolute', left: '16px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
                                    <input type="number" placeholder="Valor" value={svc.price || ''} onChange={e => {
                                         const newSvc = [...auxServices];
@@ -907,8 +907,8 @@ export const StringerDashboard = () => {
                                         setAuxServices(newSvc);
                                    }} style={{...inputStyle, paddingLeft: '56px'}} />
                                  </div>
-                                 <div style={{ display: 'flex', gap: '4px' }}>
-                                    <div style={{ width: '90px', position: 'relative' }}>
+                                 <div style={{ display: 'flex', gap: '4px', flex: '2 1 200px' }}>
+                                    <div style={{ flex: 1, minWidth: '100px', position: 'relative' }}>
                                       <span style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
                                       <input type="number" placeholder="Desc" value={svc.discountValue || ''} onChange={e => {
                                            const newSvc = [...auxServices];
@@ -916,7 +916,7 @@ export const StringerDashboard = () => {
                                            setAuxServices(newSvc);
                                       }} style={{...inputStyle, paddingLeft: '48px'}} title="Desconto BRL" />
                                     </div>
-                                    <div style={{ width: '80px', position: 'relative' }}>
+                                    <div style={{ flex: 1, minWidth: '80px', position: 'relative' }}>
                                       <input type="number" placeholder="%" value={svc.discountPercent || ''} onChange={e => {
                                            const newSvc = [...auxServices];
                                            newSvc[idx].discountPercent = e.target.value === '' ? '' : Number(e.target.value);
@@ -958,16 +958,16 @@ export const StringerDashboard = () => {
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Preço Base (BRL) - Final c/ desconto abatido</label>
-                        <div style={{ display: 'flex', gap: '8px' }}>
-                          <div style={{ ...inputStyle, flex: 2, background: 'rgba(0,0,0,0.2)', color: 'white', cursor: 'not-allowed', display: 'flex', alignItems: 'center' }} title="Preço Automático (Baseado na tabela de cordas)">
+                        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+                          <div style={{ ...inputStyle, flex: '1 1 120px', background: 'rgba(0,0,0,0.2)', color: 'white', cursor: 'not-allowed', display: 'flex', alignItems: 'center' }} title="Preço Automático (Baseado na tabela de cordas)">
                            <span>{price || '0.00'}</span>
                           </div>
-                          <div style={{ flex: 1, display: 'flex', gap: '8px' }}>
-                            <div style={{ flex: 1, position: 'relative' }}>
+                          <div style={{ flex: '2 1 200px', display: 'flex', gap: '8px' }}>
+                            <div style={{ flex: 1, minWidth: '100px', position: 'relative' }}>
                               <span style={{ position: 'absolute', left: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>BRL</span>
                               <input type="number" placeholder="Desc" value={priceDiscountValue || ''} onChange={e => setPriceDiscountValue(e.target.value === '' ? '' : Number(e.target.value))} style={{...inputStyle, paddingLeft: '50px'}} title="Desconto Base (BRL)" />
                             </div>
-                            <div style={{ width: '80px', position: 'relative' }}>
+                            <div style={{ flex: 1, minWidth: '80px', position: 'relative' }}>
                               <input type="number" placeholder="%" value={priceDiscountPercent || ''} onChange={e => setPriceDiscountPercent(e.target.value === '' ? '' : Number(e.target.value))} style={{...inputStyle, paddingRight: '28px'}} title="Desconto Base (%)" />
                               <span style={{ position: 'absolute', right: '12px', top: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>%</span>
                             </div>
