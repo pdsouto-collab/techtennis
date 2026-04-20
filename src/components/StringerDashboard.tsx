@@ -1452,7 +1452,20 @@ export const StringerDashboard = () => {
                     name: `${firstName} ${lastName}`.trim(),
                     phone: fd.get('phone') as string,
                     email: fd.get('email') as string,
-                    originClub: fd.get('originClub') as string
+                    originClub: fd.get('originClub') as string,
+                    gender: fd.get('gender') as string,
+                    professor: fd.get('professor') as string,
+                    birthDate: fd.get('birthDate') as string,
+                    cpfCnpj: fd.get('cpfCnpj') as string,
+                    landline: fd.get('landline') as string,
+                    address: fd.get('address') as string,
+                    cep: fd.get('cep') as string,
+                    city: fd.get('city') as string,
+                    country: fd.get('country') as string,
+                    stringingPoint: fd.get('stringingPoint') as string,
+                    racketpediaCode: fd.get('racketpediaCode') as string,
+                    customerType: fd.get('customerType') as string,
+                    notes: fd.get('notes') as string
                   };
                   if (selectedCustomer) {
                     setCustomers(customers.map((c: any) => c.id === selectedCustomer.id ? { ...c, ...customerData } : c));
@@ -1479,7 +1492,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Gênero</label>
-                      <select name="gender" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
+                      <select name="gender" defaultValue={selectedCustomer?.gender || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
                         <option value="">Selecione...</option>
                         <option value="M">Masculino</option>
                         <option value="F">Feminino</option>
@@ -1499,7 +1512,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
-                      <input type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
+                      <input name="professor" type="text" defaultValue={selectedCustomer?.professor || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
                     </div>
                   </div>
 
@@ -1510,71 +1523,71 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Data de Nascimento</label>
-                      <input type="date" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
+                      <input name="birthDate" type="date" defaultValue={selectedCustomer?.birthDate || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CPF / CNPJ</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="cpfCnpj" type="text" defaultValue={selectedCustomer?.cpfCnpj || ''} style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone Fixo</label>
-                      <input type="tel" style={inputStyle} />
+                      <input name="landline" type="tel" defaultValue={selectedCustomer?.landline || ''} style={inputStyle} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Endereço</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="address" type="text" defaultValue={selectedCustomer?.address || ''} style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CEP</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="cep" type="text" defaultValue={selectedCustomer?.cep || ''} style={inputStyle} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cidade</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="city" type="text" defaultValue={selectedCustomer?.city || ''} style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>País</label>
-                      <input type="text" defaultValue="Brasil" style={inputStyle} />
+                      <input name="country" type="text" defaultValue={selectedCustomer?.country || 'Brasil'} style={inputStyle} />
                     </div>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
-                      <select style={inputStyle}>
+                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || 'Test'} style={inputStyle}>
                         <option value="Test">Test</option>
                         <option value="Loja 1">Loja 1</option>
                       </select>
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Código da Racketpedia</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="racketpediaCode" type="text" defaultValue={selectedCustomer?.racketpediaCode || ''} style={inputStyle} />
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', gap: '32px', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
-                      <input type="radio" name="customerType" defaultChecked style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
+                      <input type="radio" name="customerType" value="PF" defaultChecked={!selectedCustomer || selectedCustomer.customerType !== 'PJ'} style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
                       Cliente Pessoa Física
                     </label>
                     <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
-                      <input type="radio" name="customerType" style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
+                      <input type="radio" name="customerType" value="PJ" defaultChecked={selectedCustomer?.customerType === 'PJ'} style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
                       Cliente Pessoa Jurídica
                     </label>
                   </div>
 
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
-                    <textarea rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                    <textarea name="notes" defaultValue={selectedCustomer?.notes || ''} rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '24px' }}>
