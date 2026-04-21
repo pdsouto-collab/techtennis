@@ -26,6 +26,7 @@ export const ClassManagementProfessor = () => {
   // State
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'students' | 'agenda' | 'reports'>('agenda');
+  const [agendaDateFilter, setAgendaDateFilter] = useState<string>('');
   
   // Modals & Forms
   const [isStudentModalOpen, setIsStudentModalOpen] = useState(false);
@@ -133,19 +134,34 @@ export const ClassManagementProfessor = () => {
 
             {activeTab === 'agenda' && (
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', margin: 0 }}>Agenda de Aulas</h2>
-                  <button 
-                    onClick={() => {
-                      setIsBulkClass(false);
-                      setSelectedDays([]);
-                      setIsClassModalOpen(true);
-                    }}
-                    className="button-primary" style={{ padding: '10px 20px', fontSize: '15px', color: 'var(--text-dark)' }}
-                    disabled={students.filter(s => s.professorId === selectedProfessorId).length === 0}
-                  >
-                    <Calendar size={18} /> Agendar Aula
-                  </button>
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <label style={{ fontSize: '14px', fontWeight: 600, color: 'var(--text-secondary)' }}>Filtro:</label>
+                      <input 
+                        type="date" 
+                        title="Filtrar por data específica"
+                        value={agendaDateFilter}
+                        onChange={(e) => setAgendaDateFilter(e.target.value)}
+                        style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #E5E7EB', outline: 'none' }}
+                      />
+                      {agendaDateFilter && (
+                        <button onClick={() => setAgendaDateFilter('')} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer', fontSize: '14px', fontWeight: 600 }}>Limpar</button>
+                      )}
+                    </div>
+                    <button 
+                      onClick={() => {
+                        setIsBulkClass(false);
+                        setSelectedDays([]);
+                        setIsClassModalOpen(true);
+                      }}
+                      className="button-primary" style={{ padding: '10px 20px', fontSize: '15px', color: 'var(--text-dark)' }}
+                      disabled={students.filter(s => s.professorId === selectedProfessorId).length === 0}
+                    >
+                      <Calendar size={18} /> Agendar Aula
+                    </button>
+                  </div>
                 </div>
 
                 <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
@@ -164,7 +180,7 @@ export const ClassManagementProfessor = () => {
                     </div>
                   </div>
                   
-                  {classes.filter(c => c.professorId === selectedProfessorId).length === 0 ? (
+                  {classes.filter(c => c.professorId === selectedProfessorId && (!agendaDateFilter || c.date === agendaDateFilter)).length === 0 ? (
                     <div style={{ padding: '60px', textAlign: 'center', color: 'var(--text-secondary)' }}>Nenhuma aula agendada.</div>
                   ) : (
                     <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
@@ -178,7 +194,7 @@ export const ClassManagementProfessor = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {[...classes].filter(c => c.professorId === selectedProfessorId).sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(cls => {
+                        {[...classes].filter(c => c.professorId === selectedProfessorId && (!agendaDateFilter || c.date === agendaDateFilter)).sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map(cls => {
                           const student = students.find(s => s.id === cls.studentId);
                           return (
                             <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', background: cls.status === 'completed' ? 'rgba(16,185,129,0.05)' : cls.status.includes('cancelled') ? 'rgba(239,68,68,0.05)' : cls.status === 'rain' ? 'rgba(245,158,11,0.05)' : 'white' }}>
