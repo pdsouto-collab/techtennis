@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Trash2, Plus, Edit } from 'lucide-react';
 
 export const SettingsView = ({ settings, setSettings }: any) => {
-  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports' | 'commissions' | 'clubDiscounts'>('strings');
+  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports' | 'clubs' | 'commissions' | 'clubDiscounts'>('strings');
   
   const [newItemText, setNewItemText] = useState('');
   const [newCommissionPercent, setNewCommissionPercent] = useState('');
@@ -31,10 +31,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   const [editStartDate, setEditStartDate] = useState('');
   const [editEndDate, setEditEndDate] = useState('');
 
-  const customers = JSON.parse(localStorage.getItem('tt_customers') || '[]');
-  const uniqueClubs = Array.from(new Set(customers.map((c: any) => c.originClub?.trim()).filter(Boolean)));
-
   const currentList = settings[activeTab] || [];
+  const uniqueClubs = settings.clubs || [];
 
   const handleAdd = () => {
     let value: any = newItemText.trim();
@@ -132,6 +130,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     { id: 'machines', label: 'Máquina de Encordoamento' },
     { id: 'stringers', label: 'Encordoador' },
     { id: 'sports', label: 'Esporte' },
+    { id: 'clubs', label: 'Clubes / Condomínios' },
     { id: 'commissions', label: 'Comissão Professor (%)' },
     { id: 'clubDiscounts', label: 'Desconto por Clube (%)' },
   ];

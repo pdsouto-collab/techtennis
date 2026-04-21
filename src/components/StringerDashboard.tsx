@@ -81,6 +81,7 @@ export const StringerDashboard = () => {
     const saved = localStorage.getItem('tt_settings');
     const parsed = saved ? JSON.parse(saved) : { strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'] };
     if (!parsed.sports) parsed.sports = ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel'];
+    if (!parsed.clubs) parsed.clubs = [];
     return parsed;
   });
 
@@ -1551,7 +1552,12 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Clube de Origem</label>
-                      <input name="originClub" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} defaultValue={selectedCustomer?.originClub || ''} />
+                      <select name="originClub" defaultValue={selectedCustomer?.originClub || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
+                        <option value="">Não informado</option>
+                        {Array.from(new Set([...(appSettings.clubs || []), ...(selectedCustomer?.originClub ? [selectedCustomer.originClub] : [])])).map((club: any) => (
+                           <option key={club} value={club}>{club}</option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
