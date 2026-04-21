@@ -9,6 +9,7 @@ import { ClassManagementProfessor } from './components/ClassManagementProfessor'
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import { CustomerSingleClass } from './components/CustomerSingleClass';
 import { ProfessorSingleClass } from './components/ProfessorSingleClass';
+import { OpenAgenda } from './components/OpenAgenda';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import brandLogo from './assets/techtennis-logo.png';
@@ -235,6 +236,11 @@ const Hero = () => {
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => navigate('/customer-single-class')}
             />
+            <HomeTile 
+              title="Agenda Aberta" subtitle="Horários Disponíveis"
+              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/open-agenda', { state: { role: 'ENCORDOADOR' } })}
+            />
           </>
         )}
 
@@ -261,6 +267,11 @@ const Hero = () => {
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => navigate('/professor-single-class')}
             />
+            <HomeTile 
+              title="Agenda Aberta" subtitle="Divulgue Seus Horários"
+              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/open-agenda', { state: { role: 'PROFESSOR' } })}
+            />
           </>
         )}
 
@@ -281,6 +292,11 @@ const Hero = () => {
               title="Buscar Aula Avulsa" subtitle="Treine Hoje"
               backgroundImage="https://images.unsplash.com/photo-1530915534664-4ac6423816b7?q=80&w=1500&auto=format&fit=crop"
               onClick={() => navigate('/customer-single-class')}
+            />
+            <HomeTile 
+              title="Agenda Aberta" subtitle="Horários Disponíveis"
+              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              onClick={() => navigate('/open-agenda', { state: { role: 'CLIENTE' } })}
             />
           </>
         )}
@@ -351,6 +367,7 @@ function App() {
             <Route path="/classes-customer" element={<ClassManagementCustomer />} />
             <Route path="/customer-single-class" element={<CustomerSingleClass />} />
             <Route path="/professor-single-class" element={<ProfessorSingleClass />} />
+            <Route path="/open-agenda" element={<OpenAgenda />} />
           </Routes>
         </main>
       </div>
