@@ -1555,7 +1555,12 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
-                      <input name="professor" type="text" defaultValue={selectedCustomer?.professor || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
+                      <select name="professor" defaultValue={selectedCustomer?.professor || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
+                        <option value="">Selecione um professor...</option>
+                        {professors.map(p => (
+                          <option key={p.id} value={p.name}>{p.name}</option>
+                        ))}
+                      </select>
                     </div>
                   </div>
 
