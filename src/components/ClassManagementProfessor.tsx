@@ -23,6 +23,11 @@ export const ClassManagementProfessor = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
+  const [appSettings] = useState<any>(() => {
+    const saved = localStorage.getItem('tt_settings');
+    return saved ? JSON.parse(saved) : {};
+  });
+
   // State
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'students' | 'agenda' | 'reports'>('agenda');
@@ -593,7 +598,12 @@ export const ClassManagementProfessor = () => {
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Local</label>
-                    <input name="location" type="text" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} placeholder="Ex: Quadra 4, Condominio XYZ..." />
+                    <select name="location" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }}>
+                      <option value="">Não informado</option>
+                      {(appSettings.clubs || []).map((club: string) => (
+                        <option key={club} value={club}>{club}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px' }}>
