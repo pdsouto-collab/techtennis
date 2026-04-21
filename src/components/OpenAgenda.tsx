@@ -150,10 +150,9 @@ export const OpenAgenda = () => {
                   overflow: 'hidden'
                 }}
               >
-                {/* Visual Type Indicator Banner */}
                 <div style={{ 
                   position: 'absolute', top: 0, left: 0, right: 0, height: '4px',
-                  background: slot.type === 'fixo' ? '#3B82F6' : '#22C55E' // Azul para Fixo, Verde para Avulso
+                  background: slot.type === 'fixo' ? '#FB923C' : '#22C55E' // Laranja para Fixo, Verde para Avulso
                 }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
@@ -162,10 +161,10 @@ export const OpenAgenda = () => {
                     
                     {/* Tags */}
                     <div style={{ display: 'inline-block', marginTop: '8px', padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700,
-                      background: slot.type === 'fixo' ? 'rgba(59, 130, 246, 0.2)' : 'rgba(34, 197, 94, 0.2)',
-                      color: slot.type === 'fixo' ? '#60A5FA' : '#4ADE80'
+                      background: slot.type === 'fixo' ? 'rgba(251, 146, 60, 0.2)' : 'rgba(34, 197, 94, 0.2)',
+                      color: slot.type === 'fixo' ? '#FB923C' : '#4ADE80'
                     }}>
-                      {slot.type === 'fixo' ? '🔵 Horário Fixo' : '🟢 Horário Avulso'}
+                      {slot.type === 'fixo' ? '🟠 Horário Fixo' : '🟢 Horário Avulso'}
                     </div>
                   </div>
                   
