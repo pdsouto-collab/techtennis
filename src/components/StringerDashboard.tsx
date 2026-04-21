@@ -272,11 +272,13 @@ export const StringerDashboard = () => {
       customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
       racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
       date: new Date().toLocaleDateString('pt-BR'),
-      tension: isHybrid ? `${tensionMain}/${tensionCross} lbs` : `${tensionMain} lbs`,
+      tension: isHybrid ? `${tensionMain}/${tensionCross} ${tensionUnit}` : `${tensionMain} ${tensionUnit}`,
       status: 'aguardando',
       type: 'to_string' as any,
       mainString,
       crossString,
+      tensionMain,
+      tensionCross,
       isHybrid,
       racketId: selectedJobRacket,
       isStringing,
@@ -773,15 +775,18 @@ export const StringerDashboard = () => {
                             const val = e.target.value;
                             setSelectedJobRacket(val);
                             if (val) {
-                               const pastJob = [...jobs].reverse().find(j => j.racketId === val && j.customerId === selectedCustomer?.id && (j.type === 'stringing' || j.type === 'done'));
+                               const pastJob = jobs.find(j => j.racketId === val && !!j.mainString);
                                if (pastJob) {
-                                 setStringingType(pastJob.stringingType || 'Não definido');
+                                 setStringingType(pastJob.stringingType || 'ATW');
                                  setTensionUnit(pastJob.tensionUnit || 'Lbs');
                                  setMainString(pastJob.mainString || '');
                                  setCrossString(pastJob.crossString || '');
-                                 setTensionMain(pastJob.tensionMain || '');
-                                 setTensionCross(pastJob.tensionCross || '');
-                                 setIsHybrid(pastJob.isHybrid || false);
+                                 
+                                 const match = pastJob.tension?.match(/(\d+)(?:\/(\d+))?/);
+                                 setTensionMain(pastJob.tensionMain || (match ? parseInt(match[1]) : ''));
+                                 setTensionCross(pastJob.tensionCross || (match ? (match[2] ? parseInt(match[2]) : parseInt(match[1])) : ''));
+                                 setIsHybrid(pastJob.isHybrid !== undefined ? pastJob.isHybrid : (match && match[2] ? true : false));
+                                 
                                  setPreStretchMain(pastJob.preStretchMain || '');
                                  setPreStretchCross(pastJob.preStretchCross || '');
                                  setIsStringing(true);
@@ -1073,11 +1078,15 @@ export const StringerDashboard = () => {
                           customerName: selectedCustomer ? selectedCustomer.name : 'Desconhecido',
                           racketModel: rackets.find(r => r.id === selectedJobRacket)?.name || 'Raquete Customizada',
                           date: new Date().toLocaleDateString('pt-BR'),
-                          tension: isHybrid ? `${tensionMain}/${tensionCross} lbs` : `${tensionMain} lbs`,
+                          tension: isHybrid ? `${tensionMain}/${tensionCross} ${tensionUnit}` : `${tensionMain} ${tensionUnit}`,
                           status: 'aguardando',
                           type: 'to_string' as any,
                           mainString,
                           crossString,
+                          tensionMain,
+                          tensionCross,
+                          stringingType,
+                          tensionUnit,
                           isHybrid,
                           racketId: selectedJobRacket,
                           isStringing,
