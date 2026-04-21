@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, DollarSign, Phone, Activity, Clock, Plus, ArrowLeft, Trash2, Edit } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Phone, Activity, Plus, ArrowLeft, Trash2, Edit } from 'lucide-react';
 
 interface AgendaSlot {
   id: string;
@@ -94,7 +94,7 @@ export const OpenAgenda = () => {
     }
   };
 
-  const canEdit = (slot: AgendaSlot) => {
+  const canEdit = () => {
     if (role === 'ENCORDOADOR') return true;
     if (role === 'PROFESSOR') return true; // Idealmente verificaria se o nome bate, mas vamos permitir edição a todos os professores por enquanto
     return false;
@@ -169,7 +169,7 @@ export const OpenAgenda = () => {
                     </div>
                   </div>
                   
-                  {canEdit(slot) && (
+                  {canEdit() && (
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => openForm(slot)} style={{ background: 'transparent', border: 'none', color: '#60A5FA', cursor: 'pointer' }}><Edit size={18} /></button>
                       <button onClick={() => handleDelete(slot.id)} style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
