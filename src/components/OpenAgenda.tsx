@@ -26,6 +26,8 @@ export const OpenAgenda = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  
+  const [professorIdentity, setProfessorIdentity] = useState(() => localStorage.getItem('tt_professor_identity') || '');
 
   // Form State
   const [professorName, setProfessorName] = useState('');
@@ -94,9 +96,12 @@ export const OpenAgenda = () => {
     }
   };
 
-  const canEdit = () => {
+  const canEdit = (slot: AgendaSlot) => {
     if (role === 'ENCORDOADOR') return true;
-    if (role === 'PROFESSOR') return true; // Idealmente verificaria se o nome bate, mas vamos permitir edição a todos os professores por enquanto
+    if (role === 'PROFESSOR') {
+      if (!professorIdentity) return false;
+      return slot.professorName.toLowerCase().trim() === professorIdentity.toLowerCase().trim();
+    }
     return false;
   };
 
@@ -126,6 +131,22 @@ export const OpenAgenda = () => {
             </button>
           )}
         </div>
+
+        {role === 'PROFESSOR' && (
+          <div className="glass-panel" style={{ padding: '16px 24px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+            <label style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Você é professor? Digite seu nome para gerenciar seus anúncios:</label>
+            <input 
+              type="text" 
+              value={professorIdentity} 
+              onChange={e => {
+                setProfessorIdentity(e.target.value);
+                localStorage.setItem('tt_professor_identity', e.target.value);
+              }}
+              placeholder="Ex: Bento Andrade"
+              style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '8px 16px', borderRadius: '8px', minWidth: '250px', outline: 'none' }}
+            />
+          </div>
+        )}
 
         {/* List of Slots */}
         {slots.length === 0 ? (
@@ -168,7 +189,7 @@ export const OpenAgenda = () => {
                     </div>
                   </div>
                   
-                  {canEdit() && (
+                  {canEdit(slot) && (
                     <div style={{ display: 'flex', gap: '8px' }}>
                       <button onClick={() => openForm(slot)} style={{ background: 'transparent', border: 'none', color: '#60A5FA', cursor: 'pointer' }}><Edit size={18} /></button>
                       <button onClick={() => handleDelete(slot.id)} style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
