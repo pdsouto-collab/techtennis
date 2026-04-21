@@ -27,7 +27,10 @@ export const OpenAgenda = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   
-  const [professorIdentity, setProfessorIdentity] = useState(() => localStorage.getItem('tt_professor_identity') || '');
+  const [myCreatedSlots, setMyCreatedSlots] = useState<string[]>(() => {
+    const saved = localStorage.getItem('tt_my_created_slots');
+    return saved ? JSON.parse(saved) : [];
+  });
 
   // Form State
   const [professorName, setProfessorName] = useState('');
@@ -41,6 +44,10 @@ export const OpenAgenda = () => {
   useEffect(() => {
     localStorage.setItem('tt_open_slots', JSON.stringify(slots));
   }, [slots]);
+
+  useEffect(() => {
+    localStorage.setItem('tt_my_created_slots', JSON.stringify(myCreatedSlots));
+  }, [myCreatedSlots]);
 
   const resetForm = () => {
     setProfessorName('');
@@ -86,6 +93,9 @@ export const OpenAgenda = () => {
       setSlots(prev => prev.map(s => s.id === editingId ? newSlot : s));
     } else {
       setSlots(prev => [newSlot, ...prev]);
+      if (role === 'PROFESSOR') {
+        setMyCreatedSlots(prev => [...prev, newSlot.id]);
+      }
     }
     setIsModalOpen(false);
   };
@@ -99,8 +109,7 @@ export const OpenAgenda = () => {
   const canEdit = (slot: AgendaSlot) => {
     if (role === 'ENCORDOADOR') return true;
     if (role === 'PROFESSOR') {
-      if (!professorIdentity) return false;
-      return slot.professorName.toLowerCase().trim() === professorIdentity.toLowerCase().trim();
+      return myCreatedSlots.includes(slot.id);
     }
     return false;
   };
@@ -131,22 +140,6 @@ export const OpenAgenda = () => {
             </button>
           )}
         </div>
-
-        {role === 'PROFESSOR' && (
-          <div className="glass-panel" style={{ padding: '16px 24px', background: 'rgba(255,255,255,0.05)', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-            <label style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Você é professor? Digite seu nome para gerenciar seus anúncios:</label>
-            <input 
-              type="text" 
-              value={professorIdentity} 
-              onChange={e => {
-                setProfessorIdentity(e.target.value);
-                localStorage.setItem('tt_professor_identity', e.target.value);
-              }}
-              placeholder="Ex: Bento Andrade"
-              style={{ background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', padding: '8px 16px', borderRadius: '8px', minWidth: '250px', outline: 'none' }}
-            />
-          </div>
-        )}
 
         {/* List of Slots */}
         {slots.length === 0 ? (
