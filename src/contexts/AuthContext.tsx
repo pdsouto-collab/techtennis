@@ -92,7 +92,10 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const login = (email: string, pass: string) => {
     const u = users.find(x => x.email === email && x.password === pass);
     if (!u) return 'Credenciais inválidas';
-    if (u.status === 'pending') return 'Aguardando aprovação do administrador. Prazo de até 48h.';
+    if (u.status === 'pending') {
+      if (u.role === 'CLIENTE') return 'Por favor, finalize seu cadastro confirmando seu e-mail através do link que enviamos.';
+      return 'Aguardando aprovação do administrador. Prazo de até 48h.';
+    }
     if (u.status === 'blocked') return 'Conta bloqueada.';
     setCurrentUser(u);
     return true;
