@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson } from 'lucide-react';
+import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson, MessageCircle } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
@@ -599,6 +599,24 @@ export const StringerDashboard = () => {
                             </div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+                            <button onClick={() => {
+                                const cust = customers.find(c => c.name === job.customerName);
+                                if (!cust || !cust.phone) return alert('Telefone do cliente não encontrado!');
+                                const msg = `Olá ${job.customerName}, a sua raquete (${job.racketModel}) já foi encordoada e está pronta para retirada na TechTennis!`;
+                                window.open(`https://wa.me/${cust.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                            }} style={{ background: '#25D366', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Avisar Cliente no WhatsApp">
+                              <MessageCircle size={16} />
+                            </button>
+                            {job.commissionedProfessorId && (
+                                <button onClick={() => {
+                                    const prof = professors.find(p => p.id === job.commissionedProfessorId);
+                                    if (!prof || !prof.phone) return alert('Telefone do professor não encontrado!');
+                                    const msg = `Olá Professor, a raquete do seu aluno ${job.customerName} (${job.racketModel}) já está pronta para retirada na TechTennis!`;
+                                    window.open(`https://wa.me/${prof.phone.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(msg)}`, '_blank');
+                                }} style={{ background: '#128C7E', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Avisar Professor no WhatsApp">
+                                  <MessageCircle size={16} /> <span style={{fontSize: '10px', marginLeft: '4px'}}>Prof</span>
+                                </button>
+                            )}
                             <button onClick={() => {
                               const cust = customers.find(c => c.name === job.customerName);
                               startEditingJob(job, cust);
