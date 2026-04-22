@@ -74,7 +74,6 @@ export const UserManagement = () => {
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   {user.id !== 'master-admin' && (
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                       <button onClick={() => updateUserStatus(user.id, user.status === 'blocked' ? 'active' : 'blocked')} style={{ background: 'transparent', border: 'none', color: user.status === 'blocked' ? '#10B981' : '#F59E0B', cursor: 'pointer' }} title={user.status === 'blocked' ? 'Desbloquear Usuário' : 'Bloquear Usuário'}>
                        {user.status === 'blocked' ? <CheckCircle size={18} /> : <Ban size={18} />}
                       </button>
