@@ -1262,7 +1262,7 @@ export const StringerDashboard = () => {
                        </div>
                        <div>
                           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Data do encordoamento</label>
-                          <input type="text" defaultValue="04/04/2026 16:14" style={inputStyle} />
+                          <input type="datetime-local" defaultValue="2026-04-04T16:14" style={inputStyle} />
                        </div>
                     </div>
 
