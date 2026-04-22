@@ -8,14 +8,17 @@ import { RacketCollection } from './components/RacketCollection';
 import { ClassManagementProfessor } from './components/ClassManagementProfessor';
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import { CustomerSingleClass } from './components/CustomerSingleClass';
-import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import { OpenAgenda } from './components/OpenAgenda';
+import { LoginView } from './components/LoginView';
+import { UserManagement } from './components/UserManagement';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => {
+  const { currentUser, logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -84,7 +87,7 @@ const Navbar = () => {
                   Trocar Senha
                 </button>
                 <button 
-                  onClick={() => { alert('Deslogando do sistema...'); setIsProfileOpen(false); window.location.reload(); }}
+                  onClick={() => { alert('Deslogando do sistema...'); setIsProfileOpen(false); logout(); }}
                   style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontWeight: 600, color: '#EF4444' }}
                   onMouseOver={e => e.currentTarget.style.background = '#fcf0f0'}
                   onMouseOut={e => e.currentTarget.style.background = 'transparent'}
@@ -156,11 +159,11 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
 };
 
 // --- Main Home Screen ---
-type UserProfile = 'ENCORDOADOR' | 'PROFESSOR' | 'CLIENTE';
-
 const Hero = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<UserProfile>('ENCORDOADOR');
+  const { currentUser } = useAuth();
+
+  const profile = currentUser?.role || 'CLIENTE';
 
   return (
     <div style={{ 
@@ -171,37 +174,12 @@ const Hero = () => {
       width: '100%'
     }}>
       
-      {/* Profile Switcher */}
-      <div className="glass-panel" style={{ 
-        padding: '16px', marginBottom: '32px', display: 'flex', 
-        alignItems: 'center', justifyContent: 'space-between',
-        background: 'var(--bg-panel-solid)', flexWrap: 'wrap', gap: '16px'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Settings size={20} color="var(--primary-color)" />
-          <span style={{ fontWeight: 700, color: 'var(--text-primary)' }}>Modo de Visualização:</span>
-        </div>
-        <div style={{ display: 'flex', gap: '8px', background: 'rgba(0,12,60,0.5)', padding: '6px', borderRadius: '100px' }}>
-          {(['ENCORDOADOR', 'PROFESSOR', 'CLIENTE'] as UserProfile[]).map(p => (
-            <button
-              key={p}
-              onClick={() => setProfile(p)}
-              style={{
-                padding: '8px 16px', borderRadius: '100px', border: 'none', cursor: 'pointer',
-                background: profile === p ? 'var(--primary-color)' : 'transparent',
-                color: profile === p ? 'var(--text-dark)' : 'var(--text-primary)',
-                fontWeight: 700, fontSize: '14px', transition: 'all 0.3s'
-              }}
-            >
-              {p}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      <h1 style={{ fontSize: '32px', marginBottom: '24px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
+      <h1 style={{ fontSize: '32px', marginBottom: '8px', fontWeight: 800, color: 'var(--text-primary)', fontFamily: 'var(--font-heading)' }}>
         BEM-VINDO A TECHTENNIS
       </h1>
+      <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '32px' }}>
+        Logado como {currentUser?.name} | Perfil: <strong style={{ color: 'var(--primary-color)' }}>{profile}</strong>
+      </p>
 
       <div style={{ 
         display: 'grid', 
@@ -209,11 +187,18 @@ const Hero = () => {
         gap: '24px' 
       }}>
         
-        {/* ENCORDOADOR (Master) */}
-        {profile === 'ENCORDOADOR' && (
+        {/* ADMIN E ENCORDOADOR */}
+        {(profile === 'ADMIN' || profile === 'ENCORDOADOR') && (
           <>
+            {profile === 'ADMIN' && (
+              <HomeTile 
+                title="Configurações de Usuários" subtitle="Gestão de Acessos" fullWidth
+                backgroundImage={racketCollectionImg} backgroundPosition="center 20%"
+                onClick={() => navigate('/users')}
+              />
+            )}
             <HomeTile 
-              title="Gestão de Encordoamento" subtitle="Acesso Master" fullWidth
+              title="Gestão de Encordoamento" subtitle="Acesso Master" { ...(profile !== 'ADMIN' ? { fullWidth: true } : {}) }
               backgroundImage={ernestoImg} backgroundPosition="left 35%" textPosition="right"
               onClick={() => navigate('/stringer')}
             />
@@ -245,8 +230,8 @@ const Hero = () => {
           </>
         )}
 
-        {/* PROFESSOR DE TÊNIS */}
-        {profile === 'PROFESSOR' && (
+        {/* PROFESSOR DE TÊNIS E PROFESSOR PREMIUM */}
+        {(profile === 'PROFESSOR' || profile === 'PROFESSOR_PREMIUM') && (
           <>
             <HomeTile 
               title="Coleta de Raquetes" subtitle="Apoio aos Alunos" fullWidth
@@ -318,8 +303,11 @@ function App() {
     return () => document.removeEventListener('wheel', handleWheel);
   }, []);
 
+  const { currentUser } = useAuth();
+  if (!currentUser) return <LoginView />;
+
   return (
-    <Router>
+    <>
       <div className="page-container">
         
         {/* Tennis Court Background SVG */}
@@ -369,11 +357,20 @@ function App() {
             <Route path="/customer-single-class" element={<CustomerSingleClass />} />
             <Route path="/professor-single-class" element={<ProfessorSingleClass />} />
             <Route path="/open-agenda" element={<OpenAgenda />} />
+            <Route path="/users" element={<UserManagement />} />
           </Routes>
         </main>
       </div>
-    </Router>
+    </>
   );
 }
 
-export default App;
+const WrappedApp = () => (
+  <AuthProvider>
+    <Router>
+      <App />
+    </Router>
+  </AuthProvider>
+)
+
+export default WrappedApp;

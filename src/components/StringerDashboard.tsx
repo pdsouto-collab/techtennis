@@ -1912,12 +1912,14 @@ export const StringerDashboard = () => {
                 <form onSubmit={(e) => {
                   e.preventDefault();
                   const fd = new FormData(e.currentTarget);
-                  const newProf = {
-                    id: selectedProfessor ? selectedProfessor.id : Date.now().toString(),
-                    name: fd.get('name') as string,
-                    email: fd.get('email') as string,
-                    phone: fd.get('phone') as string
-                  };
+                    const newProf = {
+                      id: selectedProfessor ? selectedProfessor.id : Date.now().toString(),
+                      name: fd.get('name') as string,
+                      email: fd.get('email') as string,
+                      phone: fd.get('phone') as string,
+                      yearsOfExperience: fd.get('yearsOfExperience') as string,
+                      trainingTypes: fd.get('trainingTypes') as string
+                    };
                   if (selectedProfessor) {
                     setProfessors(professors.map(p => p.id === newProf.id ? newProf : p));
                   } else {
@@ -1931,9 +1933,15 @@ export const StringerDashboard = () => {
                     <button type="button" onClick={() => setIsProfessorModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X /></button>
                   </div>
                   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
-                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" defaultValue={selectedProfessor?.phone || ''} style={inputStyle} /></div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" defaultValue={selectedProfessor?.phone || ''} style={inputStyle} /></div>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Anos de Experiência</label><input type="number" name="yearsOfExperience" defaultValue={selectedProfessor?.yearsOfExperience || ''} style={inputStyle} /></div>
+                    </div>
+                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Tipos de Treino (ex: Competitivo, Rebatedor)</label><input type="text" name="trainingTypes" defaultValue={selectedProfessor?.trainingTypes || ''} style={inputStyle} /></div>
                   </div>
                   <div style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
                     <button type="submit" className="button-primary" style={{ padding: '12px 32px' }}>{selectedProfessor ? 'Salvar Professor' : 'Criar Professor'}</button>
