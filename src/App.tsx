@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Search, User, Settings } from 'lucide-react';
+import { Search, User } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
 import { ClassManagementProfessor } from './components/ClassManagementProfessor';
 import { ClassManagementCustomer } from './components/ClassManagementCustomer';
 import { CustomerSingleClass } from './components/CustomerSingleClass';
+import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import { OpenAgenda } from './components/OpenAgenda';
 import { LoginView } from './components/LoginView';
 import { UserManagement } from './components/UserManagement';
@@ -18,7 +19,7 @@ import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => {
-  const { currentUser, logout } = useAuth();
+  const { logout } = useAuth();
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Edit, Save, X, Plus } from 'lucide-react';
-import { useAuth, User, UserRole } from '../contexts/AuthContext';
+import { Trash2, Edit, Save, X } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
+import type { User, UserRole } from '../contexts/AuthContext';
 
 export const UserManagement = () => {
-  const { users, updateUserStatus, deleteUser, registerProfessor, registerClient } = useAuth();
+  const { users, updateUserStatus, deleteUser } = useAuth();
   
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
   const [editStatus, setEditStatus] = useState<User['status']>('active');
