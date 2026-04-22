@@ -125,14 +125,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   };
 
   const tabs = [
-    { id: 'strings', label: 'Corda (Main/Cross)' },
-    { id: 'pickupPoints', label: 'Ponto de Encordoamento' },
-    { id: 'machines', label: 'Máquina de Encordoamento' },
-    { id: 'stringers', label: 'Encordoador' },
-    { id: 'sports', label: 'Esporte' },
     { id: 'clubs', label: 'Clubes / Condomínios' },
     { id: 'commissions', label: 'Comissão Professor (%)' },
+    { id: 'strings', label: 'Corda (Main/Cross)' },
     { id: 'clubDiscounts', label: 'Desconto por Clube (%)' },
+    { id: 'stringers', label: 'Encordoador' },
+    { id: 'sports', label: 'Esporte' },
+    { id: 'machines', label: 'Máquina de Encordoamento' },
+    { id: 'pickupPoints', label: 'Ponto de Encordoamento' },
   ];
 
   return (
