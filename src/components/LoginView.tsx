@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import brandLogo from '../assets/techtennis-logo.png';
+import atpLogo from '../assets/atp-tour-logo.jpg';
 import bgImage from '../assets/miami-open-ernesto.jpg';
 
 export const LoginView = () => {
@@ -78,11 +79,8 @@ export const LoginView = () => {
           boxShadow: '0 24px 48px rgba(0,0,0,0.5)'
         }}
       >
-        <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-          <img src={brandLogo} alt="TechTennis" style={{ height: '80px', mixBlendMode: 'multiply', filter: 'brightness(0) invert(1)' }} />
-          <p style={{ color: 'var(--primary-color)', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', fontSize: '13px', marginTop: '12px' }}>
-            ATP Pro Stringer Store
-          </p>
+        <div style={{ textAlign: 'center', marginBottom: '24px' }}>
+          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '100px', objectFit: 'contain', mixBlendMode: 'screen' }} />
         </div>
 
         <AnimatePresence mode="wait">
@@ -109,6 +107,10 @@ export const LoginView = () => {
               <button type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px' }}>
                 Acessar Plataforma
               </button>
+
+              <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '8px' }}>
+                <img src={brandLogo} alt="TechTennis" style={{ height: '50px', mixBlendMode: 'multiply', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
+              </div>
 
               <div style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
                 <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', marginBottom: '16px' }}>Ainda não tem acesso?</p>
