@@ -20,6 +20,7 @@ export const LoginView = () => {
   const [regPhone, setRegPhone] = useState('');
   const [regExp, setRegExp] = useState('');
   const [regTraining, setRegTraining] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   
   const [successMsg, setSuccessMsg] = useState('');
 
@@ -36,17 +37,21 @@ export const LoginView = () => {
     e.preventDefault();
     setLoginError('');
     setSuccessMsg('');
+    if (password !== confirmPassword) {
+      setLoginError('As senhas não coincidem!');
+      return;
+    }
     
     if (mode === 'register_client') {
       registerClient(regName, email, password, regPhone);
-      setSuccessMsg('Cadastro realizado! Você já pode entrar.');
+      setSuccessMsg('Cadastro realizado! Enviamos um link de verificação para o seu e-mail. Por favor, confirme-o para liberar seu acesso.');
       setMode('login');
     } else {
       registerProfessor(regName, email, password, regPhone, regExp, regTraining);
       setSuccessMsg('Cadastro realizado com sucesso! Seu perfil de Professor será avaliado por um Administrador em até 48h. Você receberá um aviso assim que for liberado.');
-      setMode('login');
       setEmail('');
       setPassword('');
+      setConfirmPassword('');
     }
   };
 
@@ -160,6 +165,10 @@ export const LoginView = () => {
                 <div style={{ gridColumn: 'span 2' }}>
                   <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '8px' }}>Senha *</label>
                   <input required type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
+                </div>
+                <div style={{ gridColumn: 'span 2' }}>
+                  <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '8px' }}>Confirme a Senha *</label>
+                  <input required type="password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} style={inputStyle} />
                 </div>
               </div>
 

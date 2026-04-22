@@ -150,10 +150,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       password: pass,
       phone,
       role: 'CLIENTE',
-      status: 'active'
+      status: 'pending'
     };
     setUsers(prev => [...prev, newUser]);
-    syncToCustomers(name, email, phone);
   };
 
   const registerProfessor = (name: string, email: string, pass: string, phone: string, experience: string, training: string) => {
@@ -179,6 +178,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           if (status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
              setTimeout(() => syncToProfessors(mod), 100);
           }
+          if (status === 'active' && mod.role === 'CLIENTE') {
+             setTimeout(() => syncToCustomers(mod.name, mod.email, mod.phone || ''), 100);
+          }
           return mod;
         }
         return u;
@@ -193,6 +195,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
             const mod = { ...u, ...updates };
             if (mod.status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
                 setTimeout(() => syncToProfessors(mod as User), 100);
+            }
+            if (mod.status === 'active' && mod.role === 'CLIENTE') {
+                setTimeout(() => syncToCustomers(mod.name, mod.email, mod.phone || ''), 100);
             }
             return mod as User;
         }
