@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import brandLogo from '../assets/techtennis-logo.png';
-import atpLogo from '../assets/atp-tour-logo.jpg';
+import atpLogo from '../assets/atp-tour-logo.png';
 import bgImage from '../assets/miami-open-ernesto.jpg';
 
 export const LoginView = () => {
@@ -80,7 +80,7 @@ export const LoginView = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '130px', objectFit: 'contain', mixBlendMode: 'screen' }} />
+          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '160px', objectFit: 'contain' }} />
         </div>
 
         <AnimatePresence mode="wait">
