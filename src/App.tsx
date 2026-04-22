@@ -17,6 +17,7 @@ import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
+import gestaoUsuariosImg from './assets/gestao-usuarios-bg.jpg';
 
 const Navbar = () => {
   const { logout } = useAuth();
@@ -194,7 +195,7 @@ const Hero = () => {
             {profile === 'ADMIN' && (
               <HomeTile 
                 title="Configurações de Usuários" subtitle="Gestão de Acessos" fullWidth
-                backgroundImage={racketCollectionImg} backgroundPosition="center 20%"
+                backgroundImage={gestaoUsuariosImg} backgroundPosition="center 40%"
                 onClick={() => navigate('/users')}
               />
             )}
