@@ -12,6 +12,7 @@ import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import { OpenAgenda } from './components/OpenAgenda';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
+import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 
 const Navbar = () => {
@@ -238,7 +239,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Agenda Aberta" subtitle="Horários Disponíveis"
-              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'ENCORDOADOR' } })}
             />
           </>
@@ -269,7 +270,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Agenda Aberta" subtitle="Divulgue Seus Horários"
-              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'PROFESSOR' } })}
             />
           </>
@@ -295,7 +296,7 @@ const Hero = () => {
             />
             <HomeTile 
               title="Agenda Aberta" subtitle="Horários Disponíveis"
-              backgroundImage="https://images.unsplash.com/photo-1435527173128-983b87201f4d?q=80&w=1500&auto=format&fit=crop"
+              backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'CLIENTE' } })}
             />
           </>
