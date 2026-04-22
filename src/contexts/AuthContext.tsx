@@ -25,21 +25,49 @@ interface AuthContextType {
   deleteUser: (id: string) => void;
 }
 
-const defaultAdmin: User = {
-  id: 'master-admin',
-  name: 'Administrador',
-  email: 'admin@techtennis.com',
-  password: 'admin',
-  role: 'ADMIN',
-  status: 'active'
-};
+const defaultUsers: User[] = [
+  {
+    id: 'master-admin',
+    name: 'Administrador Oficial',
+    email: 'admin@techtennis.com',
+    password: 'admin',
+    role: 'ADMIN',
+    status: 'active'
+  },
+  {
+    id: 'test-encordoador',
+    name: 'Loja Encordoador',
+    email: 'loja@techtennis.com',
+    password: '123',
+    role: 'ENCORDOADOR',
+    status: 'active'
+  },
+  {
+    id: 'test-professor',
+    name: 'Professor Gustavo',
+    email: 'guga@techtennis.com',
+    password: '123',
+    role: 'PROFESSOR_PREMIUM',
+    status: 'active',
+    yearsOfExperience: '15',
+    trainingTypes: 'Competitivo, Infantil'
+  },
+  {
+    id: 'test-cliente',
+    name: 'Rafael Cliente',
+    email: 'rafa@techtennis.com',
+    password: '123',
+    role: 'CLIENTE',
+    status: 'active'
+  }
+];
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [users, setUsers] = useState<User[]>(() => {
     const saved = localStorage.getItem('tt_users');
-    return saved ? JSON.parse(saved) : [defaultAdmin];
+    return saved ? JSON.parse(saved) : defaultUsers;
   });
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
