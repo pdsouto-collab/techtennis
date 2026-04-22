@@ -80,7 +80,7 @@ export const LoginView = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '160px', objectFit: 'contain' }} />
+          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '160px', objectFit: 'contain', mixBlendMode: 'screen', filter: 'contrast(2.5) brightness(0.8)' }} />
         </div>
 
         <AnimatePresence mode="wait">
