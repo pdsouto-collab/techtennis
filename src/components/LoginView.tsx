@@ -80,7 +80,7 @@ export const LoginView = () => {
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ width: '100%', height: 'auto', maxHeight: '200px', objectFit: 'cover', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }} />
+          <img src={atpLogo} alt="ATP Tour Pro Stringer Store" style={{ height: '160px', objectFit: 'contain', borderRadius: '16px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)' }} />
         </div>
 
         <AnimatePresence mode="wait">
@@ -109,7 +109,7 @@ export const LoginView = () => {
               </button>
 
               <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '8px' }}>
-                <img src={brandLogo} alt="TechTennis" style={{ height: '75px', mixBlendMode: 'multiply', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
+                <img src={brandLogo} alt="TechTennis" style={{ height: '90px', mixBlendMode: 'multiply', filter: 'brightness(0) invert(1)', opacity: 0.8 }} />
               </div>
 
               <div style={{ textAlign: 'center', marginTop: '16px', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '24px' }}>
