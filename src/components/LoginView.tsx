@@ -104,7 +104,7 @@ export const LoginView = () => {
                 <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '8px' }}>Senha</label>
                 <input required type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
               </div>
-              <button type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px' }}>
+              <button type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px', color: '#139AD6' }}>
                 Acessar Plataforma
               </button>
 
