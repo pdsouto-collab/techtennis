@@ -145,7 +145,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   };
 
-  const registerClient = (name: string, email: string, pass: string, phone: string) => {
+  const registerClient = async (name: string, email: string, pass: string, phone: string) => {
     const newUser: User = {
       id: Date.now().toString(),
       name,
@@ -156,6 +156,43 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       status: 'pending'
     };
     setUsers(prev => [...prev, newUser]);
+
+    // ===== INTEGRAÇÃO DE ENVIO DE E-MAIL (EmailJS) =====
+    // Para funcionar na vida real:
+    // 1. Crie uma conta grátis em https://www.emailjs.com/ usando seu e-mail pessoal provisório.
+    // 2. Adicione um "Email Service" (ex: Gmail).
+    // 3. Crie um "Email Template" com um botão/link confirmando.
+    // 4. Substitua suas chaves abaixo:
+    const EMAILJS_SERVICE_ID = 'SEU_SERVICE_ID_AQUI';
+    const EMAILJS_TEMPLATE_ID = 'SEU_TEMPLATE_ID_AQUI';
+    const EMAILJS_PUBLIC_KEY = 'SUA_PUBLIC_KEY_AQUI';
+
+    const confirmationLink = `${window.location.origin}${window.location.pathname}#/confirm?token=${newUser.id}`;
+
+    try {
+      if (EMAILJS_SERVICE_ID !== 'SEU_SERVICE_ID_AQUI') {
+        await fetch('https://api.emailjs.com/api/v1.0/email/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            service_id: EMAILJS_SERVICE_ID,
+            template_id: EMAILJS_TEMPLATE_ID,
+            user_id: EMAILJS_PUBLIC_KEY,
+            template_params: {
+              to_email: email,
+              to_name: name,
+              confirmation_link: confirmationLink
+            }
+          })
+        });
+        console.log("E-mail de confirmação disparado com sucesso para:", email);
+      } else {
+        console.warn("EmailJS não configurado. Simulação de envio para:", email);
+        console.warn("Link de confirmação gerado:", confirmationLink);
+      }
+    } catch (err) {
+      console.error("Erro ao enviar e-mail:", err);
+    }
   };
 
   const registerProfessor = (name: string, email: string, pass: string, phone: string, experience: string, training: string) => {
