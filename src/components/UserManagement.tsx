@@ -5,22 +5,19 @@ import { useAuth } from '../contexts/AuthContext';
 import type { User, UserRole } from '../contexts/AuthContext';
 
 export const UserManagement = () => {
-  const { users, updateUserStatus, deleteUser, adminCreateUser } = useAuth();
+  const { users, updateUserStatus, deleteUser, adminCreateUser, adminUpdateUser } = useAuth();
   
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [isAddingUser, setIsAddingUser] = useState(false);
-  const [editStatus, setEditStatus] = useState<User['status']>('active');
-  const [editRole, setEditRole] = useState<UserRole>('CLIENTE');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
 
   const handleEdit = (user: User) => {
-    setEditingUserId(user.id);
-    setEditStatus(user.status);
-    setEditRole(user.role);
+    setSelectedUser(user);
+    setIsModalOpen(true);
   };
 
-  const handleSave = (userId: string) => {
-    updateUserStatus(userId, editStatus, editRole);
-    setEditingUserId(null);
+  const handleAdd = () => {
+    setSelectedUser(null);
+    setIsModalOpen(true);
   };
 
   return (
@@ -30,7 +27,7 @@ export const UserManagement = () => {
           <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)' }}>Configurações de Usuários</h2>
           <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos, permissões e aprovação de professores.</p>
         </div>
-        <button onClick={() => setIsAddingUser(true)} className="button-primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button onClick={handleAdd} className="button-primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Plus size={18} /> Adicionar Usuário
         </button>
       </div>
@@ -57,58 +54,32 @@ export const UserManagement = () => {
                   {user.phone || '-'}
                 </td>
                 <td style={{ padding: '16px 24px' }}>
-                  {editingUserId === user.id ? (
-                    <select value={editRole} onChange={e => setEditRole(e.target.value as UserRole)} style={{ padding: '6px', borderRadius: '4px', border: '1px solid #E5E7EB' }}>
-                      <option value="CLIENTE">Cliente</option>
-                      <option value="PROFESSOR">Professor</option>
-                      <option value="PROFESSOR_PREMIUM">Professor Premium</option>
-                      <option value="ENCORDOADOR">Encordoador</option>
-                      <option value="ADMIN">Admin</option>
-                    </select>
-                  ) : (
-                    <span style={{ 
-                      padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700,
-                      background: user.role === 'ADMIN' ? '#FEE2E2' : user.role === 'ENCORDOADOR' ? '#E0E7FF' : user.role.includes('PROFESSOR') ? '#FEF3C7' : '#DCFCE7',
-                      color: user.role === 'ADMIN' ? '#991B1B' : user.role === 'ENCORDOADOR' ? '#3730A3' : user.role.includes('PROFESSOR') ? '#92400E' : '#166534'
-                    }}>
-                      {user.role}
-                    </span>
-                  )}
+                  <span style={{ 
+                    padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700,
+                    background: user.role === 'ADMIN' ? '#FEE2E2' : user.role === 'ENCORDOADOR' ? '#E0E7FF' : user.role.includes('PROFESSOR') ? '#FEF3C7' : '#DCFCE7',
+                    color: user.role === 'ADMIN' ? '#991B1B' : user.role === 'ENCORDOADOR' ? '#3730A3' : user.role.includes('PROFESSOR') ? '#92400E' : '#166534'
+                  }}>
+                    {user.role}
+                  </span>
                 </td>
                 <td style={{ padding: '16px 24px', textAlign: 'center' }}>
-                  {editingUserId === user.id ? (
-                    <select value={editStatus} onChange={e => setEditStatus(e.target.value as any)} style={{ padding: '6px', borderRadius: '4px', border: '1px solid #E5E7EB' }}>
-                      <option value="active">Ativo</option>
-                      <option value="pending">Pendente</option>
-                      <option value="blocked">Bloqueado</option>
-                    </select>
-                  ) : (
-                    <span style={{ 
-                      padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700, display: 'inline-block',
-                      background: user.status === 'active' ? '#DCFCE7' : user.status === 'pending' ? '#FEF9C3' : '#FEE2E2',
-                      color: user.status === 'active' ? '#166534' : user.status === 'pending' ? '#854D0E' : '#991B1B'
-                    }}>
-                      {user.status === 'active' ? 'Ativo' : user.status === 'pending' ? 'Pendente' : 'Bloqueado'}
-                    </span>
-                  )}
+                  <span style={{ 
+                    padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700, display: 'inline-block',
+                    background: user.status === 'active' ? '#DCFCE7' : user.status === 'pending' ? '#FEF9C3' : '#FEE2E2',
+                    color: user.status === 'active' ? '#166534' : user.status === 'pending' ? '#854D0E' : '#991B1B'
+                  }}>
+                    {user.status === 'active' ? 'Ativo' : user.status === 'pending' ? 'Pendente' : 'Bloqueado'}
+                  </span>
                 </td>
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                   {user.id !== 'master-admin' && (
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                      {editingUserId === user.id ? (
-                        <>
-                          <button onClick={() => handleSave(user.id)} style={{ background: 'transparent', border: 'none', color: '#10B981', cursor: 'pointer' }}><Save size={18} /></button>
-                          <button onClick={() => setEditingUserId(null)} style={{ background: 'transparent', border: 'none', color: '#6B7280', cursor: 'pointer' }}><X size={18} /></button>
-                        </>
-                      ) : (
-                        <>
-                          <button onClick={() => updateUserStatus(user.id, user.status === 'blocked' ? 'active' : 'blocked')} style={{ background: 'transparent', border: 'none', color: user.status === 'blocked' ? '#10B981' : '#F59E0B', cursor: 'pointer' }} title={user.status === 'blocked' ? 'Desbloquear Usuário' : 'Bloquear Usuário'}>
-                           {user.status === 'blocked' ? <CheckCircle size={18} /> : <Ban size={18} />}
-                          </button>
-                          <button onClick={() => handleEdit(user)} style={{ background: 'transparent', border: 'none', color: '#6B7280', cursor: 'pointer' }} title="Editar"><Edit size={18} /></button>
-                          <button onClick={() => window.confirm('Deseja excluir este usuário?') && deleteUser(user.id)} style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer' }} title="Excluir"><Trash2 size={18} /></button>
-                        </>
-                      )}
+                    <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                      <button onClick={() => updateUserStatus(user.id, user.status === 'blocked' ? 'active' : 'blocked')} style={{ background: 'transparent', border: 'none', color: user.status === 'blocked' ? '#10B981' : '#F59E0B', cursor: 'pointer' }} title={user.status === 'blocked' ? 'Desbloquear Usuário' : 'Bloquear Usuário'}>
+                       {user.status === 'blocked' ? <CheckCircle size={18} /> : <Ban size={18} />}
+                      </button>
+                      <button onClick={() => handleEdit(user)} style={{ background: 'transparent', border: 'none', color: '#6B7280', cursor: 'pointer' }} title="Editar"><Edit size={18} /></button>
+                      <button onClick={() => window.confirm('Deseja excluir este usuário?') && deleteUser(user.id)} style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer' }} title="Excluir"><Trash2 size={18} /></button>
                     </div>
                   )}
                 </td>
@@ -118,35 +89,40 @@ export const UserManagement = () => {
         </table>
       </div>
 
-      {isAddingUser && (
+      {isModalOpen && (
         <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ width: '100%', maxWidth: '500px', background: 'white', borderRadius: '24px', overflow: 'hidden' }}>
                 <form onSubmit={(e) => {
                     e.preventDefault();
                     const fd = new FormData(e.currentTarget);
-                    adminCreateUser({
+                    const userData = {
                         name: fd.get('name') as string,
                         email: fd.get('email') as string,
                         password: fd.get('password') as string,
                         phone: fd.get('phone') as string,
                         role: fd.get('role') as UserRole,
                         status: fd.get('status') as User['status']
-                    });
-                    setIsAddingUser(false);
+                    };
+                    if (selectedUser) {
+                        adminUpdateUser(selectedUser.id, userData);
+                    } else {
+                        adminCreateUser(userData);
+                    }
+                    setIsModalOpen(false);
                 }}>
                     <div style={{ background: 'var(--primary-color)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <h3 style={{ color: 'var(--text-dark)', fontSize: '20px', fontWeight: 700, margin: 0 }}>Adicionar Usuário</h3>
-                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dark)', cursor: 'pointer' }}><X size={24} /></button>
+                        <h3 style={{ color: 'var(--text-dark)', fontSize: '20px', fontWeight: 700, margin: 0 }}>{selectedUser ? 'Editar Usuário' : 'Adicionar Usuário'}</h3>
+                        <button type="button" onClick={() => setIsModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dark)', cursor: 'pointer' }}><X size={24} /></button>
                     </div>
                     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Nome Completo *</label><input required name="name" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Email *</label><input required type="email" name="email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue="123456" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Telefone</label><input name="phone" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedUser?.name || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Email *</label><input required type="email" name="email" defaultValue={selectedUser?.email || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue={selectedUser?.password || '123456'} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Telefone</label><input name="phone" defaultValue={selectedUser?.phone || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Perfil Base</label>
-                                <select name="role" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
+                                <select name="role" defaultValue={selectedUser?.role || 'CLIENTE'} required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
                                     <option value="CLIENTE">Cliente</option>
                                     <option value="PROFESSOR">Professor</option>
                                     <option value="PROFESSOR_PREMIUM">Professor Premium</option>
@@ -156,7 +132,7 @@ export const UserManagement = () => {
                             </div>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Status Inicial</label>
-                                <select name="status" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
+                                <select name="status" defaultValue={selectedUser?.status || 'active'} required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
                                     <option value="active">Ativo</option>
                                     <option value="pending">Pendente de Aprovação</option>
                                     <option value="blocked">Bloqueado</option>
@@ -165,7 +141,7 @@ export const UserManagement = () => {
                         </div>
                     </div>
                     <div style={{ padding: '24px', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ padding: '12px 24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancelar</button>
+                        <button type="button" onClick={() => setIsModalOpen(false)} style={{ padding: '12px 24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancelar</button>
                         <button type="submit" className="button-primary" style={{ padding: '12px 24px' }}>Salvar Usuário</button>
                     </div>
                 </form>

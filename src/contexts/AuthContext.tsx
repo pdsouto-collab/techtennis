@@ -24,6 +24,7 @@ interface AuthContextType {
   updateUserStatus: (id: string, status: User['status'], role?: UserRole) => void;
   deleteUser: (id: string) => void;
   adminCreateUser: (user: Partial<User>) => void;
+  adminUpdateUser: (id: string, updates: Partial<User>) => void;
 }
 
 const defaultUsers: User[] = [
@@ -176,7 +177,6 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         if (u.id === id) {
           const mod = { ...u, status, ...(role ? { role } : {}) };
           if (status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
-             // Quando aprovado como professor, sicroniza com tt_professors
              setTimeout(() => syncToProfessors(mod), 100);
           }
           return mod;
@@ -185,6 +185,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       });
       return updated;
     });
+  };
+
+  const adminUpdateUser = (id: string, updates: Partial<User>) => {
+    setUsers(prev => prev.map(u => {
+        if (u.id === id) {
+            const mod = { ...u, ...updates };
+            if (mod.status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
+                setTimeout(() => syncToProfessors(mod as User), 100);
+            }
+            return mod as User;
+        }
+        return u;
+    }));
   };
 
   const deleteUser = (id: string) => {
@@ -205,7 +218,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser, adminCreateUser }}>
+    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser, adminCreateUser, adminUpdateUser }}>
       {children}
     </AuthContext.Provider>
   );
