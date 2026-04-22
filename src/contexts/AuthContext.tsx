@@ -23,6 +23,7 @@ interface AuthContextType {
   registerProfessor: (name: string, email: string, pass: string, phone: string, experience: string, training: string) => void;
   updateUserStatus: (id: string, status: User['status'], role?: UserRole) => void;
   deleteUser: (id: string) => void;
+  adminCreateUser: (user: Partial<User>) => void;
 }
 
 const defaultUsers: User[] = [
@@ -190,8 +191,21 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers(prev => prev.filter(u => u.id !== id));
   };
 
+  const adminCreateUser = (user: Partial<User>) => {
+    const newUser: User = {
+        id: Date.now().toString(),
+        name: user.name || '',
+        email: user.email || '',
+        password: user.password || '123',
+        phone: user.phone || '',
+        role: user.role || 'CLIENTE',
+        status: user.status || 'active'
+    };
+    setUsers(prev => [...prev, newUser]);
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser }}>
+    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser, adminCreateUser }}>
       {children}
     </AuthContext.Provider>
   );

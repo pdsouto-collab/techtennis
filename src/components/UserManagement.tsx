@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Edit, Save, X } from 'lucide-react';
+import { Trash2, Edit, Save, X, Plus } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { User, UserRole } from '../contexts/AuthContext';
 
 export const UserManagement = () => {
-  const { users, updateUserStatus, deleteUser } = useAuth();
+  const { users, updateUserStatus, deleteUser, adminCreateUser } = useAuth();
   
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [isAddingUser, setIsAddingUser] = useState(false);
   const [editStatus, setEditStatus] = useState<User['status']>('active');
   const [editRole, setEditRole] = useState<UserRole>('CLIENTE');
 
@@ -29,6 +30,9 @@ export const UserManagement = () => {
           <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)' }}>Configurações de Usuários</h2>
           <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos, permissões e aprovação de professores.</p>
         </div>
+        <button onClick={() => setIsAddingUser(true)} className="button-primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Plus size={18} /> Adicionar Usuário
+        </button>
       </div>
 
       <div style={{ background: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
@@ -110,6 +114,61 @@ export const UserManagement = () => {
           </tbody>
         </table>
       </div>
+
+      {isAddingUser && (
+        <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)', zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center', padding: '24px' }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} style={{ width: '100%', maxWidth: '500px', background: 'white', borderRadius: '24px', overflow: 'hidden' }}>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.currentTarget);
+                    adminCreateUser({
+                        name: fd.get('name') as string,
+                        email: fd.get('email') as string,
+                        password: fd.get('password') as string,
+                        phone: fd.get('phone') as string,
+                        role: fd.get('role') as UserRole,
+                        status: fd.get('status') as User['status']
+                    });
+                    setIsAddingUser(false);
+                }}>
+                    <div style={{ background: 'var(--primary-color)', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h3 style={{ color: 'var(--text-dark)', fontSize: '20px', fontWeight: 700, margin: 0 }}>Adicionar Usuário</h3>
+                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dark)', cursor: 'pointer' }}><X size={24} /></button>
+                    </div>
+                    <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Email *</label><input required type="email" name="email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue="123456" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px' }}>Perfil Base</label>
+                                <select name="role" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                                    <option value="CLIENTE">Cliente</option>
+                                    <option value="PROFESSOR">Professor</option>
+                                    <option value="PROFESSOR_PREMIUM">Professor Premium</option>
+                                    <option value="ENCORDOADOR">Encordoador</option>
+                                    <option value="ADMIN">Administrador</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style={{ display: 'block', marginBottom: '8px' }}>Status Inicial</label>
+                                <select name="status" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                                    <option value="active">Ativo</option>
+                                    <option value="pending">Pendente de Aprovação</option>
+                                    <option value="blocked">Bloqueado</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div style={{ padding: '24px', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ padding: '12px 24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+                        <button type="submit" className="button-primary" style={{ padding: '12px 24px' }}>Salvar Usuário</button>
+                    </div>
+                </form>
+            </motion.div>
+        </div>
+      )}
     </motion.div>
   );
 };
