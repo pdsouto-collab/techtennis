@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Trash2, Edit, Save, X, Plus, Ban, CheckCircle } from 'lucide-react';
+import { Trash2, Edit, X, Plus, Ban, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { User, UserRole } from '../contexts/AuthContext';
 
