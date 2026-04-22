@@ -139,14 +139,14 @@ export const UserManagement = () => {
                         <button type="button" onClick={() => setIsAddingUser(false)} style={{ background: 'none', border: 'none', color: 'var(--text-dark)', cursor: 'pointer' }}><X size={24} /></button>
                     </div>
                     <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Email *</label><input required type="email" name="email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue="123456" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Nome Completo *</label><input required name="name" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Email *</label><input required type="email" name="email" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue="123456" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Telefone</label><input name="phone" style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '8px' }}>Perfil Base</label>
-                                <select name="role" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Perfil Base</label>
+                                <select name="role" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
                                     <option value="CLIENTE">Cliente</option>
                                     <option value="PROFESSOR">Professor</option>
                                     <option value="PROFESSOR_PREMIUM">Professor Premium</option>
@@ -155,8 +155,8 @@ export const UserManagement = () => {
                                 </select>
                             </div>
                             <div>
-                                <label style={{ display: 'block', marginBottom: '8px' }}>Status Inicial</label>
-                                <select name="status" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB' }}>
+                                <label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Status Inicial</label>
+                                <select name="status" required style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827', background: 'white' }}>
                                     <option value="active">Ativo</option>
                                     <option value="pending">Pendente de Aprovação</option>
                                     <option value="blocked">Bloqueado</option>
@@ -165,7 +165,7 @@ export const UserManagement = () => {
                         </div>
                     </div>
                     <div style={{ padding: '24px', background: '#F9FAFB', display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
-                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ padding: '12px 24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>Cancelar</button>
+                        <button type="button" onClick={() => setIsAddingUser(false)} style={{ padding: '12px 24px', background: 'white', border: '1px solid #E5E7EB', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', color: '#374151' }}>Cancelar</button>
                         <button type="submit" className="button-primary" style={{ padding: '12px 24px' }}>Salvar Usuário</button>
                     </div>
                 </form>
