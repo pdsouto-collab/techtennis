@@ -1,0 +1,67 @@
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  phone     String?
+  role      String   @default("CLIENTE") // CLIENTE, PROFESSOR, ADMIN, ENCORDOADOR
+  status    String   @default("pending") // pending, active, blocked
+  experience String?
+  training   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobsAsProfessor Job[] @relation("ProfessorJobs")
+  customerProfile Customer?
+}
+
+model Customer {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  club      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  jobs      Job[]
+}
+
+model Job {
+  id                    String   @id @default(cuid())
+  customerId            String
+  customer              Customer @relation(fields: [customerId], references: [id])
+  customerNameAlias     String? // for legacy fallback
+  racketModel           String
+  date                  String?
+  tension               String
+  status                String
+  type                  String
+  paid                  Boolean  @default(false)
+  price                 Float?
+  orderCode             String?
+  pickupDate            String?
+  commissionedProfessorId String?
+  professor             User?    @relation("ProfessorJobs", fields: [commissionedProfessorId], references: [id])
+  
+  stringMains           String?
+  stringCross           String?
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Setting {
+  id        String @id @default(cuid())
+  key       String @unique
+  value     String // JSON string to hold objects or arrays
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
