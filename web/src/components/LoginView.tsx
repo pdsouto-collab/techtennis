@@ -23,17 +23,25 @@ export const LoginView = () => {
   const [confirmPassword, setConfirmPassword] = useState('');
   
   const [successMsg, setSuccessMsg] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     setLoginError('');
-    const res = login(email, password);
-    if (typeof res === 'string') {
-      setLoginError(res);
+    try {
+      const res = await login(email, password);
+      if (typeof res === 'string') {
+        setLoginError(res);
+      }
+    } catch (err) {
+      setLoginError('Erro ao realizar login.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoginError('');
     setSuccessMsg('');
@@ -42,16 +50,23 @@ export const LoginView = () => {
       return;
     }
     
-    if (mode === 'register_client') {
-      registerClient(regName, email, password, regPhone);
-      setSuccessMsg('Cadastro realizado! Enviamos um link de verificação para o seu e-mail. Por favor, confirme-o para liberar seu acesso.');
-      setMode('login');
-    } else {
-      registerProfessor(regName, email, password, regPhone, regExp, regTraining);
-      setSuccessMsg('Cadastro realizado com sucesso! Seu perfil de Professor será avaliado por um Administrador em até 48h. Você receberá um aviso assim que for liberado.');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
+    setIsLoading(true);
+    try {
+      if (mode === 'register_client') {
+        await registerClient(regName, email, password, regPhone);
+        setSuccessMsg('Cadastro realizado! Enviamos um link de verificação para o seu e-mail. Por favor, confirme-o para liberar seu acesso.');
+        setMode('login');
+      } else {
+        await registerProfessor(regName, email, password, regPhone, regExp, regTraining);
+        setSuccessMsg('Cadastro realizado com sucesso! Seu perfil de Professor será avaliado por um Administrador em até 48h. Você receberá um aviso assim que for liberado.');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+      }
+    } catch (err: any) {
+      setLoginError(err.message || 'Erro ao realizar cadastro');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,8 +124,8 @@ export const LoginView = () => {
                 <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '8px' }}>Senha</label>
                 <input required type="password" value={password} onChange={e => setPassword(e.target.value)} style={inputStyle} />
               </div>
-              <button type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px', color: '#139AD6' }}>
-                Acessar Plataforma
+              <button disabled={isLoading} type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px', color: isLoading ? 'grey' : '#139AD6' }}>
+                {isLoading ? 'Conectando...' : 'Acessar Plataforma'}
               </button>
 
               <div style={{ textAlign: 'center', marginTop: '16px', marginBottom: '8px' }}>
