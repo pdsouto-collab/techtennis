@@ -31,14 +31,6 @@ interface AuthContextType {
 
 const defaultUsers: User[] = [
   {
-    id: 'master-admin',
-    name: 'Administrador Oficial',
-    email: 'admin@techtennis.com',
-    password: 'admin',
-    role: 'ADMIN',
-    status: 'active'
-  },
-  {
     id: 'test-encordoador',
     name: 'Loja Encordoador',
     email: 'loja@techtennis.com',
