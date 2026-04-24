@@ -10,6 +10,7 @@ interface AgendaSlot {
   region: string;
   price: string;
   type: 'fixo' | 'avulso';
+  resumeSummary: string;
   trainingTypes: string;
   phone: string;
 }
@@ -31,6 +32,7 @@ export const OpenAgenda = () => {
   const [price, setPrice] = useState('');
   const [type, setType] = useState<'fixo' | 'avulso'>('fixo');
   const [trainingTypes, setTrainingTypes] = useState('');
+  const [resumeSummary, setResumeSummary] = useState('');
   const [phone, setPhone] = useState('');
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
@@ -62,6 +64,7 @@ export const OpenAgenda = () => {
     setPrice('');
     setType('fixo');
     setTrainingTypes('');
+    setResumeSummary('');
     setPhone('');
     setEditingId(null);
   };
@@ -74,6 +77,7 @@ export const OpenAgenda = () => {
       setPrice(slot.price);
       setType(slot.type);
       setTrainingTypes(slot.trainingTypes);
+      setResumeSummary(slot.resumeSummary || '');
       setPhone(slot.phone);
       setEditingId(slot.id);
     } else {
@@ -84,7 +88,7 @@ export const OpenAgenda = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone };
+    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary };
 
     try {
       const url = editingId ? `${API_URL}/api/agenda/${editingId}` : `${API_URL}/api/agenda`;
@@ -218,6 +222,12 @@ export const OpenAgenda = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)', fontSize: '14px' }}>
                     <Activity size={16} /> <span>{slot.trainingTypes}</span>
                   </div>
+                  {slot.resumeSummary && (
+                    <div style={{ marginTop: '4px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
+                      "{slot.resumeSummary}"
+                    </div>
+                  )}
+
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)', fontSize: '14px' }}>
                     <Phone size={16} /> <span>{slot.phone}</span>
                   </div>
@@ -269,6 +279,11 @@ export const OpenAgenda = () => {
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Tipos de Treino</label>
                     <input type="text" value={trainingTypes} onChange={e => setTrainingTypes(e.target.value)} required style={inputStyle} placeholder="Ex: Treino Competitivo, Rebatedor, Tático" />
+                  </div>
+                  
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Currículo Resumido</label>
+                    <textarea value={resumeSummary} onChange={e => setResumeSummary(e.target.value)} style={{...inputStyle, resize: 'vertical', minHeight: '80px'}} placeholder="Ex: Ex-atleta ATP, treinador há 10 anos..." />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>

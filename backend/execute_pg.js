@@ -5,22 +5,14 @@ async function execute() {
   await c.connect();
   
   const query = `
-    CREATE TABLE IF NOT EXISTS "ManualEntry" (
-      "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      "professorId" TEXT NOT NULL,
-      "amount" NUMERIC NOT NULL,
-      "date" TEXT,
-      "customerName" TEXT,
-      "reason" TEXT,
-      "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
-    );
+    ALTER TABLE "AgendaSlot" ADD COLUMN IF NOT EXISTS "resumeSummary" TEXT;
   `;
   
   try {
     await c.query(query);
-    console.log('Tabela ManualEntry criada na nuvem!');
+    console.log('Coluna resumeSummary adicionada em AgendaSlot com sucesso!');
   } catch(e) {
-    console.error('Erro na criação de tabela:', e);
+    console.error('Erro ao adicionar coluna:', e);
   }
   
   await c.end();
