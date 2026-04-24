@@ -610,18 +610,35 @@ app.delete('/api/manual-entries/:id', authenticateToken, async (req, res) => {
 // ==========================================
 
 app.put('/api/users/profile', authenticateToken, async (req, res) => {
-  const { name, phone, photoUrl } = req.body;
+  const { name, phone, photoUrl, email, password } = req.body;
   const userId = req.user.userId;
   const db = getDB();
   try {
     await db.connect();
-    const updateQ = `
-      UPDATE "User"
-      SET "name"=$1, "phone"=$2, "photoUrl"=$3, "updatedAt"=NOW()
-      WHERE "id"=$4
-      RETURNING id, name, email, phone, role, status, "photoUrl"
-    `;
-    const result = await db.query(updateQ, [name, phone, photoUrl || '', userId]);
+    
+    let updateQ = '';
+    let values = [];
+    
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateQ = `
+        UPDATE "User"
+        SET "name"=$1, "phone"=$2, "photoUrl"=$3, "email"=$4, "password"=$5, "updatedAt"=NOW()
+        WHERE "id"=$6
+        RETURNING id, name, email, phone, role, status, "photoUrl"
+      `;
+      values = [name, phone, photoUrl || '', email, hashedPassword, userId];
+    } else {
+      updateQ = `
+        UPDATE "User"
+        SET "name"=$1, "phone"=$2, "photoUrl"=$3, "email"=$4, "updatedAt"=NOW()
+        WHERE "id"=$5
+        RETURNING id, name, email, phone, role, status, "photoUrl"
+      `;
+      values = [name, phone, photoUrl || '', email, userId];
+    }
+    
+    const result = await db.query(updateQ, values);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuário não encontrado.' });
     res.json(result.rows[0]);
   } catch (err) {
