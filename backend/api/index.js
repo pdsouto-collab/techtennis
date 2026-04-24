@@ -534,4 +534,74 @@ app.put('/api/settings', authenticateToken, async (req, res) => {
   }
 });
 
+// ==========================================
+// API RESTful: LANCAMENTOS MANUAIS (ManualEntry)
+// ==========================================
+
+app.get('/api/manual-entries', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "ManualEntry" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Manual Entries.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/manual-entries', authenticateToken, async (req, res) => {
+  const { professorId, amount, date, customerName, reason } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "ManualEntry" ("professorId", "amount", "date", "customerName", "reason")
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const result = await db.query(insertQ, [professorId, amount, date, customerName, reason]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/manual-entries/:id', authenticateToken, async (req, res) => {
+  const { professorId, amount, date, customerName, reason } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "ManualEntry" SET "professorId"=$1, "amount"=$2, "date"=$3, "customerName"=$4, "reason"=$5
+      WHERE "id"=$6 RETURNING *
+    `;
+    const result = await db.query(updateQ, [professorId, amount, date, customerName, reason, req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/manual-entries/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "ManualEntry" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;
