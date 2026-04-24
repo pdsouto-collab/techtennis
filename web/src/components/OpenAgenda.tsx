@@ -35,7 +35,7 @@ export const OpenAgenda = () => {
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
   const getAuthHeader = () => {
-    const token = localStorage.getItem('tt_token');
+    const token = localStorage.getItem('tt_auth_token');
     return { 'Authorization': `Bearer ${token}` };
   };
 
