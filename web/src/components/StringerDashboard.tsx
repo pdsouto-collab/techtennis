@@ -67,10 +67,33 @@ export const StringerDashboard = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [jobs, setJobs] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_jobs_v2');
-    return saved ? JSON.parse(saved) : INITIAL_JOBS;
-  });
+  const [jobs, setJobs] = useState<any[]>([]);
+  const [loadingJobs, setLoadingJobs] = useState(true);
+
+  const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+  const getAuthHeader = () => {
+    const token = localStorage.getItem('tt_token');
+    return { 'Authorization': `Bearer ${token}` };
+  };
+
+  const fetchJobs = async () => {
+    setLoadingJobs(true);
+    try {
+      const res = await fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() });
+      if (res.ok) {
+        const data = await res.json();
+        setJobs(data);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingJobs(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
   const [rackets, setRackets] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_rackets');
@@ -87,16 +110,12 @@ export const StringerDashboard = () => {
 
   useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
   useEffect(() => { localStorage.setItem('tt_professors', JSON.stringify(professors)); }, [professors]);
-  useEffect(() => { localStorage.setItem('tt_jobs_v2', JSON.stringify(jobs)); }, [jobs]);
   useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
   useEffect(() => { localStorage.setItem('tt_settings', JSON.stringify(appSettings)); }, [appSettings]);
 
   // Sync state if another tab changes localStorage
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'tt_jobs_v2' && e.newValue) {
-        setJobs(JSON.parse(e.newValue));
-      }
       if (e.key === 'tt_customers' && e.newValue) {
         setCustomers(JSON.parse(e.newValue));
       }
@@ -295,12 +314,22 @@ export const StringerDashboard = () => {
       commissionedProfessorId: commissionedProfessorId || null,
       auxServices
     };
-    
-    if (editingJobId) {
-      setJobs(prev => prev.map(j => j.id === editingJobId ? { ...j, ...newJob } : j));
-    } else {
-      setJobs(prev => [newJob, ...prev]);
-    }
+    // Envia para API
+    fetch(editingJobId ? `${API_URL}/api/jobs/${editingJobId}` : `${API_URL}/api/jobs`, {
+      method: editingJobId ? 'PUT' : 'POST',
+      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(newJob)
+    }).then(res => res.json()).then(data => {
+       fetchJobs();
+    }).catch(err => {
+      console.error('Falha ao salvar job', err);
+      // Fallback local se erro de rede
+      if (editingJobId) {
+        setJobs(prev => prev.map(j => j.id === editingJobId ? { ...j, ...newJob } : j));
+      } else {
+        setJobs(prev => [newJob, ...prev]);
+      }
+    });
 
     setJobSaved(true);
     setTimeout(() => {
@@ -569,7 +598,12 @@ export const StringerDashboard = () => {
                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: Solinco Hyper-G</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
-                            <button onClick={() => setJobs(prev => prev.filter(j => j.id !== job.id))} style={{ background: '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Excluir">
+                            <button onClick={() => {
+                               if (window.confirm('Excluir este serviço na Nuvem?')) {
+                                  fetch(`${API_URL}/api/jobs/${job.id}`, { method: 'DELETE', headers: getAuthHeader() })
+                                    .then(() => fetchJobs()).catch(console.error);
+                               }
+                            }} style={{ background: '#E04A59', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Excluir">
                               <Trash2 size={16} />
                             </button>
                             <button onClick={() => {

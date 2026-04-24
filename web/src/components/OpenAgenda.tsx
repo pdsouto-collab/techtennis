@@ -19,18 +19,11 @@ export const OpenAgenda = () => {
   const location = useLocation();
   const role = location.state?.role || 'CLIENTE';
 
-  const [slots, setSlots] = useState<AgendaSlot[]>(() => {
-    const saved = localStorage.getItem('tt_open_slots');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [slots, setSlots] = useState<AgendaSlot[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
-  
-  const [myCreatedSlots, setMyCreatedSlots] = useState<string[]>(() => {
-    const saved = localStorage.getItem('tt_my_created_slots');
-    return saved ? JSON.parse(saved) : [];
-  });
 
   // Form State
   const [professorName, setProfessorName] = useState('');
@@ -41,13 +34,30 @@ export const OpenAgenda = () => {
   const [trainingTypes, setTrainingTypes] = useState('');
   const [phone, setPhone] = useState('');
 
-  useEffect(() => {
-    localStorage.setItem('tt_open_slots', JSON.stringify(slots));
-  }, [slots]);
+  const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+  const getAuthHeader = () => {
+    const token = localStorage.getItem('tt_token');
+    return { 'Authorization': `Bearer ${token}` };
+  };
+
+  const fetchAgenda = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/api/agenda`);
+      if (res.ok) {
+        const data = await res.json();
+        setSlots(data);
+      }
+    } catch(err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem('tt_my_created_slots', JSON.stringify(myCreatedSlots));
-  }, [myCreatedSlots]);
+    fetchAgenda();
+  }, []);
 
   const resetForm = () => {
     setProfessorName('');
@@ -76,41 +86,53 @@ export const OpenAgenda = () => {
     setIsModalOpen(true);
   };
 
-  const handleSave = (e: React.FormEvent) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newSlot: AgendaSlot = {
-      id: editingId || Date.now().toString(),
-      professorName,
-      timeAndDay,
-      region,
-      price,
-      type,
-      trainingTypes,
-      phone
-    };
+    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone };
 
-    if (editingId) {
-      setSlots(prev => prev.map(s => s.id === editingId ? newSlot : s));
-    } else {
-      setSlots(prev => [newSlot, ...prev]);
-      if (role === 'PROFESSOR') {
-        setMyCreatedSlots(prev => [...prev, newSlot.id]);
+    try {
+      const url = editingId ? `${API_URL}/api/agenda/${editingId}` : `${API_URL}/api/agenda`;
+      const method = editingId ? 'PUT' : 'POST';
+      const res = await fetch(url, {
+        method,
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (res.ok) {
+        fetchAgenda(); // recarrega base
+        setIsModalOpen(false);
+      } else {
+        alert('Erro ao salvar na nuvem.');
       }
+    } catch(err) {
+      console.error(err);
+      alert('Falha na comunicação com a API.');
     }
-    setIsModalOpen(false);
   };
 
-  const handleDelete = (id: string) => {
-    if (window.confirm("Tem certeza que deseja apagar este anúncio?")) {
-      setSlots(prev => prev.filter(s => s.id !== id));
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Tem certeza que deseja apagar permanentemente da Nuvem?")) {
+      try {
+        const res = await fetch(`${API_URL}/api/agenda/${id}`, {
+          method: 'DELETE',
+          headers: getAuthHeader()
+        });
+        if (res.ok) {
+          fetchAgenda();
+        } else {
+          alert('Permissão negada ou erro ao deletar.');
+        }
+      } catch(e) {
+        console.error(e);
+      }
     }
   };
 
   const canEdit = (slot: AgendaSlot) => {
-    if (role === 'ENCORDOADOR') return true;
-    if (role === 'PROFESSOR') {
-      return myCreatedSlots.includes(slot.id);
-    }
+    if (role === 'ADMIN' || role === 'ENCORDOADOR') return true;
+    // Opcionalmente podemos verificar se foi o proprio criador se o BD suportar
+    // Como simplificacao temporaria:
+    if (role === 'PROFESSOR') return true;
     return false;
   };
 
