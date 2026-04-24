@@ -5,30 +5,26 @@ async function execute() {
   await c.connect();
   
   const query = `
-    CREATE TABLE IF NOT EXISTS "ClientProfile" (
+    CREATE TABLE IF NOT EXISTS "ProfessorProfile" (
       "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
       "name" TEXT NOT NULL,
       "email" TEXT,
       "phone" TEXT,
-      "originClub" TEXT,
-      "professorId" TEXT,
+      "yearsOfExperience" TEXT,
+      "trainingTypes" TEXT,
       "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
     );
 
-    CREATE TABLE IF NOT EXISTS "RacketItem" (
-      "id" UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-      "customerId" TEXT NOT NULL,
-      "brand" TEXT NOT NULL,
-      "name" TEXT NOT NULL,
-      "tension" TEXT,
-      "strings" TEXT,
-      "createdAt" TIMESTAMP NOT NULL DEFAULT NOW()
+    CREATE TABLE IF NOT EXISTS "SystemSetting" (
+      "key" TEXT PRIMARY KEY,
+      "value" JSONB NOT NULL,
+      "updatedAt" TIMESTAMP NOT NULL DEFAULT NOW()
     );
   `;
   
   try {
     await c.query(query);
-    console.log('Tabelas ClientProfile e RacketItem criadas na nuvem!');
+    console.log('Tabelas ProfessorProfile e SystemSetting criadas na nuvem!');
   } catch(e) {
     console.error('Erro na criação de tabelas:', e);
   }

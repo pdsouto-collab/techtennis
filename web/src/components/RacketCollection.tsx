@@ -13,34 +13,23 @@ export const RacketCollection = () => {
   };
 
   const [jobs, setJobs] = useState<any[]>([]);
+  const [professors, setProfessors] = useState<any[]>([]);
+  const [appSettings, setAppSettings] = useState<any>({});
   
   useEffect(() => {
-    fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() })
-      .then(r => r.json())
-      .then(d => setJobs(d))
-      .catch(e => console.error(e));
+    fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() }).then(r => r.json()).then(d => setJobs(d)).catch(e => console.error(e));
+    fetch(`${API_URL}/api/professors`, { headers: getAuthHeader() }).then(r => r.json()).then(d => {
+       setProfessors(d);
+       if (role === 'PROFESSOR' && d.length > 0) setSelectedProfessorId(d[0].id);
+    }).catch(e => console.error(e));
+    fetch(`${API_URL}/api/settings`, { headers: getAuthHeader() }).then(r => r.json()).then(d => setAppSettings(d)).catch(e => console.error(e));
   }, []);
-  const [professors] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_professors');
-    return saved ? JSON.parse(saved) : [];
-  });
-  const [appSettings] = useState<any>(() => {
-    const saved = localStorage.getItem('tt_settings');
-    return saved ? JSON.parse(saved) : {};
-  });
+// Removed local storage initialization for professors and settings
 
   // State
   const location = useLocation();
   const role = location.state?.role || 'ENCORDOADOR';
-  const [selectedProfessorId, setSelectedProfessorId] = useState<string>(() => {
-    // If it's a professor, automatically select the first one as a mock logged-in user
-    if (role === 'PROFESSOR') {
-      const saved = localStorage.getItem('tt_professors');
-      const profs = saved ? JSON.parse(saved) : [];
-      return profs.length > 0 ? profs[0].id : '';
-    }
-    return '';
-  });
+  const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
 
   const [manualEntries, setManualEntries] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_manual_entries');
