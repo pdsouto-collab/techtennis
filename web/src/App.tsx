@@ -91,14 +91,7 @@ const Navbar = () => {
                   >
                     Meu Perfil
                   </button>
-                  <button 
-                    onClick={() => { alert('Troca de senha enviada para seu e-mail.'); setIsProfileOpen(false); }}
-                    style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', borderBottom: '1px solid #eee', fontWeight: 600, color: '#1a1a2e' }}
-                    onMouseOver={e => e.currentTarget.style.background = '#f5f5f5'}
-                    onMouseOut={e => e.currentTarget.style.background = 'transparent'}
-                  >
-                    Trocar Senha
-                  </button>
+
                   <button 
                     onClick={() => { alert('Deslogando do sistema...'); setIsProfileOpen(false); logout(); }}
                     style={{ width: '100%', padding: '12px 16px', textAlign: 'left', border: 'none', background: 'transparent', cursor: 'pointer', fontWeight: 600, color: '#EF4444' }}
