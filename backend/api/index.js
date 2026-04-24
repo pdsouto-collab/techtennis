@@ -422,4 +422,186 @@ app.delete('/api/rackets/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// ==========================================
+// API RESTful: PROFESSORES (ProfessorProfile)
+// ==========================================
+
+app.get('/api/professors', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "ProfessorProfile" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Professores.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/professors', authenticateToken, async (req, res) => {
+  const { name, email, phone, yearsOfExperience, trainingTypes } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "ProfessorProfile" ("name", "email", "phone", "yearsOfExperience", "trainingTypes")
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const result = await db.query(insertQ, [name, email, phone, yearsOfExperience, trainingTypes]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar professor.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/professors/:id', authenticateToken, async (req, res) => {
+  const { name, email, phone, yearsOfExperience, trainingTypes } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "ProfessorProfile" SET "name"=$1, "email"=$2, "phone"=$3, "yearsOfExperience"=$4, "trainingTypes"=$5
+      WHERE "id"=$6 RETURNING *
+    `;
+    const result = await db.query(updateQ, [name, email, phone, yearsOfExperience, trainingTypes, req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar professor.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/professors/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "ProfessorProfile" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar professor.' });
+  } finally {
+    await db.end();
+  }
+});
+
+// ==========================================
+// API RESTful: CONFIGURAÇOES (SystemSetting)
+// ==========================================
+
+app.get('/api/settings', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "SystemSetting" WHERE key=$1', ['appSettings']);
+    if (result.rows.length > 0) {
+      res.json(result.rows[0].value);
+    } else {
+      res.json({});
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Configurações.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/settings', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const upsertQ = `
+      INSERT INTO "SystemSetting" ("key", "value", "updatedAt") 
+      VALUES ('appSettings', $1::jsonb, NOW())
+      ON CONFLICT ("key") DO UPDATE SET "value" = EXCLUDED.value, "updatedAt" = NOW()
+      RETURNING *
+    `;
+    const result = await db.query(upsertQ, [JSON.stringify(req.body)]);
+    res.json(result.rows[0].value);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar configurações.' });
+  } finally {
+    await db.end();
+  }
+});
+
+// ==========================================
+// API RESTful: LANCAMENTOS MANUAIS (ManualEntry)
+// ==========================================
+
+app.get('/api/manual-entries', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "ManualEntry" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Manual Entries.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/manual-entries', authenticateToken, async (req, res) => {
+  const { professorId, amount, date, customerName, reason } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "ManualEntry" ("professorId", "amount", "date", "customerName", "reason")
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const result = await db.query(insertQ, [professorId, amount, date, customerName, reason]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/manual-entries/:id', authenticateToken, async (req, res) => {
+  const { professorId, amount, date, customerName, reason } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "ManualEntry" SET "professorId"=$1, "amount"=$2, "date"=$3, "customerName"=$4, "reason"=$5
+      WHERE "id"=$6 RETURNING *
+    `;
+    const result = await db.query(updateQ, [professorId, amount, date, customerName, reason, req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/manual-entries/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "ManualEntry" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar Manual Entry.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;

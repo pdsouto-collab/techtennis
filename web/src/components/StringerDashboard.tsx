@@ -52,11 +52,7 @@ export const StringerDashboard = () => {
   // Persistent States
   const [customers, setCustomers] = useState<any[]>([]);
 
-  const [professors, setProfessors] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
-    const saved = localStorage.getItem('tt_professors');
-    return saved ? JSON.parse(saved) : [];
-  });
-
+  const [professors, setProfessors] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
@@ -95,38 +91,47 @@ export const StringerDashboard = () => {
     }
   };
 
+  const fetchProfessors = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/professors`, { headers: getAuthHeader() });
+      if (res.ok) setProfessors(await res.json());
+    } catch (e) { console.error(e); }
+  };
+
+  const fetchSettings = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/settings`, { headers: getAuthHeader() });
+      if (res.ok) {
+         const data = await res.json();
+         if (Object.keys(data).length > 0) setAppSettings(data);
+      }
+    } catch (e) { console.error(e); }
+  };
+
   useEffect(() => {
     fetchJobs();
     fetchCustomers();
     fetchRackets();
+    fetchProfessors();
+    fetchSettings();
   }, []);
 
   const [rackets, setRackets] = useState<any[]>([]);
 
-  const [appSettings, setAppSettings] = useState<any>(() => {
-    const saved = localStorage.getItem('tt_settings');
-    const parsed = saved ? JSON.parse(saved) : { strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'] };
-    if (!parsed.sports) parsed.sports = ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel'];
-    if (!parsed.clubs) parsed.clubs = [];
-    return parsed;
-  });
+  const [appSettings, setAppSettings] = useState<any>({ strings: ['Solinco Hyper-G Green 115', 'Babolat RPM Blast', 'Luxilon Alu Power'], pickupPoints: ['Test', 'Loja 1'], machines: ['Babolat Star 5', 'Wilson Baiardo'], stringers: ['Tester Ernesto', 'Paulo Souto'], sports: ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel'], clubs: []});
+  const [initialSettingsLoaded, setInitialSettingsLoaded] = useState(false);
 
-  useEffect(() => { localStorage.setItem('tt_professors', JSON.stringify(professors)); }, [professors]);
-  useEffect(() => { localStorage.setItem('tt_settings', JSON.stringify(appSettings)); }, [appSettings]);
-
-  // Sync state if another tab changes localStorage
   useEffect(() => {
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'tt_professors' && e.newValue) {
-        setProfessors(JSON.parse(e.newValue));
-      }
-      if (e.key === 'tt_settings' && e.newValue) {
-        setAppSettings(JSON.parse(e.newValue));
-      }
-    };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
-  }, []);
+    if (!initialSettingsLoaded) {
+       setInitialSettingsLoaded(true);
+       return;
+    }
+    fetch(`${API_URL}/api/settings`, {
+      method: 'PUT',
+      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify(appSettings)
+    }).catch(e => console.error(e));
+  }, [appSettings]);
 
   // Search State
   const [customerQuery, setCustomerQuery] = useState('');
@@ -1479,7 +1484,12 @@ export const StringerDashboard = () => {
                       <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone || ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                          <button onClick={() => setProfessors(professors.filter(p => p.id !== prof.id))} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
+                          <button onClick={async () => {
+                            if(window.confirm('Apagar professor?')) {
+                              await fetch(`${API_URL}/api/professors/${prof.id}`, { method: 'DELETE', headers: getAuthHeader() });
+                              fetchProfessors();
+                            }
+                          }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
                           <button onClick={() => { setSelectedProfessor(prof); setIsProfessorModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
                         </div>
                       </td>
@@ -1974,17 +1984,16 @@ export const StringerDashboard = () => {
                   e.preventDefault();
                   const fd = new FormData(e.currentTarget);
                     const newProf = {
-                      id: selectedProfessor ? selectedProfessor.id : Date.now().toString(),
                       name: fd.get('name') as string,
                       email: fd.get('email') as string,
                       phone: fd.get('phone') as string,
                       yearsOfExperience: fd.get('yearsOfExperience') as string,
                       trainingTypes: fd.get('trainingTypes') as string
                     };
-                  if (selectedProfessor) {
-                    setProfessors(professors.map(p => p.id === newProf.id ? newProf : p));
+                  if (selectedProfessor && selectedProfessor.id) {
+                     fetch(`${API_URL}/api/professors/${selectedProfessor.id}`, { method: 'PUT', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) }).then(() => fetchProfessors());
                   } else {
-                    setProfessors([newProf, ...professors]);
+                     fetch(`${API_URL}/api/professors`, { method: 'POST', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) }).then(() => fetchProfessors());
                   }
                   setIsProfessorModalOpen(false);
                   setSelectedProfessor(null);
