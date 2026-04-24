@@ -171,13 +171,18 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     
     // Disparo pro Servidor Vercel
     try {
-      await fetch(`${API_URL}/api/auth/register`, {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password: pass, phone, role: 'CLIENTE' })
       });
-    } catch(e) {
+      if (!res.ok) {
+         const d = await res.json().catch(() => ({}));
+         throw new Error(d.error || 'Erro Crítico no Banco de Dados (API).');
+      }
+    } catch(e: any) {
       console.error('Erro API:', e);
+      throw e;
     }
 
     // ===== INTEGRAÇÃO DE ENVIO DE E-MAIL (EmailJS) =====
