@@ -108,6 +108,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       
       setCurrentUser(data.user);
       localStorage.setItem('tt_auth_token', data.token);
+      
+      // Sincronizar o usuário logado com a lista local
+      setUsers(prev => {
+        if (!prev.find(u => u.email === data.user.email)) {
+           return [...prev, data.user];
+        }
+        return prev.map(u => u.email === data.user.email ? data.user : u);
+      });
+      
       return true;
     } catch(err) {
       console.error(err);
@@ -306,6 +315,12 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       if (res.ok) {
         const updatedUser = await res.json();
         setCurrentUser(prev => prev ? { ...prev, ...updatedUser } : updatedUser);
+        setUsers(prev => {
+          if (!prev.find(u => u.email === updatedUser.email)) {
+            return [...prev, updatedUser];
+          }
+          return prev.map(u => u.id === (currentUser?.id || updatedUser.id) || u.email === updatedUser.email ? { ...u, ...updatedUser } : u);
+        });
         return true;
       }
       return false;
