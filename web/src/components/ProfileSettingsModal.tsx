@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { User } from '../contexts/AuthContext';
-import { User as UserIcon, Phone, Camera, X, Mail, Lock } from 'lucide-react';
+import { User as UserIcon, Phone, Camera, X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
 
 interface ProfileSettingsModalProps {
   currentUser: User;
@@ -14,6 +14,9 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
   const [phone, setPhone] = useState(currentUser.phone || '');
   const [email, setEmail] = useState(currentUser.email || '');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [photoUrl, setPhotoUrl] = useState(currentUser.photoUrl || '');
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -61,6 +64,10 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (password && password !== confirmPassword) {
+      alert('As senhas não coincidem!');
+      return;
+    }
     setLoading(true);
     const success = await onUpdate({ name, phone, photoUrl, email, password });
     setLoading(false);
@@ -126,9 +133,25 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Nova Senha (opcional)</label>
             <div style={{ position: 'relative' }}>
               <Lock style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
-              <input type="password" placeholder="Deixe em branco para manter a atual" value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+              <input type={showPassword ? "text" : "password"} placeholder="Deixe em branco para manter a atual" value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: '14px 48px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+              <button type="button" onClick={() => setShowPassword(!showPassword)} style={{ position: 'absolute', top: '50%', right: '16px', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
           </div>
+          
+          {password && (
+            <div>
+              <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Confirmar Nova Senha</label>
+              <div style={{ position: 'relative' }}>
+                <Lock style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
+                <input type={showConfirmPassword ? "text" : "password"} placeholder="Confirme a nova senha" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} style={{ width: '100%', padding: '14px 48px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} style={{ position: 'absolute', top: '50%', right: '16px', transform: 'translateY(-50%)', background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}>
+                  {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
+            </div>
+          )}
 
           <div style={{ marginTop: '16px' }}>
             <button type="submit" disabled={loading} className="button-primary" style={{ width: '100%', padding: '16px' }}>
