@@ -1,7 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import type { User } from '../contexts/AuthContext';
-import { User as UserIcon, Phone, Camera, X } from 'lucide-react';
+import { User as UserIcon, Phone, Camera, X, Mail, Lock } from 'lucide-react';
 
 interface ProfileSettingsModalProps {
   currentUser: User;
@@ -12,6 +12,8 @@ interface ProfileSettingsModalProps {
 export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ currentUser, onClose, onUpdate }) => {
   const [name, setName] = useState(currentUser.name);
   const [phone, setPhone] = useState(currentUser.phone || '');
+  const [email, setEmail] = useState(currentUser.email || '');
+  const [password, setPassword] = useState('');
   const [photoUrl, setPhotoUrl] = useState(currentUser.photoUrl || '');
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,7 +62,7 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const success = await onUpdate({ name, phone, photoUrl });
+    const success = await onUpdate({ name, phone, photoUrl, email, password });
     setLoading(false);
     if (success) onClose();
     else alert('Erro ao atualizar perfil.');
@@ -109,6 +111,22 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
             <div style={{ position: 'relative' }}>
               <Phone style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
               <input type="text" value={phone} onChange={e => setPhone(e.target.value)} style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>E-mail</label>
+            <div style={{ position: 'relative' }}>
+              <Mail style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
+              <input type="email" value={email} onChange={e => setEmail(e.target.value)} required style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+            </div>
+          </div>
+
+          <div>
+            <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Nova Senha (opcional)</label>
+            <div style={{ position: 'relative' }}>
+              <Lock style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
+              <input type="password" placeholder="Deixe em branco para manter a atual" value={password} onChange={e => setPassword(e.target.value)} style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
             </div>
           </div>
 
