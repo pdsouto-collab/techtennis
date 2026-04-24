@@ -8,7 +8,7 @@ export const RacketCollection = () => {
   
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
   const getAuthHeader = () => {
-    const t = localStorage.getItem('token');
+    const t = localStorage.getItem('tt_auth_token');
     return t ? { 'Authorization': `Bearer ${t}` } : {} as HeadersInit;
   };
 
