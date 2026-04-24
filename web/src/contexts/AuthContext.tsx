@@ -17,7 +17,7 @@ export interface User {
 interface AuthContextType {
   currentUser: User | null;
   users: User[];
-  login: (email: string, pass: string) => boolean | string;
+  login: (email: string, pass: string) => Promise<boolean | string>;
   logout: () => void;
   registerClient: (name: string, email: string, pass: string, phone: string) => void;
   registerProfessor: (name: string, email: string, pass: string, phone: string, experience: string, training: string) => void;
@@ -64,6 +64,8 @@ const defaultUsers: User[] = [
   }
 ];
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -89,16 +91,26 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [currentUser]);
 
-  const login = (email: string, pass: string) => {
-    const u = users.find(x => x.email === email && x.password === pass);
-    if (!u) return 'Credenciais inválidas';
-    if (u.status === 'pending') {
-      if (u.role === 'CLIENTE') return 'Por favor, finalize seu cadastro confirmando seu e-mail através do link que enviamos.';
-      return 'Aguardando aprovação do administrador. Prazo de até 48h.';
+  const login = async (email: string, pass: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pass })
+      });
+      const data = await res.json();
+      
+      if (!res.ok) {
+        return data.error || 'Falha na autenticação';
+      }
+      
+      setCurrentUser(data.user);
+      localStorage.setItem('tt_auth_token', data.token);
+      return true;
+    } catch(err) {
+      console.error(err);
+      return 'Erro de conexão com o servidor';
     }
-    if (u.status === 'blocked') return 'Conta bloqueada.';
-    setCurrentUser(u);
-    return true;
   };
 
   const logout = () => {
@@ -156,6 +168,17 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       status: 'pending'
     };
     setUsers(prev => [...prev, newUser]);
+    
+    // Disparo pro Servidor Vercel
+    try {
+      await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, email, password: pass, phone, role: 'CLIENTE' })
+      });
+    } catch(e) {
+      console.error('Erro API:', e);
+    }
 
     // ===== INTEGRAÇÃO DE ENVIO DE E-MAIL (EmailJS) =====
     // Para funcionar na vida real:
