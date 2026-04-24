@@ -604,4 +604,33 @@ app.delete('/api/manual-entries/:id', authenticateToken, async (req, res) => {
   }
 });
 
+
+// ==========================================
+// API RESTful: PERFIL DO USUÁRIO
+// ==========================================
+
+app.put('/api/users/profile', authenticateToken, async (req, res) => {
+  const { name, phone, photoUrl } = req.body;
+  const userId = req.user.userId;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "User"
+      SET "name"=$1, "phone"=$2, "photoUrl"=$3, "updatedAt"=NOW()
+      WHERE "id"=$4
+      RETURNING id, name, email, phone, role, status, "photoUrl"
+    `;
+    const result = await db.query(updateQ, [name, phone, photoUrl || '', userId]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Usuário não encontrado.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Perfil Update Error:', err);
+    res.status(500).json({ error: 'Erro ao atualizar perfil.' });
+  } finally {
+    await db.end();
+  }
+});
+
+
 module.exports = app;
