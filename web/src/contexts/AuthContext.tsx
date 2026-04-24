@@ -17,7 +17,7 @@ export interface User {
 interface AuthContextType {
   currentUser: User | null;
   users: User[];
-  login: (email: string, pass: string) => boolean | string;
+  login: (email: string, pass: string) => Promise<boolean | string>;
   logout: () => void;
   registerClient: (name: string, email: string, pass: string, phone: string) => void;
   registerProfessor: (name: string, email: string, pass: string, phone: string, experience: string, training: string) => void;
