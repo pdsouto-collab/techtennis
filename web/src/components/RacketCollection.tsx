@@ -15,6 +15,14 @@ export const RacketCollection = () => {
   const [jobs, setJobs] = useState<any[]>([]);
   const [professors, setProfessors] = useState<any[]>([]);
   const [appSettings, setAppSettings] = useState<any>({});
+  const [manualEntries, setManualEntries] = useState<any[]>([]);
+  
+  const fetchManualEntries = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/manual-entries`, { headers: getAuthHeader() });
+      if (res.ok) setManualEntries(await res.json());
+    } catch (e) { console.error(e); }
+  };
   
   useEffect(() => {
     fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() }).then(r => r.json()).then(d => setJobs(d)).catch(e => console.error(e));
@@ -23,6 +31,7 @@ export const RacketCollection = () => {
        if (role === 'PROFESSOR' && d.length > 0) setSelectedProfessorId(d[0].id);
     }).catch(e => console.error(e));
     fetch(`${API_URL}/api/settings`, { headers: getAuthHeader() }).then(r => r.json()).then(d => setAppSettings(d)).catch(e => console.error(e));
+    fetchManualEntries();
   }, []);
 // Removed local storage initialization for professors and settings
 
@@ -30,11 +39,6 @@ export const RacketCollection = () => {
   const location = useLocation();
   const role = location.state?.role || 'ENCORDOADOR';
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
-
-  const [manualEntries, setManualEntries] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_manual_entries');
-    return saved ? JSON.parse(saved) : [];
-  });
   const [isManualModalOpen, setIsManualModalOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<any>(null);
   const [manualAmount, setManualAmount] = useState('');
@@ -42,35 +46,35 @@ export const RacketCollection = () => {
   const [manualCustomer, setManualCustomer] = useState('');
   const [manualReason, setManualReason] = useState('');
 
-  const handleSaveManualEntry = () => {
+  const handleSaveManualEntry = async () => {
     if (!manualAmount || !selectedProfessorId || selectedProfessorId === 'all') {
       alert('Selecione um professor específico e informe o valor.');
       return;
     }
-    const newEntry = {
-      id: editingEntry ? editingEntry.id : 'me_' + Date.now().toString(),
+    const payload = {
       professorId: selectedProfessorId,
       amount: parseFloat(manualAmount),
       date: manualDate,
       customerName: manualCustomer,
       reason: manualReason
     };
-    let updated;
-    if (editingEntry) {
-      updated = manualEntries.map(e => e.id === editingEntry.id ? newEntry : e);
-    } else {
-      updated = [...manualEntries, newEntry];
-    }
-    setManualEntries(updated);
-    localStorage.setItem('tt_manual_entries', JSON.stringify(updated));
-    setIsManualModalOpen(false);
+    try {
+      if (editingEntry && editingEntry.id) {
+        await fetch(`${API_URL}/api/manual-entries/${editingEntry.id}`, { method: 'PUT', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+      } else {
+        await fetch(`${API_URL}/api/manual-entries`, { method: 'POST', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(payload) });
+      }
+      fetchManualEntries();
+      setIsManualModalOpen(false);
+    } catch(e) { console.error(e); }
   };
 
-  const handleDeleteManualEntry = (id: string) => {
+  const handleDeleteManualEntry = async (id: string) => {
     if (confirm('Tem certeza que deseja excluir este lançamento?')) {
-      const updated = manualEntries.filter(e => e.id !== id);
-      setManualEntries(updated);
-      localStorage.setItem('tt_manual_entries', JSON.stringify(updated));
+      try {
+        await fetch(`${API_URL}/api/manual-entries/${id}`, { method: 'DELETE', headers: getAuthHeader() });
+        fetchManualEntries();
+      } catch(e) { console.error(e); }
     }
   };
 
