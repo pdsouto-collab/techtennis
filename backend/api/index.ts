@@ -109,4 +109,4 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'TechTennis API is healthy and connected to Neon!', env: process.env.NODE_ENV });
 });
 
-export default app;
+module.exports = app;
