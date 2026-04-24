@@ -201,4 +201,85 @@ app.delete('/api/jobs/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// ==========================================
+// API RESTful: AGENDA ABERTA
+// ==========================================
+
+app.get('/api/agenda', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "AgendaSlot" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/agenda', authenticateToken, async (req, res) => {
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "AgendaSlot" 
+      ("professorName", "timeAndDay", "region", "price", "type", "trainingTypes", "phone")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `;
+    const result = await db.query(insertQ, [
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar slot na agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/agenda/:id', authenticateToken, async (req, res) => {
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone } = req.body;
+  const slotId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "AgendaSlot" 
+      SET "professorName"=$1, "timeAndDay"=$2, "region"=$3, "price"=$4, "type"=$5, "trainingTypes"=$6, "phone"=$7
+      WHERE id=$8 RETURNING *
+    `;
+    const result = await db.query(updateQ, [
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, slotId
+    ]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Slot não encontrado.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar slot na agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/agenda/:id', authenticateToken, async (req, res) => {
+  const slotId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('DELETE FROM "AgendaSlot" WHERE id=$1 RETURNING id', [slotId]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Slot não encontrado.' });
+    res.json({ message: 'Deletado com sucesso.', id: slotId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar slot da agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;
