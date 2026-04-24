@@ -109,4 +109,177 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'TechTennis API is healthy and connected to Neon!', env: process.env.NODE_ENV });
 });
 
+// ==========================================
+// API RESTful: JOBS (SERVIÇOS DA AGENDA)
+// ==========================================
+
+// Middleware para verificar TOKEN
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) return res.status(401).json({ error: 'Token não fornecido.' });
+  jwt.verify(token, JWT_SECRET, (err, user) => {
+    if (err) return res.status(403).json({ error: 'Token inválido/expirado.' });
+    req.user = user;
+    next();
+  });
+};
+
+app.get('/api/jobs', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    // Exemplo Simples: Retorna todos os jobs
+    // Num sistema real filtraríamos por cargo, permissão, etc.
+    const result = await db.query('SELECT * FROM "Job" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Jobs.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/jobs', authenticateToken, async (req, res) => {
+  const { customerId, customerNameAlias, racketModel, type, tension, price, stringMains, stringCross } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "Job" 
+      ("id", "customerId", "customerNameAlias", "racketModel", "type", "tension", "price", "status", "stringMains", "stringCross", "createdAt", "updatedAt")
+      VALUES 
+      (gen_random_uuid(), $1, $2, $3, $4, $5, $6, 'Pendente', $7, $8, NOW(), NOW())
+      RETURNING *
+    `;
+    // Se o customerId vier vazio do front, usar string fallback temporario
+    const cId = customerId || 'temp_cust_id';
+    const result = await db.query(insertQ, [
+      cId, customerNameAlias || 'Desconhecido', racketModel || 'N/A', type || 'encordoamento', tension, price || 0, stringMains, stringCross
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar o serviço.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
+  const { status } = req.body;
+  const jobId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `UPDATE "Job" SET status=$1, "updatedAt"=NOW() WHERE id=$2 RETURNING *`;
+    const result = await db.query(updateQ, [status, jobId]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Serviço não encontrado.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar status do Job.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/jobs/:id', authenticateToken, async (req, res) => {
+  const jobId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('DELETE FROM "Job" WHERE id=$1 RETURNING id', [jobId]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Serviço não encontrado.' });
+    res.json({ message: 'Deletado com sucesso.', id: jobId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar o serviço.' });
+  } finally {
+    await db.end();
+  }
+});
+
+// ==========================================
+// API RESTful: AGENDA ABERTA
+// ==========================================
+
+app.get('/api/agenda', async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "AgendaSlot" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/agenda', authenticateToken, async (req, res) => {
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "AgendaSlot" 
+      ("professorName", "timeAndDay", "region", "price", "type", "trainingTypes", "phone")
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *
+    `;
+    const result = await db.query(insertQ, [
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone
+    ]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar slot na agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/agenda/:id', authenticateToken, async (req, res) => {
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone } = req.body;
+  const slotId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "AgendaSlot" 
+      SET "professorName"=$1, "timeAndDay"=$2, "region"=$3, "price"=$4, "type"=$5, "trainingTypes"=$6, "phone"=$7
+      WHERE id=$8 RETURNING *
+    `;
+    const result = await db.query(updateQ, [
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, slotId
+    ]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Slot não encontrado.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar slot na agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/agenda/:id', authenticateToken, async (req, res) => {
+  const slotId = req.params.id;
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('DELETE FROM "AgendaSlot" WHERE id=$1 RETURNING id', [slotId]);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Slot não encontrado.' });
+    res.json({ message: 'Deletado com sucesso.', id: slotId });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar slot da agenda.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;
