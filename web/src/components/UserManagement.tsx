@@ -72,7 +72,6 @@ export const UserManagement = () => {
                   </span>
                 </td>
                 <td style={{ padding: '16px 24px', textAlign: 'right' }}>
-                  {user.id !== 'master-admin' && (
                     <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                       <button onClick={() => updateUserStatus(user.id, user.status === 'blocked' ? 'active' : 'blocked')} style={{ background: 'transparent', border: 'none', color: user.status === 'blocked' ? '#10B981' : '#F59E0B', cursor: 'pointer' }} title={user.status === 'blocked' ? 'Desbloquear Usuário' : 'Bloquear Usuário'}>
                        {user.status === 'blocked' ? <CheckCircle size={18} /> : <Ban size={18} />}
@@ -80,7 +79,6 @@ export const UserManagement = () => {
                       <button onClick={() => handleEdit(user)} style={{ background: 'transparent', border: 'none', color: '#6B7280', cursor: 'pointer' }} title="Editar"><Edit size={18} /></button>
                       <button onClick={() => window.confirm('Deseja excluir este usuário?') && deleteUser(user.id)} style={{ background: 'transparent', border: 'none', color: '#EF4444', cursor: 'pointer' }} title="Excluir"><Trash2 size={18} /></button>
                     </div>
-                  )}
                 </td>
               </tr>
             ))}
