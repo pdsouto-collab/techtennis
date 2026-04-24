@@ -8,10 +8,7 @@ import { AnalyticsView } from './AnalyticsView';
 import { OrdersView } from './OrdersView';
 import { SettingsView } from './SettingsView';
 // Extended Mock Data for the new functionalities
-const INITIAL_CUSTOMERS = [
-  { id: 'c1', name: 'Rafael Nadal', email: 'rafa@example.com', phone: '+1234567890' },
-  { id: 'c2', name: 'Carlos Alcaraz', email: 'carlos@example.com', phone: '+0987654321' }
-];
+// Removed INITIAL_CUSTOMERS to fetch from API
 
 // Removed INITIAL_JOBS to fetch from API
 
@@ -53,10 +50,7 @@ export const StringerDashboard = () => {
   const [commissionedProfessorId, setCommissionedProfessorId] = useState<string>('');
 
   // Persistent States
-  const [customers, setCustomers] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
-    const saved = localStorage.getItem('tt_customers');
-    return saved ? JSON.parse(saved) : INITIAL_CUSTOMERS;
-  });
+  const [customers, setCustomers] = useState<any[]>([]);
 
   const [professors, setProfessors] = useState<{id: string, name: string, phone: string, email: string}[]>(() => {
     const saved = localStorage.getItem('tt_professors');
@@ -83,14 +77,31 @@ export const StringerDashboard = () => {
     }
   };
 
+  const fetchRackets = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/rackets`, { headers: getAuthHeader() });
+      if (res.ok) setRackets(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  const fetchCustomers = async () => {
+    try {
+      const res = await fetch(`${API_URL}/api/customers`, { headers: getAuthHeader() });
+      if (res.ok) setCustomers(await res.json());
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
   useEffect(() => {
     fetchJobs();
+    fetchCustomers();
+    fetchRackets();
   }, []);
 
-  const [rackets, setRackets] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_rackets');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [rackets, setRackets] = useState<any[]>([]);
 
   const [appSettings, setAppSettings] = useState<any>(() => {
     const saved = localStorage.getItem('tt_settings');
@@ -100,22 +111,14 @@ export const StringerDashboard = () => {
     return parsed;
   });
 
-  useEffect(() => { localStorage.setItem('tt_customers', JSON.stringify(customers)); }, [customers]);
   useEffect(() => { localStorage.setItem('tt_professors', JSON.stringify(professors)); }, [professors]);
-  useEffect(() => { localStorage.setItem('tt_rackets', JSON.stringify(rackets)); }, [rackets]);
   useEffect(() => { localStorage.setItem('tt_settings', JSON.stringify(appSettings)); }, [appSettings]);
 
   // Sync state if another tab changes localStorage
   useEffect(() => {
     const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'tt_customers' && e.newValue) {
-        setCustomers(JSON.parse(e.newValue));
-      }
       if (e.key === 'tt_professors' && e.newValue) {
         setProfessors(JSON.parse(e.newValue));
-      }
-      if (e.key === 'tt_rackets' && e.newValue) {
-        setRackets(JSON.parse(e.newValue));
       }
       if (e.key === 'tt_settings' && e.newValue) {
         setAppSettings(JSON.parse(e.newValue));
@@ -887,10 +890,13 @@ export const StringerDashboard = () => {
                           }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#3A52EE', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Editar Raquete">
                             <Edit size={20} />
                           </button>
-                          <button type="button" onClick={() => {
+                          <button type="button" onClick={async () => {
                             if (window.confirm('Tem certeza que deseja apagar esta raquete do cadastro do cliente?')) {
-                              setRackets(prev => prev.filter(r => r.id !== selectedJobRacket));
-                              setSelectedJobRacket('');
+                              try {
+                                await fetch(`${API_URL}/api/rackets/${selectedJobRacket}`, { method: 'DELETE', headers: getAuthHeader() });
+                                fetchRackets();
+                                setSelectedJobRacket('');
+                              } catch(e) { console.error(e); }
                             }
                           }} style={{ padding: '0 16px', borderRadius: '12px', border: 'none', background: '#EB5757', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', transition: 'background 0.2s' }} title="Excluir Raquete">
                             <Trash2 size={20} />
@@ -1402,7 +1408,12 @@ export const StringerDashboard = () => {
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button onClick={() => { setSelectedCustomer(customer); setIsHistoryModalOpen(true); }} style={{ background: '#6136B3', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Histórico"><UserSquare size={16} /></button>
-                          <button onClick={() => setCustomers(customers.filter(c => c.id !== customer.id))} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
+                          <button onClick={async () => {
+                              if(window.confirm('Apagar cliente?')) {
+                                await fetch(`${API_URL}/api/customers/${customer.id}`, { method: 'DELETE', headers: getAuthHeader() });
+                                fetchCustomers();
+                              }
+                            }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
                           <button onClick={() => { setSelectedCustomer(customer); setIsCustomerModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
                           <button onClick={() => { setSelectedCustomer(customer); setCustomerQuery(customer.name); setSelectedJobRacket(''); setNewJobStep(2); setView('new_job'); }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Nova Ordem"><FolderPlus size={16} /></button>
                         </div>
@@ -1556,12 +1567,21 @@ export const StringerDashboard = () => {
                     notes: fd.get('notes') as string
                   };
                   if (selectedCustomer) {
-                    setCustomers(customers.map((c: any) => c.id === selectedCustomer.id ? { ...c, ...customerData } : c));
+                    fetch(`${API_URL}/api/customers/${selectedCustomer.id}`, {
+                      method: 'PUT',
+                      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                      body: JSON.stringify(customerData)
+                    }).then(() => fetchCustomers());
                   } else {
-                    const newCustomer = { id: 'c' + Date.now(), ...customerData };
-                    setCustomers(prev => [...prev, newCustomer]);
-                    setSelectedCustomer(newCustomer);
-                    setCustomerQuery(newCustomer.name);
+                    fetch(`${API_URL}/api/customers`, {
+                      method: 'POST',
+                      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                      body: JSON.stringify(customerData)
+                    }).then(res => res.json()).then((data) => {
+                       fetchCustomers();
+                       setSelectedCustomer(data);
+                       setCustomerQuery(data.name);
+                    });
                   }
                   setIsCustomerModalOpen(false); 
                 }}>
@@ -1760,22 +1780,19 @@ export const StringerDashboard = () => {
                     return; // Prevent saving
                   }
 
+                  const payload = { brand, name: racketName, identifier };
                   if (racketFormDefault && racketFormDefault.id && !racketFormDefault.isClone) {
-                     setRackets(prev => prev.map(r => r.id === racketFormDefault.id ? {
-                        ...r,
-                        name: racketName,
-                        brand: brand,
-                        identifier: identifier,
-                     } : r));
+                     fetch(`${API_URL}/api/rackets/${racketFormDefault.id}`, {
+                       method: 'PUT',
+                       headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                       body: JSON.stringify(payload)
+                     }).then(() => fetchRackets());
                   } else {
-                     const newRacket = {
-                       id: 'r' + Date.now(),
-                       name: racketName,
-                       brand: brand,
-                       identifier: identifier,
-                       customerId: customerId
-                     };
-                     setRackets(prev => [...prev, newRacket]);
+                     fetch(`${API_URL}/api/rackets`, {
+                       method: 'POST',
+                       headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                       body: JSON.stringify({ ...payload, customerId })
+                     }).then(() => fetchRackets());
                   }
                   setIsRacketModalOpen(false); 
                 }}>
