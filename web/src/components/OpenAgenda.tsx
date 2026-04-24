@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Calendar, MapPin, DollarSign, Phone, Activity, Plus, ArrowLeft, Trash2, Edit } from 'lucide-react';
+import { Calendar, MapPin, DollarSign, Phone, Activity, Plus, ArrowLeft, Trash2, Edit, User as UserIcon } from 'lucide-react';
+import { useAuth } from '../contexts/AuthContext';
 
 interface AgendaSlot {
   id: string;
@@ -11,6 +12,7 @@ interface AgendaSlot {
   price: string;
   type: 'fixo' | 'avulso';
   resumeSummary: string;
+  professorPhotoUrl?: string;
   trainingTypes: string;
   phone: string;
 }
@@ -20,6 +22,7 @@ export const OpenAgenda = () => {
   const location = useLocation();
   const role = location.state?.role || 'CLIENTE';
 
+  const { currentUser } = useAuth();
   const [slots, setSlots] = useState<AgendaSlot[]>([]);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -88,7 +91,7 @@ export const OpenAgenda = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary };
+    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl: currentUser?.photoUrl || '' };
 
     try {
       const url = editingId ? `${API_URL}/api/agenda/${editingId}` : `${API_URL}/api/agenda`;
@@ -192,15 +195,20 @@ export const OpenAgenda = () => {
                 }} />
 
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                  <div>
-                    <h3 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: 'white' }}>{slot.professorName}</h3>
-                    
-                    {/* Tags */}
+                  <div style={{ display: 'flex', gap: '16px', alignItems: 'center' }}>
+                    <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: slot.professorPhotoUrl ? `url(${slot.professorPhotoUrl}) center/cover` : 'rgba(255,255,255,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, overflow: 'hidden' }}>
+                      {!slot.professorPhotoUrl && <UserIcon size={24} color="var(--text-secondary)" />}
+                    </div>
+                    <div>
+                      <h3 style={{ fontSize: '20px', fontWeight: 700, margin: 0, color: 'white' }}>{slot.professorName}</h3>
+                      
+                      {/* Tags */}
                     <div style={{ display: 'inline-block', marginTop: '8px', padding: '4px 10px', borderRadius: '100px', fontSize: '12px', fontWeight: 700,
                       background: slot.type === 'fixo' ? 'rgba(251, 146, 60, 0.2)' : 'rgba(34, 197, 94, 0.2)',
                       color: slot.type === 'fixo' ? '#FB923C' : '#4ADE80'
                     }}>
                       {slot.type === 'fixo' ? '🟠 Horário Fixo' : '🟢 Horário Avulso'}
+                      </div>
                     </div>
                   </div>
                   

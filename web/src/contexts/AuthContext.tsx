@@ -12,6 +12,7 @@ export interface User {
   phone?: string;
   yearsOfExperience?: string;
   trainingTypes?: string;
+  photoUrl?: string;
 }
 
 interface AuthContextType {
@@ -25,6 +26,7 @@ interface AuthContextType {
   deleteUser: (id: string) => void;
   adminCreateUser: (user: Partial<User>) => void;
   adminUpdateUser: (id: string, updates: Partial<User>) => void;
+  updateProfile: (updates: Partial<User>) => Promise<boolean>;
 }
 
 const defaultUsers: User[] = [
@@ -290,8 +292,32 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers(prev => [...prev, newUser]);
   };
 
+
+  const updateProfile = async (updates: Partial<User>): Promise<boolean> => {
+    try {
+      const res = await fetch(`${API_URL}/api/users/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('tt_auth_token')}`
+        },
+        body: JSON.stringify(updates)
+      });
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setCurrentUser(prev => prev ? { ...prev, ...updatedUser } : updatedUser);
+        return true;
+      }
+      return false;
+    } catch(e) {
+      console.error(e);
+      return false;
+    }
+  };
+
   return (
-    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser, adminCreateUser, adminUpdateUser }}>
+
+    <AuthContext.Provider value={{ currentUser, users, login, logout, registerClient, registerProfessor, updateUserStatus, deleteUser, adminCreateUser, adminUpdateUser, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );
