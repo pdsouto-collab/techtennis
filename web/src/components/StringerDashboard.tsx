@@ -13,11 +13,7 @@ const INITIAL_CUSTOMERS = [
   { id: 'c2', name: 'Carlos Alcaraz', email: 'carlos@example.com', phone: '+0987654321' }
 ];
 
-const INITIAL_JOBS = [
-  { id: 'j3', customerName: 'Rafael Nadal', racketModel: 'Babolat Pure Aero', date: '2026-04-05', tension: '55/53 lbs', status: 'pronta', type: 'picking_up', paid: true, price: 120 },
-  { id: 'j2', customerName: 'Carlos Alcaraz', racketModel: 'Babolat Pure Aero 98', date: '2026-04-06', tension: '50/50 lbs', status: 'aguardando', type: 'to_string' },
-  { id: 'j1', customerName: 'Jannik Sinner', racketModel: 'Head Speed Pro', date: '2026-04-04', tension: '52/52 lbs', status: 'na_fila', type: 'to_string' },
-];
+// Removed INITIAL_JOBS to fetch from API
 
 export const StringerDashboard = () => {
   const navigate = useNavigate();
@@ -68,7 +64,6 @@ export const StringerDashboard = () => {
   });
 
   const [jobs, setJobs] = useState<any[]>([]);
-  const [loadingJobs, setLoadingJobs] = useState(true);
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
   const getAuthHeader = () => {
@@ -77,7 +72,6 @@ export const StringerDashboard = () => {
   };
 
   const fetchJobs = async () => {
-    setLoadingJobs(true);
     try {
       const res = await fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() });
       if (res.ok) {
@@ -86,8 +80,6 @@ export const StringerDashboard = () => {
       }
     } catch (e) {
       console.error(e);
-    } finally {
-      setLoadingJobs(false);
     }
   };
 
@@ -319,7 +311,7 @@ export const StringerDashboard = () => {
       method: editingJobId ? 'PUT' : 'POST',
       headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
       body: JSON.stringify(newJob)
-    }).then(res => res.json()).then(data => {
+    }).then(res => res.json()).then(() => {
        fetchJobs();
     }).catch(err => {
       console.error('Falha ao salvar job', err);

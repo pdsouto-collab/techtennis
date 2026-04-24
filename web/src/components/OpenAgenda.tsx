@@ -20,7 +20,6 @@ export const OpenAgenda = () => {
   const role = location.state?.role || 'CLIENTE';
 
   const [slots, setSlots] = useState<AgendaSlot[]>([]);
-  const [loading, setLoading] = useState(true);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -41,7 +40,6 @@ export const OpenAgenda = () => {
   };
 
   const fetchAgenda = async () => {
-    setLoading(true);
     try {
       const res = await fetch(`${API_URL}/api/agenda`);
       if (res.ok) {
@@ -50,8 +48,6 @@ export const OpenAgenda = () => {
       }
     } catch(err) {
       console.error(err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -128,7 +124,7 @@ export const OpenAgenda = () => {
     }
   };
 
-  const canEdit = (slot: AgendaSlot) => {
+  const canEdit = (_slot: AgendaSlot) => {
     if (role === 'ADMIN' || role === 'ENCORDOADOR') return true;
     // Opcionalmente podemos verificar se foi o proprio criador se o BD suportar
     // Como simplificacao temporaria:
