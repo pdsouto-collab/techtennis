@@ -282,4 +282,144 @@ app.delete('/api/agenda/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// ==========================================
+// API RESTful: CLIENTES (ClientProfile)
+// ==========================================
+
+app.get('/api/customers', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "ClientProfile" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Clientes.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/customers', authenticateToken, async (req, res) => {
+  const { name, email, phone, originClub, professorId } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "ClientProfile" ("name", "email", "phone", "originClub", "professorId")
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const result = await db.query(insertQ, [name, email, phone, originClub, professorId]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar cliente.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/customers/:id', authenticateToken, async (req, res) => {
+  const { name, email, phone, originClub, professorId } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "ClientProfile" SET "name"=$1, "email"=$2, "phone"=$3, "originClub"=$4, "professorId"=$5
+      WHERE "id"=$6 RETURNING *
+    `;
+    const result = await db.query(updateQ, [name, email, phone, originClub, professorId, req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar cliente.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/customers/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "ClientProfile" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar cliente.' });
+  } finally {
+    await db.end();
+  }
+});
+
+// ==========================================
+// API RESTful: RAQUETES (RacketItem)
+// ==========================================
+
+app.get('/api/rackets', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "RacketItem" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro interno ao buscar Raquetes.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.post('/api/rackets', authenticateToken, async (req, res) => {
+  const { customerId, brand, name, tension, strings } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const insertQ = `
+      INSERT INTO "RacketItem" ("customerId", "brand", "name", "tension", "strings")
+      VALUES ($1, $2, $3, $4, $5) RETURNING *
+    `;
+    const result = await db.query(insertQ, [customerId, brand, name, tension, strings]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao criar raquete.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.put('/api/rackets/:id', authenticateToken, async (req, res) => {
+  const { brand, name, tension, strings } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    const updateQ = `
+      UPDATE "RacketItem" SET "brand"=$1, "name"=$2, "tension"=$3, "strings"=$4
+      WHERE "id"=$5 RETURNING *
+    `;
+    const result = await db.query(updateQ, [brand, name, tension, strings, req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao atualizar raquete.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/rackets/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "RacketItem" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar raquete.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;

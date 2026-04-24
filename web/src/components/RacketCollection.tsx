@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ArrowLeft, DollarSign, Calendar as CalendarIcon, Package, Plus, Edit, Trash2, X } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -6,11 +6,20 @@ import { motion } from 'framer-motion';
 export const RacketCollection = () => {
   const navigate = useNavigate();
   
-  // Local Storage Data
-  const [jobs] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_jobs_v2');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+  const getAuthHeader = () => {
+    const t = localStorage.getItem('token');
+    return t ? { 'Authorization': `Bearer ${t}` } : {} as HeadersInit;
+  };
+
+  const [jobs, setJobs] = useState<any[]>([]);
+  
+  useEffect(() => {
+    fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() })
+      .then(r => r.json())
+      .then(d => setJobs(d))
+      .catch(e => console.error(e));
+  }, []);
   const [professors] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_professors');
     return saved ? JSON.parse(saved) : [];
