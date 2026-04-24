@@ -90,6 +90,19 @@ app.post('/api/auth/login', async (req, res) => {
   }
 });
 
+// Rota temporária de backend para promoção segura local (remover depois)
+app.get('/api/auth/promote-admin', async (req, res) => {
+  const email = req.query.email;
+  if (!email || typeof email !== 'string') {
+    return res.status(400).json({ error: 'Email missing' });
+  }
+  const user = await prisma.user.update({
+    where: { email },
+    data: { role: 'ADMIN', status: 'active'}
+  });
+  res.json({ success: true, user: user.email, role: user.role });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ message: 'TechTennis API is healthy and connected to Neon!', env: process.env.NODE_ENV });
 });
