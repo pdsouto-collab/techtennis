@@ -1984,7 +1984,7 @@ export const StringerDashboard = () => {
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                           <button onClick={() => {
-                            setRacketFormDefault({ name: racket.name + ' [Cópia]', isClone: true });
+                            setRacketFormDefault({ ...racket, name: racket.name, identifier: '', isClone: true });
                             setIsCloneRacketModalOpen(false);
                             setIsRacketModalOpen(true);
                           }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
