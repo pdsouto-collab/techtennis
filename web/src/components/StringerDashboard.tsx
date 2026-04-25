@@ -596,7 +596,7 @@ export const StringerDashboard = () => {
                         <>
                           <div>
                              <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mains: {job.stringMains || 'N/A'}</div>
-                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: {job.stringCross || 'N/A'}</div>
+                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: {job.stringCross || job.stringMains || 'N/A'}</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                             <button onClick={() => {
@@ -1276,7 +1276,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Crosses</div>
-                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringCross || 'N/A'} @{activeStringingJob.tensionCross || activeStringingJob.tension}</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringCross || activeStringingJob.stringMains || 'N/A'} @{activeStringingJob.tensionCross || activeStringingJob.tension}</div>
                     </div>
                  </div>
 
