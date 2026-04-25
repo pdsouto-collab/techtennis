@@ -7,6 +7,7 @@ import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
 import { OrdersView } from './OrdersView';
 import { SettingsView } from './SettingsView';
+import { applyPhoneMask, applyCpfCnpjMask } from '../utils/masks';
 // Extended Mock Data for the new functionalities
 // Removed INITIAL_CUSTOMERS to fetch from API
 
@@ -1409,7 +1410,7 @@ export const StringerDashboard = () => {
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Não informado'}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}></td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone || ''}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone ? applyPhoneMask(customer.phone) : ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button onClick={() => { setSelectedCustomer(customer); setIsHistoryModalOpen(true); }} style={{ background: '#6136B3', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Histórico"><UserSquare size={16} /></button>
@@ -1481,7 +1482,7 @@ export const StringerDashboard = () => {
                     <tr key={prof.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{prof.name}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{prof.email || ''}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone || ''}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone ? applyPhoneMask(prof.phone) : ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
                           <button onClick={async () => {
@@ -1619,7 +1620,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Celular</label>
-                      <input name="phone" type="tel" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.phone : ''} />
+                      <input name="phone" type="tel" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} defaultValue={selectedCustomer && selectedCustomer.phone ? applyPhoneMask(selectedCustomer.phone) : ''} />
                     </div>
                   </div>
 
@@ -1658,7 +1659,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CPF / CNPJ</label>
-                      <input name="cpfCnpj" type="text" defaultValue={selectedCustomer?.cpfCnpj || ''} style={inputStyle} />
+                      <input name="cpfCnpj" type="text" onChange={(e) => e.target.value = applyCpfCnpjMask(e.target.value)} defaultValue={selectedCustomer?.cpfCnpj ? applyCpfCnpjMask(selectedCustomer.cpfCnpj) : ''} style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone Fixo</label>
@@ -1691,10 +1692,10 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
-                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || 'Test'} style={inputStyle}>
-                        <option value="Test">Test</option>
-                        <option value="Loja 1">Loja 1</option>
-                      </select>
+                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || ''} style={inputStyle}>
+                          <option value="">Selecione...</option>
+                          {appSettings?.pickupPoints?.map((p: string) => <option key={p} value={p}>{p}</option>)}
+                        </select>
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Código da Racketpedia</label>
@@ -2008,7 +2009,7 @@ export const StringerDashboard = () => {
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
                     </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" defaultValue={selectedProfessor?.phone || ''} style={inputStyle} /></div>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} defaultValue={selectedProfessor?.phone ? applyPhoneMask(selectedProfessor.phone) : ''} style={inputStyle} /></div>
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Anos de Experiência</label><input type="number" name="yearsOfExperience" defaultValue={selectedProfessor?.yearsOfExperience || ''} style={inputStyle} /></div>
                     </div>
                     <div><label style={{ display: 'block', marginBottom: '8px' }}>Tipos de Treino (ex: Competitivo, Rebatedor)</label><input type="text" name="trainingTypes" defaultValue={selectedProfessor?.trainingTypes || ''} style={inputStyle} /></div>
