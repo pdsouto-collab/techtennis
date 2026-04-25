@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { motion } from 'framer-motion';
 import { Trash2, Edit, X, Plus, Ban, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -115,7 +116,7 @@ export const UserManagement = () => {
                         <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedUser?.name || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
                         <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Email *</label><input required type="email" name="email" defaultValue={selectedUser?.email || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
                         <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Senha de Acesso</label><input required type="text" name="password" defaultValue={selectedUser?.password || '123456'} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
-                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Telefone</label><input name="phone" defaultValue={selectedUser?.phone || ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
+                        <div><label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Telefone</label><input name="phone" onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} defaultValue={selectedUser?.phone ? applyPhoneMask(selectedUser.phone) : ''} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: '1px solid #E5E7EB', color: '#111827' }} /></div>
                         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                             <div>
                                 <label style={{ display: 'block', marginBottom: '8px', color: '#4B5563', fontWeight: 600, fontSize: '14px' }}>Perfil Base</label>

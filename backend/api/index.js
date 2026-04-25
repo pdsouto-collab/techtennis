@@ -31,13 +31,15 @@ app.post('/api/auth/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userRole = role || 'CLIENTE';
     const finalStatus = userRole === 'PROFESSOR' ? 'pending' : 'active';
+    const crypto = require('crypto');
+    const newId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 
     const insertQ = `
-      INSERT INTO "User" (name, email, password, phone, role, status, "createdAt", "updatedAt")
-      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+      INSERT INTO "User" (id, name, email, password, phone, role, status, "createdAt", "updatedAt")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
       RETURNING id, name, email, role, status
     `;
-    const inserted = await db.query(insertQ, [name, email, hashedPassword, phone, userRole, finalStatus]);
+    const inserted = await db.query(insertQ, [newId, name, email, hashedPassword, phone, userRole, finalStatus]);
     const newUser = inserted.rows[0];
 
     res.status(201).json({ message: 'Conta criada com sucesso!', user: newUser });
@@ -650,4 +652,50 @@ app.put('/api/users/profile', authenticateToken, async (req, res) => {
 });
 
 
+
+// ==========================================
+// API RESTful: GERENCIAMENTO DE USUA?RIOS (ADMIN)
+// ==========================================
+
+app.put('/api/users/:id', authenticateToken, async (req, res) => {
+  const { name, email, phone, role, status, password } = req.body;
+  const db = getDB();
+  try {
+    await db.connect();
+    let updateQ;
+    let values;
+    if (password && password.trim() !== '') {
+      const hashedPassword = await bcrypt.hash(password, 10);
+      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "password"=$6, "updatedAt"=NOW() WHERE "id"=$7 RETURNING id, name, email, phone, role, status, "photoUrl"`;
+      values = [name, email, phone, role, status, hashedPassword, req.params.id];
+    } else {
+      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "updatedAt"=NOW() WHERE "id"=$6 RETURNING id, name, email, phone, role, status, "photoUrl"`;
+      values = [name, email, phone, role, status, req.params.id];
+    }
+    const result = await db.query(updateQ, values);
+    if (result.rowCount === 0) return res.status(404).json({ error: 'Usuário não encontrado.' });
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error('Update User Error:', err);
+    res.status(500).json({ error: 'Erro ao atualizar usuário.' });
+  } finally {
+    await db.end();
+  }
+});
+
+app.delete('/api/users/:id', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    await db.query('DELETE FROM "User" WHERE "id"=$1', [req.params.id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao deletar usuário.' });
+  } finally {
+    await db.end();
+  }
+});
+
 module.exports = app;
+

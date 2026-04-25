@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { motion } from 'framer-motion';
 import type { User } from '../contexts/AuthContext';
 import { User as UserIcon, Phone, Camera, X, Mail, Lock, Eye, EyeOff } from 'lucide-react';
@@ -117,7 +118,7 @@ export const ProfileSettingsModal: React.FC<ProfileSettingsModalProps> = ({ curr
             <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Celular</label>
             <div style={{ position: 'relative' }}>
               <Phone style={{ position: 'absolute', top: '50%', left: '16px', transform: 'translateY(-50%)', color: 'var(--text-secondary)' }} size={20} />
-              <input type="text" value={phone} onChange={e => setPhone(e.target.value)} style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
+              <input type="text" value={phone} onChange={e => setPhone(applyPhoneMask(e.target.value))} style={{ width: '100%', padding: '14px 14px 14px 48px', borderRadius: '12px', background: 'rgba(0,0,0,0.2)', border: '1px solid rgba(255,255,255,0.1)', color: 'white', fontSize: '15px' }} />
             </div>
           </div>
 
