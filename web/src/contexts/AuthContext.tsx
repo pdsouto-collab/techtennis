@@ -280,7 +280,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers(prev => prev.filter(u => u.id !== id));
   };
 
-  const adminCreateUser = (user: Partial<User>) => {
+  const adminCreateUser = async (user: Partial<User>) => {
     const newUser: User = {
         id: Date.now().toString(),
         name: user.name || '',
@@ -291,6 +291,22 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
         status: user.status || 'active'
     };
     setUsers(prev => [...prev, newUser]);
+    
+    try {
+      await fetch(`${API_URL}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          name: newUser.name, 
+          email: newUser.email, 
+          password: newUser.password, 
+          phone: newUser.phone, 
+          role: newUser.role 
+        })
+      });
+    } catch(e) {
+      console.error('Erro ao salvar usuario no banco de dados', e);
+    }
   };
 
 
