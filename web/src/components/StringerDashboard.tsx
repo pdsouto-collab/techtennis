@@ -14,6 +14,7 @@ import { applyPhoneMask, applyCpfCnpjMask } from '../utils/masks';
 // Removed INITIAL_JOBS to fetch from API
 
 export const StringerDashboard = () => {
+  const getRacketDisplayName = (r: any) => r ? (r.name + (r.identifier ? ' [' + r.identifier + ']' : '')) : '';
   const navigate = useNavigate();
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'professors' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
@@ -764,9 +765,7 @@ export const StringerDashboard = () => {
                       )}
                     </AnimatePresence>
                   </div>
-                  <button type="button" onClick={() => setShowCustomerDropdown(true)} style={{ height: '50px', padding: '0 24px', borderRadius: '12px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 600, marginTop: '29px' }}>
-                    <Search size={18} /> Buscar Cliente
-                  </button>
+                  
                   <button type="button" onClick={() => setIsCustomerModalOpen(true)} className="button-primary" style={{ height: '50px', padding: '0 24px', display: 'flex', alignItems: 'center', gap: '8px', marginTop: '29px' }}>
                     <Plus size={18} /> Novo Cliente
                   </button>
@@ -1553,226 +1552,8 @@ export const StringerDashboard = () => {
 
               {/* Modal Body */}
               <div style={{ padding: '32px', overflowY: 'auto', flex: 1 }}>
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
-                  e.preventDefault(); 
-                  const fd = new FormData(e.currentTarget);
-                  const firstName = fd.get('firstName') as string;
-                  const lastName = fd.get('lastName') as string;
-                  const customerData = {
-                    name: `${firstName} ${lastName}`.trim(),
-                    phone: fd.get('phone') as string,
-                    email: fd.get('email') as string,
-                    originClub: fd.get('originClub') as string,
-                    gender: fd.get('gender') as string,
-                    professor: fd.get('professor') as string,
-                    birthDate: fd.get('birthDate') as string,
-                    cpfCnpj: fd.get('cpfCnpj') as string,
-                    landline: fd.get('landline') as string,
-                    address: fd.get('address') as string,
-                    cep: fd.get('cep') as string,
-                    city: fd.get('city') as string,
-                    country: fd.get('country') as string,
-                    stringingPoint: fd.get('stringingPoint') as string,
-                    racketpediaCode: fd.get('racketpediaCode') as string,
-                    customerType: fd.get('customerType') as string,
-                    notes: fd.get('notes') as string
-                  };
-                  if (selectedCustomer) {
-                    fetch(`${API_URL}/api/customers/${selectedCustomer.id}`, {
-                      method: 'PUT',
-                      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-                      body: JSON.stringify(customerData)
-                    }).then(() => fetchCustomers());
-                  } else {
-                    fetch(`${API_URL}/api/customers`, {
-                      method: 'POST',
-                      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-                      body: JSON.stringify(customerData)
-                    }).then(res => res.json()).then((data) => {
-                       fetchCustomers();
-                       setSelectedCustomer(data);
-                       setCustomerQuery(data.name);
-                    });
-                  }
-                  setIsCustomerModalOpen(false); 
-                }}>
-                  
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Sobrenome</label>
-                      <input name="lastName" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.name?.split(' ').slice(1).join(' ') : ''} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Nome</label>
-                      <input name="firstName" type="text" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required defaultValue={selectedCustomer ? selectedCustomer.name?.split(' ')[0] : ''} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Gênero</label>
-                      <select name="gender" defaultValue={selectedCustomer?.gender || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
-                        <option value="">Selecione...</option>
-                        <option value="M">Masculino</option>
-                        <option value="F">Feminino</option>
-                        <option value="O">Outro</option>
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Celular</label>
-                      <input name="phone" type="tel" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} required onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} defaultValue={selectedCustomer && selectedCustomer.phone ? applyPhoneMask(selectedCustomer.phone) : ''} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Clube de Origem</label>
-                      <select name="originClub" defaultValue={selectedCustomer?.originClub || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
-                        <option value="">Não informado</option>
-                        {Array.from(new Set([...(appSettings.clubs || []), ...(selectedCustomer?.originClub ? [selectedCustomer.originClub] : [])])).map((club: any) => (
-                           <option key={club} value={club}>{club}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
-                      <select name="professor" defaultValue={selectedCustomer?.professor || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
-                        <option value="">Selecione um professor...</option>
-                        {professors.map(p => (
-                          <option key={p.id} value={p.name}>{p.name}</option>
-                        ))}
-                      </select>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>E-mail</label>
-                      <input name="email" type="email" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} defaultValue={selectedCustomer ? selectedCustomer.email : ''} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Data de Nascimento</label>
-                      <input name="birthDate" type="date" defaultValue={selectedCustomer?.birthDate || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CPF / CNPJ</label>
-                      <input name="cpfCnpj" type="text" onChange={(e) => e.target.value = applyCpfCnpjMask(e.target.value)} defaultValue={selectedCustomer?.cpfCnpj ? applyCpfCnpjMask(selectedCustomer.cpfCnpj) : ''} style={inputStyle} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone Fixo</label>
-                      <input name="landline" type="tel" defaultValue={selectedCustomer?.landline || ''} style={inputStyle} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Endereço</label>
-                      <input name="address" type="text" defaultValue={selectedCustomer?.address || ''} style={inputStyle} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CEP</label>
-                      <input name="cep" type="text" defaultValue={selectedCustomer?.cep || ''} style={inputStyle} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Cidade</label>
-                      <input name="city" type="text" defaultValue={selectedCustomer?.city || ''} style={inputStyle} />
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>País</label>
-                      <input name="country" type="text" defaultValue={selectedCustomer?.country || 'Brasil'} style={inputStyle} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
-                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || ''} style={inputStyle}>
-                          <option value="">Selecione...</option>
-                          {appSettings?.pickupPoints?.map((p: string) => <option key={p} value={p}>{p}</option>)}
-                        </select>
-                    </div>
-                    <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Código da Racketpedia</label>
-                      <input name="racketpediaCode" type="text" defaultValue={selectedCustomer?.racketpediaCode || ''} style={inputStyle} />
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', gap: '32px', alignItems: 'center', marginTop: '8px', flexWrap: 'wrap' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
-                      <input type="radio" name="customerType" value="PF" defaultChecked={!selectedCustomer || selectedCustomer.customerType !== 'PJ'} style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
-                      Cliente Pessoa Física
-                    </label>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
-                      <input type="radio" name="customerType" value="PJ" defaultChecked={selectedCustomer?.customerType === 'PJ'} style={{ width: '20px', height: '20px', accentColor: 'var(--primary-color)' }} />
-                      Cliente Pessoa Jurídica
-                    </label>
-                  </div>
-
-                  <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
-                    <textarea name="notes" defaultValue={selectedCustomer?.notes || ''} rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '24px' }}>
-                    <button type="button" onClick={() => setIsCustomerModalOpen(false)} style={{ padding: '16px 32px', background: 'transparent', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 700 }}>Cancelar</button>
-                    <button type="submit" className="button-primary" style={{ padding: '16px 32px' }}>Salvar Cliente</button>
-                  </div>
-
-                </form>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-
-      {/* History Modal */}
-      <AnimatePresence>
-        {isHistoryModalOpen && (
-          <CustomerHistoryModal 
-            isOpen={isHistoryModalOpen} 
-            onClose={() => setIsHistoryModalOpen(false)} 
-            customer={selectedCustomer} 
-            jobs={jobs} 
-            setJobs={setJobs}
-            onEdit={(job: any) => {
-              setIsHistoryModalOpen(false);
-              setCustomerQuery(job.customerName);
-              setSelectedJobRacket(job.racketModel);
-              setNewJobStep(2);
-              setView('new_job');
-            }}
-          />
-        )}
-      </AnimatePresence>
-
-      {/* Add Racket Modal */}
-      <AnimatePresence>
-        {isRacketModalOpen && (
-          <div style={{
-            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-            background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(8px)',
-            zIndex: 100, display: 'flex', justifyContent: 'center', alignItems: 'center',
-            padding: '24px'
-          }}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-              style={{ width: '100%', maxWidth: '900px', maxHeight: '90vh', background: 'var(--bg-panel-solid)', borderRadius: '32px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-              
-              {/* Modal Header */}
-              <div style={{ background: '#3A52EE', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 600, margin: 0 }}>{racketFormDefault?.isClone ? 'Clonar Raquete' : 'Adicionar Raquete'}</h3>
-                <button onClick={() => setIsRacketModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
-              </div>
-
-              {/* Modal Body */}
-              <div style={{ padding: '32px', overflowY: 'auto', flex: 1, background: 'rgba(255,255,255,0.05)' }}>
-                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
-                  e.preventDefault(); 
+                                <form style={{ display: 'flex', flexDirection: 'column', gap: '20px' }} onSubmit={(e) => { 
+                  e.preventDefault();
                   const fd = new FormData(e.currentTarget);
                   const racketName = fd.get('racketName') as string;
                   const identifier = fd.get('identifier') as string;
@@ -1791,21 +1572,56 @@ export const StringerDashboard = () => {
                     return; // Prevent saving
                   }
 
-                  const payload = { brand, name: racketName, identifier };
+                  const payload = { 
+                    brand, 
+                    name: racketName, 
+                    identifier,
+                    stringPattern: fd.get('stringPattern') as string,
+                    gripSize: fd.get('gripSize') as string,
+                    sport: fd.get('sport') as string,
+                    notes: fd.get('notes') as string,
+                    weight: fd.get('weight') as string,
+                    balance: fd.get('balance') as string,
+                    length: fd.get('length') as string,
+                    swingweight: fd.get('swingweight') as string,
+                    spinweight: fd.get('spinweight') as string,
+                    twistweight: fd.get('twistweight') as string,
+                    recoilweight: fd.get('recoilweight') as string,
+                    polarIndex: fd.get('polarIndex') as string,
+                    stiffnessRA: fd.get('stiffnessRA') as string,
+                    dynamicStiffnessHz: fd.get('dynamicStiffnessHz') as string,
+                    dynamicStiffnessDRA: fd.get('dynamicStiffnessDRA') as string
+                  };
+                  
                   if (racketFormDefault && racketFormDefault.id && !racketFormDefault.isClone) {
                      fetch(`${API_URL}/api/rackets/${racketFormDefault.id}`, {
                        method: 'PUT',
                        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
                        body: JSON.stringify(payload)
-                     }).then(() => fetchRackets());
+                     }).then(async (res) => {
+                       if (!res.ok) {
+                         const data = await res.json().catch(() => ({}));
+                         alert(data.error || 'Erro ao salvar a raquete.');
+                       } else {
+                         await fetchRackets();
+                         setIsRacketModalOpen(false);
+                       }
+                     });
                   } else {
                      fetch(`${API_URL}/api/rackets`, {
                        method: 'POST',
                        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
                        body: JSON.stringify({ ...payload, customerId })
-                     }).then(() => fetchRackets());
+                     }).then(async (res) => {
+                       if (!res.ok) {
+                         const data = await res.json().catch(() => ({}));
+                         alert(data.error || 'Erro ao criar a raquete.');
+                       } else {
+                         await fetchRackets();
+                         setIsRacketModalOpen(false);
+                       }
+                     });
                   }
-                  setIsRacketModalOpen(false); 
                 }}>
                   
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '20px' }}>
@@ -1819,19 +1635,19 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Identificador</label>
-                      <input type="text" name="identifier" style={inputStyle} defaultValue={racketFormDefault?.identifier || ''} />
+                      <input name="identifier" type="text" style={inputStyle} defaultValue={racketFormDefault?.identifier || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Padrão de cordas</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="stringPattern" type="text" style={inputStyle} defaultValue={racketFormDefault?.stringPattern || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Tamanho do Grip</label>
-                      <input type="text" style={inputStyle} />
+                      <input name="gripSize" type="text" style={inputStyle} defaultValue={racketFormDefault?.gripSize || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Esporte</label>
-                      <select style={inputStyle} name="sport" defaultValue="Tênis">
+                      <select name="sport" style={inputStyle} defaultValue={racketFormDefault?.sport || 'Tênis'}>
                          {(appSettings.sports || ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel']).map((s: string) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
@@ -1839,55 +1655,55 @@ export const StringerDashboard = () => {
 
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
-                    <textarea rows={3} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                    <textarea name="notes" rows={3} style={{ ...inputStyle, resize: 'none' }} defaultValue={racketFormDefault?.notes || ''}></textarea>
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Peso (g)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="weight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.weight || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Equilíbrio (mm)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="balance" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.balance || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Comprimento (mm)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="length" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.length || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Swingweight (kgcm²)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="swingweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.swingweight || ''} />
                     </div>
 
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Spinweight (kgcm²)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="spinweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.spinweight || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Twistweight (kgcm²)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="twistweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.twistweight || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Recoilweight (kgcm²)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="recoilweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.recoilweight || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Índice Polar</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="polarIndex" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.polarIndex || ''} />
                     </div>
 
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez (RA)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="stiffnessRA" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.stiffnessRA || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez Dinâmica (Hz)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="dynamicStiffnessHz" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.dynamicStiffnessHz || ''} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez Dinâmica (DRA)</label>
-                      <input type="number" step="0.1" style={inputStyle} />
+                      <input name="dynamicStiffnessDRA" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.dynamicStiffnessDRA || ''} />
                     </div>
                   </div>
 
@@ -1943,13 +1759,13 @@ export const StringerDashboard = () => {
                     rackets.filter(r => r.customerId === selectedCustomer?.id).map(racket => (
                       <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <div>
-                          <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}</div>
+                          <div style={{ fontWeight: 600, color: 'white' }}>{getRacketDisplayName(racket)}</div>
                         </div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{new Date().toLocaleDateString('pt-BR')} 16:30</div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
                         <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
                           <button onClick={() => {
-                            setRacketFormDefault({ name: racket.name + ' [Cópia]', isClone: true });
+                            setRacketFormDefault({ ...racket, name: racket.name, identifier: '', isClone: true });
                             setIsCloneRacketModalOpen(false);
                             setIsRacketModalOpen(true);
                           }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
