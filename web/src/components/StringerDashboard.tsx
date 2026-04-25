@@ -7,7 +7,7 @@ import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
 import { OrdersView } from './OrdersView';
 import { SettingsView } from './SettingsView';
-import { applyPhoneMask } from '../utils/masks';
+import { applyPhoneMask, applyCpfCnpjMask } from '../utils/masks';
 // Extended Mock Data for the new functionalities
 // Removed INITIAL_CUSTOMERS to fetch from API
 
@@ -1659,7 +1659,7 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>CPF / CNPJ</label>
-                      <input name="cpfCnpj" type="text" defaultValue={selectedCustomer?.cpfCnpj || ''} style={inputStyle} />
+                      <input name="cpfCnpj" type="text" onChange={(e) => e.target.value = applyCpfCnpjMask(e.target.value)} defaultValue={selectedCustomer?.cpfCnpj ? applyCpfCnpjMask(selectedCustomer.cpfCnpj) : ''} style={inputStyle} />
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone Fixo</label>
@@ -1692,10 +1692,10 @@ export const StringerDashboard = () => {
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
-                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || 'Test'} style={inputStyle}>
-                        <option value="Test">Test</option>
-                        <option value="Loja 1">Loja 1</option>
-                      </select>
+                      <select name="stringingPoint" defaultValue={selectedCustomer?.stringingPoint || ''} style={inputStyle}>
+                          <option value="">Selecione...</option>
+                          {appSettings?.pickupPoints?.map((p: string) => <option key={p} value={p}>{p}</option>)}
+                        </select>
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Código da Racketpedia</label>
