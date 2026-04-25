@@ -2026,13 +2026,24 @@ export const StringerDashboard = () => {
                       yearsOfExperience: fd.get('yearsOfExperience') as string,
                       trainingTypes: fd.get('trainingTypes') as string
                     };
-                  if (selectedProfessor && selectedProfessor.id) {
-                     fetch(`${API_URL}/api/professors/${selectedProfessor.id}`, { method: 'PUT', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) }).then(() => fetchProfessors());
-                  } else {
-                     fetch(`${API_URL}/api/professors`, { method: 'POST', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) }).then(() => fetchProfessors());
+                                    try {
+                    let res;
+                    if (selectedProfessor && selectedProfessor.id) {
+                       res = await fetch(`${API_URL}/api/professors/${selectedProfessor.id}`, { method: 'PUT', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) });
+                    } else {
+                       res = await fetch(`${API_URL}/api/professors`, { method: 'POST', headers: {...getAuthHeader(), 'Content-Type': 'application/json'}, body: JSON.stringify(newProf) });
+                    }
+                    if (!res.ok) {
+                        const errText = await res.text();
+                        throw new Error(errText || 'Erro da API');
+                    }
+                    await fetchProfessors();
+                    setIsProfessorModalOpen(false);
+                    setSelectedProfessor(null);
+                  } catch(e: any) {
+                    console.error('Error saving professor:', e);
+                    alert('Falha ao salvar professor. Verifique os dados. (' + e.message + ')');
                   }
-                  setIsProfessorModalOpen(false);
-                  setSelectedProfessor(null);
                 }}>
                   <div style={{ padding: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)', display: 'flex', justifyContent: 'space-between' }}>
                     <h2 style={{ fontSize: '20px', color: 'white' }}>{selectedProfessor ? 'Editar Professor' : 'Novo Professor'}</h2>
