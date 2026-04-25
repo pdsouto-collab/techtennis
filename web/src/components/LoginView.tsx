@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
@@ -169,7 +170,7 @@ export const LoginView = () => {
                 </div>
                 <div>
                   <label style={{ display: 'block', color: 'rgba(255,255,255,0.7)', fontSize: '14px', marginBottom: '8px' }}>Telefone *</label>
-                  <input required type="text" value={regPhone} onChange={e => setRegPhone(e.target.value)} style={inputStyle} />
+                  <input required type="text" value={regPhone} onChange={e => setRegPhone(applyPhoneMask(e.target.value))} style={inputStyle} />
                 </div>
                 
                 {mode === 'register_prof' && (
