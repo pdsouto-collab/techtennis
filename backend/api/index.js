@@ -31,13 +31,15 @@ app.post('/api/auth/register', async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const userRole = role || 'CLIENTE';
     const finalStatus = userRole === 'PROFESSOR' ? 'pending' : 'active';
+    const crypto = require('crypto');
+    const newId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 
     const insertQ = `
-      INSERT INTO "User" (name, email, password, phone, role, status, "createdAt", "updatedAt")
-      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+      INSERT INTO "User" (id, name, email, password, phone, role, status, "createdAt", "updatedAt")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
       RETURNING id, name, email, role, status
     `;
-    const inserted = await db.query(insertQ, [name, email, hashedPassword, phone, userRole, finalStatus]);
+    const inserted = await db.query(insertQ, [newId, name, email, hashedPassword, phone, userRole, finalStatus]);
     const newUser = inserted.rows[0];
 
     res.status(201).json({ message: 'Conta criada com sucesso!', user: newUser });
