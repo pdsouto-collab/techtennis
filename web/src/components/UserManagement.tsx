@@ -51,7 +51,7 @@ export const UserManagement = () => {
                   <span style={{ fontWeight: 700, color: '#1a1a2e' }}>{user.name}</span>
                   <span style={{ fontSize: '12px', color: '#6B7280' }}>{user.email}</span>
                 </td>
-                <td style={{ padding: '16px 24px', color: 'var(--text-secondary)' }}>
+                <td style={{ padding: '16px 24px', color: '#4B5563', fontSize: '14px' }}>
                   {user.phone ? applyPhoneMask(user.phone) : '-'}
                 </td>
                 <td style={{ padding: '16px 24px' }}>
