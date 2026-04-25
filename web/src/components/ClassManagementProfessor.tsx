@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { ArrowLeft, Users, Calendar, BarChart2, Plus, Edit, Trash2, X, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
