@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { motion } from 'framer-motion';
 import { Trash2, Edit, X, Plus, Ban, CheckCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
