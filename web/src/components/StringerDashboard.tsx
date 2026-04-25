@@ -595,8 +595,8 @@ export const StringerDashboard = () => {
                       {activeFilter === 'to_string' ? (
                         <>
                           <div>
-                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mains: Solinco Hyper-G</div>
-                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: Solinco Hyper-G</div>
+                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Mains: {job.stringMains || 'N/A'}</div>
+                             <div style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>Cross: {job.stringCross || 'N/A'}</div>
                           </div>
                           <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
                             <button onClick={() => {
@@ -1272,11 +1272,11 @@ export const StringerDashboard = () => {
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Mains</div>
-                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Solinco Hyper-G Green 115 @{activeStringingJob.tension}</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringMains || 'N/A'} @{activeStringingJob.tensionMain || activeStringingJob.tension}</div>
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Crosses</div>
-                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Solinco Hyper-G Green 115 @{activeStringingJob.tension}</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringCross || 'N/A'} @{activeStringingJob.tensionCross || activeStringingJob.tension}</div>
                     </div>
                  </div>
 
@@ -1990,7 +1990,7 @@ export const StringerDashboard = () => {
                     rackets.filter(r => r.customerId === selectedCustomer?.id).map(racket => (
                       <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
                         <div>
-                          <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}</div>
+                          <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}{racket.identifier ? ` [${racket.identifier}]` : ''}</div>
                         </div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{new Date().toLocaleDateString('pt-BR')} 16:30</div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
