@@ -232,7 +232,7 @@ app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
       await db.connect();
       const updateQ = `UPDATE "Job" SET "status"=$1, "updatedAt"=NOW() WHERE id=$2 RETURNING *`;
       const result = await db.query(updateQ, [status, jobId]);
-      if (result.rowCount === 0) return res.status(404).json({ error: 'ServiÃ§o nÃ£o encontrado.' });
+      if (result.rowCount === 0) return res.status(404).json({ error: 'Serviço não encontrado.' });
       res.json(result.rows[0]);
     } catch (err) {
       console.error(err);
@@ -241,22 +241,6 @@ app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
       await db.end();
     }
   });
-      res.json(result.rows[0]);
-    } catch (err) {
-      console.error(err);
-      res.status(500).json({ error: 'Erro ao atualizar status do Job.' });
-    } finally {
-      await db.end();
-    }
-  });
-    res.json(result.rows[0]);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Erro ao atualizar status do Job.' });
-  } finally {
-    await db.end();
-  }
-});
 
 app.delete('/api/jobs/:id', authenticateToken, async (req, res) => {
   const jobId = req.params.id;
