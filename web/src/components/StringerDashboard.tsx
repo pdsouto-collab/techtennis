@@ -874,7 +874,11 @@ export const StringerDashboard = () => {
                            const customerRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
                            const usedRacketIdsInOrder = jobs.filter(j => j.orderCode === currentOrderCode && j.id !== editingJobId).map(j => j.racketId);
                            
-                           customerRackets.sort((a, b) => a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' }));
+                           customerRackets.sort((a, b) => {
+                               const nameA = a.identifier ? `${a.name.trim()} [${a.identifier}]` : a.name.trim();
+                               const nameB = b.identifier ? `${b.name.trim()} [${b.identifier}]` : b.name.trim();
+                               return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+                           });
 
                            return customerRackets.map(r => {
                                const suffix = r.identifier ? ` [${r.identifier}]` : '';
@@ -1387,8 +1391,8 @@ export const StringerDashboard = () => {
               </div>
             </div>
 
-            <div style={{ background: 'white', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
+            <div style={{ background: 'white', borderRadius: '12px', overflowX: 'auto', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
+              <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)', whiteSpace: 'nowrap' }}>
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
