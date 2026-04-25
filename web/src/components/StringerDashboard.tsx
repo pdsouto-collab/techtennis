@@ -1391,13 +1391,13 @@ export const StringerDashboard = () => {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Name</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Stringing point</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Coach</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Club</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Email</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Phone</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Mobile</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Ponto de Encordoamento</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Professor</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Clube</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Telefone Fixo</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Celular</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}></th>
                   </tr>
                 </thead>
@@ -1405,11 +1405,11 @@ export const StringerDashboard = () => {
                   {customers.map((customer: any, index: number) => (
                     <tr key={customer.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>Test</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}></td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.stringingPoint || 'Não informado'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px' }}>{professors.find((p: any) => p.id === customer.professorId)?.name || 'Nenhum'}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Não informado'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || ''}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}></td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || 'Não informado'}</td>
+                        <td style={{ padding: '16px', fontSize: '14px' }}>{customer.landline ? applyPhoneMask(customer.landline) : ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone ? applyPhoneMask(customer.phone) : ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
@@ -1471,9 +1471,9 @@ export const StringerDashboard = () => {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Name</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Email</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Phone</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
+                    <th style={{ padding: '16px', fontWeight: 600 }}>Telefone Fixo</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}></th>
                   </tr>
                 </thead>
