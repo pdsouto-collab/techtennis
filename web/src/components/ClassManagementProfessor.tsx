@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { applyPhoneMask } from '../utils/masks';
 import { ArrowLeft, Users, Calendar, BarChart2, Plus, Edit, Trash2, X, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -122,7 +123,7 @@ export const ClassManagementProfessor = () => {
                           </div>
                         </div>
                         <div style={{ fontSize: '14px', color: '#4B5563' }}>
-                          {student.phone ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span style={{ fontWeight: 500 }}>{student.phone}</span></div> : null}
+                          {student.phone ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span style={{ fontWeight: 500 }}>{student.phone ? applyPhoneMask(student.phone) : ''}</span></div> : null}
                           {student.isResidential ? <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Condomínio / Residencial'}</span></div> : null}
                           {student.level ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>⭐ <span style={{ fontWeight: 500 }}>{student.level}</span></div> : null}
                         </div>
@@ -406,7 +407,7 @@ export const ClassManagementProfessor = () => {
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Telefone</label>
-                    <input name="phone" defaultValue={activeStudent?.phone} type="text" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
+                    <input name="phone" defaultValue={activeStudent?.phone ? applyPhoneMask(activeStudent.phone) : ''} onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} type="tel" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} />
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Endereço</label>
