@@ -144,6 +144,7 @@ app.get('/api/jobs', authenticateToken, async (req, res) => {
 });
 
 
+
 app.post('/api/jobs', authenticateToken, async (req, res) => {
   const { customerId, customerName, racketModel, type, tension, price, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices } = req.body;
   const db = getDB();
@@ -232,6 +233,14 @@ app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
       const updateQ = `UPDATE "Job" SET "status"=$1, "updatedAt"=NOW() WHERE id=$2 RETURNING *`;
       const result = await db.query(updateQ, [status, jobId]);
       if (result.rowCount === 0) return res.status(404).json({ error: 'ServiÃ§o nÃ£o encontrado.' });
+      res.json(result.rows[0]);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Erro ao atualizar status do Job.' });
+    } finally {
+      await db.end();
+    }
+  });
       res.json(result.rows[0]);
     } catch (err) {
       console.error(err);

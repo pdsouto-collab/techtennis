@@ -1787,7 +1787,7 @@ export const StringerDashboard = () => {
                   );
 
                   if (isDuplicate) {
-                    alert('NÃ£o Ã© possÃvel salvar: o cliente jÃ¡ possui uma raquete com este mesmo Nome e Identificador!');
+                    alert('Não é possível salvar: o cliente já possui uma raquete com este mesmo Nome e Identificador!');
                     return; // Prevent saving
                   }
 
@@ -1857,7 +1857,7 @@ export const StringerDashboard = () => {
                       <input name="identifier" type="text" style={inputStyle} defaultValue={racketFormDefault?.identifier || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>PadrÃ£o de cordas</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Padrão de cordas</label>
                       <input name="stringPattern" type="text" style={inputStyle} defaultValue={racketFormDefault?.stringPattern || ''} />
                     </div>
                     <div>
@@ -1866,14 +1866,14 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Esporte</label>
-                      <select name="sport" style={inputStyle} defaultValue={racketFormDefault?.sport || 'TÃªnis'}>
-                         {(appSettings.sports || ['TÃªnis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel']).map((s: string) => <option key={s} value={s}>{s}</option>)}
+                      <select name="sport" style={inputStyle} defaultValue={racketFormDefault?.sport || 'Tênis'}>
+                         {(appSettings.sports || ['Tênis', 'Beach Tennis', 'Squash', 'Badminton', 'Padel']).map((s: string) => <option key={s} value={s}>{s}</option>)}
                       </select>
                     </div>
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>ObservaÃ§Ãµes</label>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
                     <textarea name="notes" rows={3} style={{ ...inputStyle, resize: 'none' }} defaultValue={racketFormDefault?.notes || ''}></textarea>
                   </div>
 
@@ -1883,7 +1883,7 @@ export const StringerDashboard = () => {
                       <input name="weight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.weight || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>EquilÃ­brio (mm)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Equilíbrio (mm)</label>
                       <input name="balance" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.balance || ''} />
                     </div>
                     <div>
@@ -1891,24 +1891,24 @@ export const StringerDashboard = () => {
                       <input name="length" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.length || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Swingweight (kgcmÂ²)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Swingweight (kgcm²)</label>
                       <input name="swingweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.swingweight || ''} />
                     </div>
 
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Spinweight (kgcmÂ²)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Spinweight (kgcm²)</label>
                       <input name="spinweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.spinweight || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Twistweight (kgcmÂ²)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Twistweight (kgcm²)</label>
                       <input name="twistweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.twistweight || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Recoilweight (kgcmÂ²)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Recoilweight (kgcm²)</label>
                       <input name="recoilweight" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.recoilweight || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ãndice Polar</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Índice Polar</label>
                       <input name="polarIndex" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.polarIndex || ''} />
                     </div>
 
@@ -1917,18 +1917,18 @@ export const StringerDashboard = () => {
                       <input name="stiffnessRA" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.stiffnessRA || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez DinÃ¢mica (Hz)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez Dinâmica (Hz)</label>
                       <input name="dynamicStiffnessHz" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.dynamicStiffnessHz || ''} />
                     </div>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez DinÃ¢mica (DRA)</label>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Rigidez Dinâmica (DRA)</label>
                       <input name="dynamicStiffnessDRA" type="number" step="0.1" style={inputStyle} defaultValue={racketFormDefault?.dynamicStiffnessDRA || ''} />
                     </div>
                   </div>
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px' }}>
                     <button type="button" onClick={() => setIsRacketModalOpen(false)} style={{ padding: '16px 32px', background: 'transparent', border: '2px solid rgba(255,255,255,0.4)', borderRadius: '100px', color: 'white', cursor: 'pointer', fontWeight: 700 }}>Fechar</button>
-                    <button type="submit" className="button-primary" style={{ padding: '16px 32px' }}>Salvar AlteraÃ§Ãµes</button>
+                    <button type="submit" className="button-primary" style={{ padding: '16px 32px' }}>Salvar Alterações</button>
                   </div>
 
                 </form>
