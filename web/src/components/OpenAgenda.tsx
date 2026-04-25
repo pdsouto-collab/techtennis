@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, MapPin, DollarSign, Phone, Activity, Plus, ArrowLeft, Trash2, Edit, User as UserIcon } from 'lucide-react';
+import { applyPhoneMask } from '../utils/masks';
 import { useAuth } from '../contexts/AuthContext';
 
 interface AgendaSlot {
@@ -237,7 +238,7 @@ export const OpenAgenda = () => {
                   )}
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)', fontSize: '14px' }}>
-                    <Phone size={16} /> <span>{slot.phone}</span>
+                    <Phone size={16} /> <span>{slot.phone ? applyPhoneMask(slot.phone) : ''}</span>
                   </div>
                   {slot.price && (
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: '#FCD34D', fontSize: '15px', fontWeight: 600, marginTop: '4px' }}>
@@ -301,7 +302,7 @@ export const OpenAgenda = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Celular (WhatsApp)</label>
-                      <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} required style={inputStyle} placeholder="(11) 99999-9999" />
+                      <input type="tel" value={phone} onChange={e => setPhone(applyPhoneMask(e.target.value))} required style={inputStyle} placeholder="+55 (11) 99999-9999" />
                     </div>
                   </div>
 
