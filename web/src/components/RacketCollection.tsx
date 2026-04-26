@@ -111,7 +111,11 @@ export const RacketCollection = () => {
     if (job.basePrice > 0) {
       const stringComm = commissions.find((c: any) => c.name.toLowerCase().includes('encordoamento'));
       if (stringComm) {
-        total += job.basePrice * (stringComm.percent / 100);
+        const baseDiscountVal = Number(job.priceDiscountPercent) || 0;
+        const baseDiscountAmt = Number(job.priceDiscountValue) || 0;
+        let finalBasePrice = (Number(job.basePrice) * (1 - baseDiscountVal / 100)) - baseDiscountAmt;
+        if (finalBasePrice < 0) finalBasePrice = 0;
+        total += finalBasePrice * (stringComm.percent / 100);
       }
     }
 
@@ -121,7 +125,11 @@ export const RacketCollection = () => {
         if (service.isActive && service.price > 0) {
           const svcComm = commissions.find((c: any) => c.name.toLowerCase() === service.type.toLowerCase());
           if (svcComm) {
-            total += service.price * (svcComm.percent / 100);
+            const sDiscount = Number(service.discountPercent) || 0;
+            const sDiscountVal = Number(service.discountValue) || 0;
+            let finalAuxPrice = (Number(service.price) * (1 - sDiscount / 100)) - sDiscountVal;
+            if (finalAuxPrice < 0) finalAuxPrice = 0;
+            total += finalAuxPrice * (svcComm.percent / 100);
           }
         }
       });
