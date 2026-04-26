@@ -266,7 +266,7 @@ export const StringerDashboard = () => {
       o.pickupDate ? new Date(o.pickupDate).toLocaleString('pt-BR') : '',
       o.customerName,
       o.racketModel,
-      `${o.mainString || ''} @${o.tension || ''}`,
+      `${o.stringMains || o.mainString || ''} @${o.tension || ''}`,
       o.type === 'picked_up' ? 'Entregue' : o.type === 'picking_up' ? 'Pronta' : o.type === 'to_string' ? 'Para Encordoar' : 'Aguardando',
       (o.price || 120).toFixed(2)
     ]);
@@ -395,8 +395,8 @@ export const StringerDashboard = () => {
     const racketId = rackets.find(r => r.name === job.racketModel && r.customerId === cust?.id)?.id;
     if (racketId) setSelectedJobRacket(racketId);
     
-    setMainString(job.mainString || '');
-    setCrossString(job.crossString || '');
+    setMainString(job.stringMains || job.mainString || '');
+    setCrossString(job.stringCross || job.crossString || '');
     setIsHybrid(job.isHybrid || false);
     setIsStringing(job.isStringing !== false);
     setPreStretchMain(job.preStretchMain || '');
@@ -846,12 +846,12 @@ export const StringerDashboard = () => {
                             const val = e.target.value;
                             setSelectedJobRacket(val);
                             if (val) {
-                               const pastJob = jobs.find(j => j.racketId === val && !!j.mainString);
+                               const pastJob = jobs.find(j => j.racketId === val && (!!j.stringMains || !!j.mainString));
                                if (pastJob) {
                                  setStringingType(pastJob.stringingType || 'ATW');
                                  setTensionUnit(pastJob.tensionUnit || 'Lbs');
-                                 setMainString(pastJob.mainString || '');
-                                 setCrossString(pastJob.crossString || '');
+                                 setMainString(pastJob.stringMains || pastJob.mainString || '');
+                                 setCrossString(pastJob.stringCross || pastJob.crossString || '');
                                  
                                  const match = pastJob.tension?.match(/(\d+)(?:\/(\d+))?/);
                                  setTensionMain(pastJob.tensionMain || (match ? parseInt(match[1]) : ''));
@@ -1252,7 +1252,7 @@ export const StringerDashboard = () => {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                     <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'white', fontSize: '24px', fontWeight: 800, cursor: 'pointer', fontFamily: 'var(--font-heading)' }}>
-                      Stringer Dashboard (V2)
+                      Stringer Dashboard
                     </button>
                     <h2 style={{ fontSize: '24px', margin: 0, color: 'white' }}>{activeStringingJob.racketModel || 'Head Speed Pro'} <span style={{ color: 'var(--text-secondary)', fontWeight: 'normal', fontSize: '16px' }}>18x20 L3</span></h2>
                  </div>

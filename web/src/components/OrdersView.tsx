@@ -179,11 +179,11 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
             <table style={{ width: '100%', minWidth: '1000px', borderCollapse: 'collapse', textAlign: 'left' }}>
             <thead style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <tr>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Name</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de inserção</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Status v</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de retirada desejada</th>
-                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Data de retirada</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Cliente</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>Inserção</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Status</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>Previsão Retirada</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>Retirada Real</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Clube</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Professor</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Ordem</th>
