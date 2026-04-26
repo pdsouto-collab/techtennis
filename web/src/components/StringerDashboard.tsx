@@ -2145,16 +2145,40 @@ export const StringerDashboard = () => {
 
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                     {activePaymentJob.paid ? (
-                      <button onClick={() => {
+                      <button onClick={async () => {
+                        const previousJobs = [...jobs];
                         setJobs(jobs.map(j => j.id === activePaymentJob.id ? { ...j, paid: false } : j));
                         setIsPaymentModalOpen(false);
+                        try {
+                          await fetch(`${API_URL}/api/jobs/${activePaymentJob.id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                            body: JSON.stringify({ paid: false })
+                          });
+                        } catch (err) {
+                          console.error(err);
+                          alert('Erro ao atualizar o pagamento no servidor.');
+                          setJobs(previousJobs);
+                        }
                       }} style={{ padding: '12px 24px', background: '#E04A59', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>
                         Cancelar Pagamento
                       </button>
                     ) : (
-                      <button onClick={() => {
+                      <button onClick={async () => {
+                        const previousJobs = [...jobs];
                         setJobs(jobs.map(j => j.id === activePaymentJob.id ? { ...j, paid: true } : j));
                         setIsPaymentModalOpen(false);
+                        try {
+                          await fetch(`${API_URL}/api/jobs/${activePaymentJob.id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                            body: JSON.stringify({ paid: true })
+                          });
+                        } catch (err) {
+                          console.error(err);
+                          alert('Erro ao confirmar o pagamento no servidor.');
+                          setJobs(previousJobs);
+                        }
                       }} style={{ padding: '12px 24px', background: '#6FCF97', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer' }}>
                         Confirmar Pagamento
                       </button>
@@ -2180,17 +2204,42 @@ export const StringerDashboard = () => {
                 </div>
                 
                 <div style={{ padding: '32px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  <button onClick={() => {
-                    setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up', paid: true } : j));
+                  <button onClick={async () => {
+                    const previousJobs = [...jobs];
+                    setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up', status: 'entregue', paid: true } : j));
                     setIsPickupModalOpen(false);
+                    try {
+                      await fetch(`${API_URL}/api/jobs/${activePickupJob.id}/status`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                        body: JSON.stringify({ type: 'picked_up', status: 'entregue', paid: true })
+                      });
+                    } catch (err) {
+                      console.error(err);
+                      setJobs(previousJobs);
+                    }
                   }} style={{ background: '#F2C94C', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                     <div style={{ marginBottom: '4px' }}>Raquete única</div>
                     <div>(Paga)</div>
                   </button>
 
-                  <button onClick={() => {
-                    setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up', paid: true } : j));
+                  <button onClick={async () => {
+                    const previousJobs = [...jobs];
+                    const targetJobs = jobs.filter(j => j.customerName === activePickupJob.customerName && j.type === 'picking_up');
+                    setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up', status: 'entregue', paid: true } : j));
                     setIsPickupModalOpen(false);
+                    try {
+                      await Promise.all(targetJobs.map(tj => 
+                        fetch(`${API_URL}/api/jobs/${tj.id}/status`, {
+                          method: 'PUT',
+                          headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                          body: JSON.stringify({ type: 'picked_up', status: 'entregue', paid: true })
+                        })
+                      ));
+                    } catch (err) {
+                      console.error(err);
+                      setJobs(previousJobs);
+                    }
                   }} style={{ background: '#D93B65', border: 'none', borderRadius: '8px', padding: '24px', color: 'white', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                     <div style={{ marginBottom: '4px' }}>Ordem completa</div>
                     <div>(Paga)</div>
@@ -2198,17 +2247,42 @@ export const StringerDashboard = () => {
 
                   {!activePickupJob.paid && (
                     <>
-                      <button onClick={() => {
-                        setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up' } : j));
+                      <button onClick={async () => {
+                        const previousJobs = [...jobs];
+                        setJobs(prev => prev.map(j => j.id === activePickupJob.id ? { ...j, type: 'picked_up', status: 'entregue' } : j));
                         setIsPickupModalOpen(false);
+                        try {
+                          await fetch(`${API_URL}/api/jobs/${activePickupJob.id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                            body: JSON.stringify({ type: 'picked_up', status: 'entregue' })
+                          });
+                        } catch (err) {
+                          console.error(err);
+                          setJobs(previousJobs);
+                        }
                       }} style={{ background: '#FFF9E6', border: 'none', borderRadius: '8px', padding: '24px', color: 'var(--text-dark)', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                         <div style={{ marginBottom: '4px' }}>Raquete única</div>
                         <div>(Não paga)</div>
                       </button>
 
-                      <button onClick={() => {
-                        setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up' } : j));
+                      <button onClick={async () => {
+                        const previousJobs = [...jobs];
+                        const targetJobs = jobs.filter(j => j.customerName === activePickupJob.customerName && j.type === 'picking_up');
+                        setJobs(prev => prev.map(j => (j.customerName === activePickupJob.customerName && j.type === 'picking_up') ? { ...j, type: 'picked_up', status: 'entregue' } : j));
                         setIsPickupModalOpen(false);
+                        try {
+                          await Promise.all(targetJobs.map(tj => 
+                            fetch(`${API_URL}/api/jobs/${tj.id}/status`, {
+                              method: 'PUT',
+                              headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                              body: JSON.stringify({ type: 'picked_up', status: 'entregue' })
+                            })
+                          ));
+                        } catch (err) {
+                          console.error(err);
+                          setJobs(previousJobs);
+                        }
                       }} style={{ background: '#FFF0F5', border: 'none', borderRadius: '8px', padding: '24px', color: '#D93B65', fontWeight: 600, fontSize: '16px', cursor: 'pointer', textAlign: 'center' }}>
                         <div style={{ marginBottom: '4px' }}>Ordem completa</div>
                         <div>(Não paga)</div>

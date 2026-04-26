@@ -225,13 +225,13 @@ app.put('/api/jobs/:id', authenticateToken, async (req, res) => {
 
 
 app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
-    const { status, type } = req.body;
+    const { status, type, paid } = req.body;
     const jobId = req.params.id;
     const db = getDB();
     try {
       await db.connect();
-      const updateQ = `UPDATE "Job" SET "status"=$1, "type"=COALESCE($2, "type"), "updatedAt"=NOW() WHERE id=$3 RETURNING *`;
-      const result = await db.query(updateQ, [status, type, jobId]);
+      const updateQ = `UPDATE "Job" SET "status"=COALESCE($1, "status"), "type"=COALESCE($2, "type"), "paid"=COALESCE($3, "paid"), "updatedAt"=NOW() WHERE id=$4 RETURNING *`;
+      const result = await db.query(updateQ, [status, type, paid, jobId]);
       if (result.rowCount === 0) return res.status(404).json({ error: 'Serviço não encontrado.' });
       res.json(result.rows[0]);
     } catch (err) {
