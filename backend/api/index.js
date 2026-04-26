@@ -154,7 +154,7 @@ app.get('/api/jobs', authenticateToken, async (req, res) => {
 
 
 app.post('/api/jobs', authenticateToken, async (req, res) => {
-  const { customerId, customerName, racketModel, type, tension, price, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices } = req.body;
+  const { customerId, customerName, racketModel, type, tension, price, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices, date, stringerName } = req.body;
   const db = getDB();
   try {
     await db.connect();
@@ -171,17 +171,17 @@ app.post('/api/jobs', authenticateToken, async (req, res) => {
     const p_tensionCross = parseNum(tensionCross);
 
     
-    // In db, fields are: id, customerId, customerNameAlias, racketModel, type, tension, price, status, stringMains, stringCross, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices
+    // In db, fields are: id, customerId, customerNameAlias, racketModel, type, tension, price, status, stringMains, stringCross, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices, date, stringerName
     const insertQ = `
       INSERT INTO "Job" 
-      ("id", "customerId", "customerNameAlias", "customerName", "racketModel", "type", "tension", "price", "status", "stringMains", "stringCross", "orderCode", "isHybrid", "racketId", "isStringing", "stringingType", "tensionUnit", "preStretchMain", "preStretchCross", "basePrice", "priceDiscountPercent", "priceDiscountValue", "tensionMain", "tensionCross", "pickupDate", "commissionedProfessorId", "auxServices", "createdAt", "updatedAt")
+      ("id", "customerId", "customerNameAlias", "customerName", "racketModel", "type", "tension", "price", "status", "stringMains", "stringCross", "orderCode", "isHybrid", "racketId", "isStringing", "stringingType", "tensionUnit", "preStretchMain", "preStretchCross", "basePrice", "priceDiscountPercent", "priceDiscountValue", "tensionMain", "tensionCross", "pickupDate", "commissionedProfessorId", "auxServices", "date", "stringerName", "createdAt", "updatedAt")
       VALUES 
-      (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, 'aguardando', $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, NOW(), NOW())
+      (gen_random_uuid(), $1, $2, $3, $4, $5, $6, $7, 'aguardando', $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, NOW(), NOW())
       RETURNING *
     `;
     
     const result = await db.query(insertQ, [
-      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel || 'N/A', type || 'to_string', tension || '', p_price, mainString || '', crossString || '', orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, p_preStretchMain, p_preStretchCross, p_basePrice, p_priceDiscountPercent, p_priceDiscountValue, p_tensionMain, p_tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null
+      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel || 'N/A', type || 'to_string', tension || '', p_price, mainString || '', crossString || '', orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, p_preStretchMain, p_preStretchCross, p_basePrice, p_priceDiscountPercent, p_priceDiscountValue, p_tensionMain, p_tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null, date, stringerName
     ]);
 
     res.status(201).json(result.rows[0]);
@@ -194,7 +194,7 @@ app.post('/api/jobs', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/jobs/:id', authenticateToken, async (req, res) => {
-  const { customerId, customerName, racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices } = req.body;
+  const { customerId, customerName, racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices, date, stringerName } = req.body;
   const db = getDB();
   try {
     await db.connect();
@@ -214,12 +214,12 @@ app.put('/api/jobs/:id', authenticateToken, async (req, res) => {
     
     const updateQ = `
       UPDATE "Job" SET 
-        "customerId" = $1, "customerNameAlias" = $2, "customerName" = $3, "racketModel" = $4, "type" = $5, "tension" = $6, "price" = $7, "status" = COALESCE($8, "status"), "stringMains" = $9, "stringCross" = $10, "orderCode" = $11, "isHybrid" = $12, "racketId" = $13, "isStringing" = $14, "stringingType" = $15, "tensionUnit" = $16, "preStretchMain" = $17, "preStretchCross" = $18, "basePrice" = $19, "priceDiscountPercent" = $20, "priceDiscountValue" = $21, "tensionMain" = $22, "tensionCross" = $23, "pickupDate" = $24, "commissionedProfessorId" = $25, "auxServices" = $26, "updatedAt" = NOW()
-      WHERE "id" = $27
+        "customerId" = $1, "customerNameAlias" = $2, "customerName" = $3, "racketModel" = $4, "type" = $5, "tension" = $6, "price" = $7, "status" = COALESCE($8, "status"), "stringMains" = $9, "stringCross" = $10, "orderCode" = $11, "isHybrid" = $12, "racketId" = $13, "isStringing" = $14, "stringingType" = $15, "tensionUnit" = $16, "preStretchMain" = $17, "preStretchCross" = $18, "basePrice" = $19, "priceDiscountPercent" = $20, "priceDiscountValue" = $21, "tensionMain" = $22, "tensionCross" = $23, "pickupDate" = $24, "commissionedProfessorId" = $25, "auxServices" = $26, "date" = COALESCE($27, "date"), "stringerName" = $28, "updatedAt" = NOW()
+      WHERE "id" = $29
       RETURNING *
     `;
     const result = await db.query(updateQ, [
-      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null, req.params.id
+      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null, date, stringerName, req.params.id
     ]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'ServiA o nAo encontrado.' });
     res.json(result.rows[0]);
@@ -233,13 +233,13 @@ app.put('/api/jobs/:id', authenticateToken, async (req, res) => {
 
 
 app.put('/api/jobs/:id/status', authenticateToken, async (req, res) => {
-    const { status, type, paid } = req.body;
+    const { status, type, paid, stringerName } = req.body;
     const jobId = req.params.id;
     const db = getDB();
     try {
       await db.connect();
-      const updateQ = `UPDATE "Job" SET "status"=COALESCE($1, "status"), "type"=COALESCE($2, "type"), "paid"=COALESCE($3, "paid"), "updatedAt"=NOW() WHERE id=$4 RETURNING *`;
-      const result = await db.query(updateQ, [status, type, paid, jobId]);
+      const updateQ = `UPDATE "Job" SET "status"=COALESCE($1, "status"), "type"=COALESCE($2, "type"), "paid"=COALESCE($3, "paid"), "stringerName"=COALESCE($4, "stringerName"), "updatedAt"=NOW() WHERE id=$5 RETURNING *`;
+      const result = await db.query(updateQ, [status, type, paid, stringerName !== undefined ? stringerName : null, jobId]);
       if (result.rowCount === 0) return res.status(404).json({ error: 'Serviço não encontrado.' });
       res.json(result.rows[0]);
     } catch (err) {

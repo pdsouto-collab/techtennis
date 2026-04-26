@@ -168,8 +168,10 @@ export const StringerDashboard = () => {
   const [isStringing, setIsStringing] = useState(true);
   const [preStretchMain, setPreStretchMain] = useState('');
   const [preStretchCross, setPreStretchCross] = useState('');
+  const [preStretchCross, setPreStretchCross] = useState('');
   const [stringingType, setStringingType] = useState('Não definido');
   const [tensionUnit, setTensionUnit] = useState('Lbs');
+  const [dashboardStringer, setDashboardStringer] = useState('');
   const [price, setPrice] = useState<number | ''>('');
   const [priceDiscountPercent, setPriceDiscountPercent] = useState<number | ''>('');
   const [priceDiscountValue, setPriceDiscountValue] = useState<number | ''>('');
@@ -330,7 +332,8 @@ export const StringerDashboard = () => {
       price: finalPrice,
       pickupDate,
       commissionedProfessorId: commissionedProfessorId || null,
-      auxServices
+      auxServices,
+      stringerName: dashboardStringer
     };
     // Envia para API
     fetch(editingJobId ? `${API_URL}/api/jobs/${editingJobId}` : `${API_URL}/api/jobs`, {
@@ -384,6 +387,7 @@ export const StringerDashboard = () => {
       { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
     ]);
     setPickupDate('');
+    setDashboardStringer('');
   };
 
   const startEditingJob = (job: any, cust: any) => {
@@ -441,6 +445,7 @@ export const StringerDashboard = () => {
     
     setPickupDate(job.pickupDate || '');
     setCommissionedProfessorId(job.commissionedProfessorId || '');
+    setDashboardStringer(job.stringerName || '');
     setView('new_job'); 
     setNewJobStep(2);
   };
@@ -1273,7 +1278,7 @@ export const StringerDashboard = () => {
                            const res = await fetch(`${API_URL}/api/jobs/${activeStringingJob.id}/status`, {
                              method: 'PUT',
                              headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
-                             body: JSON.stringify({ type: 'picking_up', status: 'pronta' })
+                             body: JSON.stringify({ type: 'picking_up', status: 'pronta', stringerName: dashboardStringer })
                            });
                            if (!res.ok) throw new Error('Falha ao atualizar');
                         } catch (err) {
@@ -1320,7 +1325,7 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '16px' }}>
                        <div>
                           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Encordoador</label>
-                          <select style={inputStyle}>
+                          <select value={dashboardStringer} onChange={e => setDashboardStringer(e.target.value)} style={inputStyle}>
                              <option value="">Selecione...</option>
                              {appSettings.stringers.map((s: string) => <option key={s} value={s}>{s}</option>)}
                           </select>
@@ -1383,7 +1388,7 @@ export const StringerDashboard = () => {
                                  <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionCross || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>-</div><div>-</div><div>-</div>
-                               <div>{pJob.commissionedProfessorId ? professors.find(p => p.id === pJob.commissionedProfessorId)?.name || 'Prof' : '-'}</div>
+                               <div>{pJob.stringerName ? pJob.stringerName : pJob.commissionedProfessorId ? professors.find(p => p.id === pJob.commissionedProfessorId)?.name || 'Prof' : '-'}</div>
                                <div style={{ fontWeight: 600 }}>BRL {pJob.price ? pJob.price.toFixed(2) : '-'}</div>
                                <div>-</div>
                              </div>
