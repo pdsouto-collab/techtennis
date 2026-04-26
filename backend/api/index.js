@@ -355,7 +355,7 @@ app.get('/api/customers', authenticateToken, async (req, res) => {
   const db = getDB();
   try {
     await db.connect();
-    const result = await db.query('SELECT * FROM "ClientProfile" ORDER BY "createdAt" DESC');
+    const result = await db.query('SELECT * FROM "ClientProfile" ORDER BY "name" ASC');
     res.json(result.rows);
   } catch (err) {
     console.error(err);

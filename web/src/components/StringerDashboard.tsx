@@ -52,6 +52,7 @@ export const StringerDashboard = () => {
 
   // Persistent States
   const [customers, setCustomers] = useState<any[]>([]);
+  const [customerListSearch, setCustomerListSearch] = useState('');
 
   const [professors, setProfessors] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
@@ -1419,7 +1420,11 @@ export const StringerDashboard = () => {
                 <button onClick={() => setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer' }}><ArrowLeft size={24} /></button>
                 <h2 style={{ fontSize: '28px' }}>Base de Clientes</h2>
               </div>
-              <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flex: 1, justifyContent: 'flex-end', marginLeft: '24px' }}>
+                <div style={{ position: 'relative' }}>
+                  <Search style={{ position: 'absolute', left: '12px', top: '10px', color: 'rgba(255,255,255,0.5)' }} size={16} />
+                  <input type="text" placeholder="Busca avançada: nome, clube, email, fone..." value={customerListSearch} onChange={(e) => setCustomerListSearch(e.target.value)} style={{ padding: '8px 16px 8px 36px', borderRadius: '24px', border: 'none', background: 'rgba(255,255,255,0.1)', color: 'white', width: '320px', fontSize: '14px', outline: 'none' }} />
+                </div>
                 <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                   Fechar
                 </button>
@@ -1444,7 +1449,18 @@ export const StringerDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.map((customer: any, index: number) => (
+                  {customers.filter((c: any) => {
+                    if (!customerListSearch.trim()) return true;
+                    const q = customerListSearch.toLowerCase();
+                    return (
+                       (c.name || '').toLowerCase().includes(q) ||
+                       (c.email || '').toLowerCase().includes(q) ||
+                       (c.phone || '').toLowerCase().includes(q) ||
+                       (c.landline || '').toLowerCase().includes(q) ||
+                       (c.originClub || '').toLowerCase().includes(q) ||
+                       (c.cpfCnpj || '').toLowerCase().includes(q)
+                    );
+                  }).map((customer: any, index: number) => (
                     <tr key={customer.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.stringingPoint || 'Não informado'}</td>
