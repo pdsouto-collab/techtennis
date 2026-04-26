@@ -1264,7 +1264,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Data de retirada</div>
-                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>Sábado 4 Abril 2026 - 12:30</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.pickupDate ? new Date(activeStringingJob.pickupDate).toLocaleString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'Não agendada'}</div>
                     </div>
                     <div style={{ background: 'rgba(155, 81, 224, 0.1)', border: '1px solid rgba(155, 81, 224, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#EBA6FF', marginBottom: '4px' }}>Tipo de Encordoamento</div>
@@ -1272,7 +1272,7 @@ export const StringerDashboard = () => {
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Mains</div>
-                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringMains || 'N/A'} @{activeStringingJob.tensionMain || activeStringingJob.tension}</div>
+                       <div style={{ fontSize: '16px', fontWeight: 600, color: 'white' }}>{activeStringingJob.stringMains || 'N/A'} @{activeStringingJob.tensionMain || activeStringingJob.tension} {activeStringingJob.tensionUnit || 'Lbs'}</div>
                     </div>
                     <div style={{ background: 'rgba(66, 152, 231, 0.1)', border: '1px solid rgba(66, 152, 231, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#4298E7', marginBottom: '4px' }}>Crosses</div>
@@ -1304,7 +1304,7 @@ export const StringerDashboard = () => {
                        </div>
                        <div>
                           <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Data do encordoamento</label>
-                          <input type="datetime-local" defaultValue="2026-04-04T16:14" style={inputStyle} />
+                          <input type="datetime-local" min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0,16)} defaultValue={activeStringingJob.createdAt ? new Date(activeStringingJob.createdAt).toISOString().slice(0,16) : ''} style={inputStyle} />
                        </div>
                     </div>
 
@@ -1338,23 +1338,27 @@ export const StringerDashboard = () => {
                              <div>Horas</div>
                           </div>
                           
-                          {[1, 2].map((i) => (
-                             <div key={i} style={{ minWidth: '800px', display: 'grid', gridTemplateColumns: '1.2fr 2fr 2fr 0.5fr 0.5fr 0.5fr 1fr 0.8fr 0.5fr', padding: '16px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
-                               <div>{i === 1 ? '04/04/2026 13:27' : '03/04/2026 19:37'}</div>
+                          {jobs.filter(j => j.racketId === activeStringingJob.racketId && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).length === 0 ? (
+                            <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>Nenhum encordoamento finalizado encontrado.</div>
+                          ) : (
+                            jobs.filter(j => j.racketId === activeStringingJob.racketId && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).map(pJob => (
+                             <div key={pJob.id} style={{ minWidth: '800px', display: 'grid', gridTemplateColumns: '1.2fr 2fr 2fr 0.5fr 0.5fr 0.5fr 1fr 0.8fr 0.5fr', padding: '16px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
+                               <div>{new Date(pJob.updatedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                                <div>
-                                 <div style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</div>
-                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@52lbs</div>
+                                 <div style={{ fontWeight: 600 }}>{pJob.stringMains || 'N/A'}</div>
+                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionMain || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>
-                                 <div style={{ fontWeight: 600 }}>Solinco Hyper-G Green 115</div>
-                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@52lbs</div>
+                                 <div style={{ fontWeight: 600 }}>{pJob.stringCross || pJob.stringMains || 'N/A'}</div>
+                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionCross || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>-</div><div>-</div><div>-</div>
-                               <div>Tester Ernesto</div>
-                               <div style={{ fontWeight: 600 }}>BRL 120.00</div>
-                               <div>0</div>
+                               <div>{pJob.commissionedProfessorId ? professors.find(p => p.id === pJob.commissionedProfessorId)?.name || 'Prof' : '-'}</div>
+                               <div style={{ fontWeight: 600 }}>BRL {pJob.price ? pJob.price.toFixed(2) : '-'}</div>
+                               <div>-</div>
                              </div>
-                          ))}
+                            ))
+                          )}
                        </div>
                     </div>
                  </div>
@@ -1982,36 +1986,51 @@ export const StringerDashboard = () => {
                     <div></div>
                   </div>
                   
-                  {rackets.filter(r => r.customerId === selectedCustomer?.id).length === 0 ? (
-                    <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-                      Nenhuma raquete cadastrada na base para este cliente.
-                    </div>
-                  ) : (
-                    rackets.filter(r => r.customerId === selectedCustomer?.id).map(racket => (
-                      <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-                        <div>
-                          <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}{racket.identifier ? ` [${racket.identifier}]` : ''}</div>
+                  {(() => {
+                    const custRackets = rackets.filter(r => r.customerId === selectedCustomer?.id);
+                    custRackets.sort((a,b) => {
+                       const nameA = a.identifier ? `${a.name.trim()} [${a.identifier}]` : a.name.trim();
+                       const nameB = b.identifier ? `${b.name.trim()} [${b.identifier}]` : b.name.trim();
+                       return nameA.localeCompare(nameB, undefined, { numeric: true, sensitivity: 'base' });
+                    });
+                    
+                    if (custRackets.length === 0) {
+                      return (
+                        <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>
+                          Nenhuma raquete cadastrada na base para este cliente.
                         </div>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{new Date().toLocaleDateString('pt-BR')} 16:30</div>
-                        <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
-                        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
-                          <button onClick={() => {
-                            setRacketFormDefault({ ...racket, name: racket.name, identifier: '', isClone: true });
-                            setIsCloneRacketModalOpen(false);
-                            setIsRacketModalOpen(true);
-                          }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
-                            <Copy size={18} />
-                          </button>
-                          <button onClick={() => {
-                            setSelectedJobRacket(racket.id);
-                            setIsCloneRacketModalOpen(false);
-                          }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Selecionar raquete">
-                            <ArrowRightCircle size={18} />
-                          </button>
+                      );
+                    }
+
+                    return custRackets.map(racket => {
+                      const racketJobs = jobs.filter(j => j.racketId === racket.id && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+                      const lastJob = racketJobs[0];
+                      return (
+                        <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                          <div>
+                            <div style={{ fontWeight: 600, color: 'white' }}>{racket.name}{racket.identifier ? ` [${racket.identifier}]` : ''}</div>
+                          </div>
+                          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>{lastJob ? new Date(lastJob.updatedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }) : '-'}</div>
+                          <div style={{ color: 'var(--text-secondary)', fontSize: '14px' }}>-</div>
+                          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px' }}>
+                            <button onClick={() => {
+                              setRacketFormDefault({ ...racket, name: racket.name, identifier: '', isClone: true });
+                              setIsCloneRacketModalOpen(false);
+                              setIsRacketModalOpen(true);
+                            }} style={{ background: 'rgba(255,255,255,0.1)', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Clonar raquete">
+                              <Copy size={18} />
+                            </button>
+                            <button onClick={() => {
+                              setSelectedJobRacket(racket.id);
+                              setIsCloneRacketModalOpen(false);
+                            }} style={{ background: '#4298E7', border: 'none', padding: '8px', borderRadius: '8px', color: 'white', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }} title="Selecionar raquete">
+                              <ArrowRightCircle size={18} />
+                            </button>
+                          </div>
                         </div>
-                      </div>
-                    ))
-                  )}
+                      );
+                    });
+                  })()}
                 </div>
                 
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '32px' }}>
