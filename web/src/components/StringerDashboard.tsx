@@ -1466,7 +1466,6 @@ export const StringerDashboard = () => {
                     });
                     const totalItems = filtered.length;
                     const itemsPerPage = customerItemsPerPage === 'all' ? totalItems : customerItemsPerPage;
-                    const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
                     const startIndex = (customerCurrentPage - 1) * itemsPerPage;
                     const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
                     const paginated = itemsPerPage === totalItems ? filtered : filtered.slice(startIndex, endIndex);
