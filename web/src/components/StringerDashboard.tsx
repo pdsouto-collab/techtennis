@@ -62,9 +62,20 @@ export const StringerDashboard = () => {
     return { 'Authorization': `Bearer ${token}` };
   };
 
+  const handleAuthError = (res: Response) => {
+    if (res.status === 401 || res.status === 403) {
+      alert('Sua sessão expirou por tempo inativo. Faça login novamente.');
+      localStorage.removeItem('tt_auth_token');
+      window.location.href = '/';
+      return true;
+    }
+    return false;
+  };
+
   const fetchJobs = async () => {
     try {
       const res = await fetch(`${API_URL}/api/jobs`, { headers: getAuthHeader() });
+      if (handleAuthError(res)) return;
       if (res.ok) {
         const data = await res.json();
         setJobs(data);
@@ -77,6 +88,7 @@ export const StringerDashboard = () => {
   const fetchRackets = async () => {
     try {
       const res = await fetch(`${API_URL}/api/rackets`, { headers: getAuthHeader() });
+      if (handleAuthError(res)) return;
       if (res.ok) setRackets(await res.json());
     } catch (e) {
       console.error(e);
@@ -86,6 +98,7 @@ export const StringerDashboard = () => {
   const fetchCustomers = async () => {
     try {
       const res = await fetch(`${API_URL}/api/customers`, { headers: getAuthHeader() });
+      if (handleAuthError(res)) return;
       if (res.ok) setCustomers(await res.json());
     } catch (e) {
       console.error(e);
@@ -95,13 +108,17 @@ export const StringerDashboard = () => {
   const fetchProfessors = async () => {
     try {
       const res = await fetch(`${API_URL}/api/professors`, { headers: getAuthHeader() });
+      if (handleAuthError(res)) return;
       if (res.ok) setProfessors(await res.json());
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   const fetchSettings = async () => {
     try {
       const res = await fetch(`${API_URL}/api/settings`, { headers: getAuthHeader() });
+      if (handleAuthError(res)) return;
       if (res.ok) {
          const data = await res.json();
          if (Object.keys(data).length > 0) setAppSettings(data);

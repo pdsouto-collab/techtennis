@@ -8,6 +8,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Evitar cache no navegador para rotas da API
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+});
+
 const JWT_SECRET = process.env.JWT_SECRET || 'fallback_secret';
 
 // Cria o driver PG para contornar limitacoes do Prisma binario no Vercel Node
