@@ -1387,7 +1387,7 @@ export const StringerDashboard = () => {
                                  <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionCross || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>-</div><div>-</div><div>-</div>
-                               <div>{pJob.stringerName ? pJob.stringerName : pJob.commissionedProfessorId ? professors.find(p => p.id === pJob.commissionedProfessorId)?.name || 'Prof' : '-'}</div>
+                               <div>{pJob.stringerName ? pJob.stringerName : '-'}</div>
                                <div style={{ fontWeight: 600 }}>BRL {pJob.price ? pJob.price.toFixed(2) : '-'}</div>
                                <div>-</div>
                              </div>
