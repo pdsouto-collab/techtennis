@@ -53,6 +53,8 @@ export const StringerDashboard = () => {
   // Persistent States
   const [customers, setCustomers] = useState<any[]>([]);
   const [customerListSearch, setCustomerListSearch] = useState('');
+  const [customerItemsPerPage, setCustomerItemsPerPage] = useState<number | 'all'>(10);
+  const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
 
   const [professors, setProfessors] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
@@ -1449,18 +1451,27 @@ export const StringerDashboard = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {customers.filter((c: any) => {
-                    if (!customerListSearch.trim()) return true;
-                    const q = customerListSearch.toLowerCase();
-                    return (
-                       (c.name || '').toLowerCase().includes(q) ||
-                       (c.email || '').toLowerCase().includes(q) ||
-                       (c.phone || '').toLowerCase().includes(q) ||
-                       (c.landline || '').toLowerCase().includes(q) ||
-                       (c.originClub || '').toLowerCase().includes(q) ||
-                       (c.cpfCnpj || '').toLowerCase().includes(q)
-                    );
-                  }).map((customer: any, index: number) => (
+                  {(() => {
+                    const filtered = customers.filter((c: any) => {
+                      if (!customerListSearch.trim()) return true;
+                      const q = customerListSearch.toLowerCase();
+                      return (
+                         (c.name || '').toLowerCase().includes(q) ||
+                         (c.email || '').toLowerCase().includes(q) ||
+                         (c.phone || '').toLowerCase().includes(q) ||
+                         (c.landline || '').toLowerCase().includes(q) ||
+                         (c.originClub || '').toLowerCase().includes(q) ||
+                         (c.cpfCnpj || '').toLowerCase().includes(q)
+                      );
+                    });
+                    const totalItems = filtered.length;
+                    const itemsPerPage = customerItemsPerPage === 'all' ? totalItems : customerItemsPerPage;
+                    const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+                    const startIndex = (customerCurrentPage - 1) * itemsPerPage;
+                    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+                    const paginated = itemsPerPage === totalItems ? filtered : filtered.slice(startIndex, endIndex);
+
+                    return paginated.map((customer: any, index: number) => (
                     <tr key={customer.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.stringingPoint || 'Não informado'}</td>
@@ -1483,26 +1494,46 @@ export const StringerDashboard = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
+                  ));
+                  })()}
                 </tbody>
               </table>
               
               {/* Pagination footer */}
-              <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '13px', background: 'white' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span>Show</span>
-                  <select style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
-                    <option>10</option>
-                  </select>
-                  <span>entries</span>
-                  <span style={{ marginLeft: '16px' }}>Showing 1 to {customers.length} of {customers.length} entries</span>
-                </div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                  <button style={{ border: 'none', background: 'none', color: '#9CA3AF', cursor: 'not-allowed', fontWeight: 600 }}>Previous</button>
-                  <button style={{ border: 'none', background: '#4298E7', color: 'white', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>1</button>
-                  <button style={{ border: 'none', background: 'none', color: '#9CA3AF', cursor: 'not-allowed', fontWeight: 600 }}>Next</button>
-                </div>
-              </div>
+              {(() => {
+                 const filtered = customers.filter((c: any) => {
+                    if (!customerListSearch.trim()) return true;
+                    const q = customerListSearch.toLowerCase();
+                    return (c.name || '').toLowerCase().includes(q) || (c.email || '').toLowerCase().includes(q) || (c.phone || '').toLowerCase().includes(q) || (c.landline || '').toLowerCase().includes(q) || (c.originClub || '').toLowerCase().includes(q) || (c.cpfCnpj || '').toLowerCase().includes(q);
+                 });
+                 const totalItems = filtered.length;
+                 const itemsPerPage = customerItemsPerPage === 'all' ? totalItems : customerItemsPerPage;
+                 const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+                 const startIndex = totalItems === 0 ? 0 : (customerCurrentPage - 1) * itemsPerPage + 1;
+                 const endIndex = Math.min((customerCurrentPage - 1) * itemsPerPage + itemsPerPage, totalItems);
+                 return (
+                  <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '13px', background: 'white' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>Show</span>
+                      <select value={customerItemsPerPage} onChange={(e) => { setCustomerItemsPerPage(e.target.value === 'all' ? 'all' : parseInt(e.target.value)); setCustomerCurrentPage(1); }} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={30}>30</option>
+                        <option value={40}>40</option>
+                        <option value={50}>50</option>
+                        <option value="all">Todas</option>
+                      </select>
+                      <span>entries</span>
+                      <span style={{ marginLeft: '16px' }}>Showing {startIndex} to {endIndex} of {totalItems} entries</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <button onClick={() => setCustomerCurrentPage(Math.max(1, customerCurrentPage - 1))} disabled={customerCurrentPage === 1} style={{ border: 'none', background: 'none', color: customerCurrentPage === 1 ? '#9CA3AF' : '#4298E7', cursor: customerCurrentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Previous</button>
+                      <button style={{ border: 'none', background: '#4298E7', color: 'white', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>{customerCurrentPage}</button>
+                      <button onClick={() => setCustomerCurrentPage(Math.min(totalPages, customerCurrentPage + 1))} disabled={customerCurrentPage === totalPages} style={{ border: 'none', background: 'none', color: customerCurrentPage === totalPages ? '#9CA3AF' : '#4298E7', cursor: customerCurrentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Next</button>
+                    </div>
+                  </div>
+                 );
+              })()}
             </div>
           </motion.div>
         )}
