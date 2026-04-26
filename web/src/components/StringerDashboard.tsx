@@ -1247,10 +1247,23 @@ export const StringerDashboard = () => {
                       const cust = customers.find((c: any) => c.name === activeStringingJob.customerName);
                       startEditingJob(activeStringingJob, cust); 
                     }} style={{ padding: '8px 16px', background: '#4298E7', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Editar Encordoamento</button>
-                    <button onClick={() => {
+                    <button onClick={async () => {
+                        const previousJobs = [...jobs];
                         setJobs(jobs.map(j => j.id === activeStringingJob.id ? { ...j, type: 'picking_up', status: 'pronta' } : j));
                         setView('dashboard');
                         setActiveFilter('picking_up');
+                        try {
+                           const res = await fetch(`${API_URL}/api/jobs/${activeStringingJob.id}/status`, {
+                             method: 'PUT',
+                             headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                             body: JSON.stringify({ type: 'picking_up', status: 'pronta' })
+                           });
+                           if (!res.ok) throw new Error('Falha ao atualizar');
+                        } catch (err) {
+                           console.error(err);
+                           alert('Erro ao atualizar o status no servidor.');
+                           setJobs(previousJobs);
+                        }
                     }} style={{ padding: '8px 16px', background: '#6FCF97', border: 'none', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 600, cursor: 'pointer' }}>Finalizar Encordoamento</button>
                  </div>
               </div>
