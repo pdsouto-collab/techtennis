@@ -47,6 +47,10 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent) || 0, value: Number(newDiscountValue) || 0, startDate: newStartDate, endDate: newEndDate };
     } else {
       if (!newItemText.trim()) return;
+      if (currentList.some((item: any) => typeof item === 'string' && item.toLowerCase() === value.toLowerCase())) {
+        alert('Atenção: Este item já existe na lista!');
+        return;
+      }
     }
 
     setSettings((prev: any) => ({
@@ -117,6 +121,10 @@ export const SettingsView = ({ settings, setSettings }: any) => {
          newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent) || 0, value: Number(editDiscountValue) || 0, startDate: editStartDate, endDate: editEndDate };
       } else {
          if (!editItemText.trim()) return prev;
+         if (newList.some((item: any, i: number) => i !== index && typeof item === 'string' && item.toLowerCase() === editItemText.trim().toLowerCase())) {
+           alert('Atenção: Este item já existe na lista!');
+           return prev;
+         }
          newList[index] = editItemText.trim();
       }
       return { ...prev, [activeTab]: newList };
