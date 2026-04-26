@@ -1647,6 +1647,11 @@ export const StringerDashboard = () => {
                   }
                 }}>
                   
+                  <div style={{ marginBottom: '24px' }}>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>ID do Cliente</label>
+                    <input type="text" disabled style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: 600 }} value={selectedCustomer?.numericId ? String(selectedCustomer.numericId).padStart(6, '0') : 'Gerado automaticamente ao salvar'} />
+                  </div>
+
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Sobrenome</label>
