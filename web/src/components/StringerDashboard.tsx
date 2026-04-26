@@ -168,7 +168,6 @@ export const StringerDashboard = () => {
   const [isStringing, setIsStringing] = useState(true);
   const [preStretchMain, setPreStretchMain] = useState('');
   const [preStretchCross, setPreStretchCross] = useState('');
-  const [preStretchCross, setPreStretchCross] = useState('');
   const [stringingType, setStringingType] = useState('Não definido');
   const [tensionUnit, setTensionUnit] = useState('Lbs');
   const [dashboardStringer, setDashboardStringer] = useState('');
