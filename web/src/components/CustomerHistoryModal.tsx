@@ -105,35 +105,34 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
               <tbody>
                 {displayedJobs.map((job: any, index: number) => (
                   <tr key={job.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
-                    <td style={{ padding: '16px 8px', fontSize: '14px', color: '#374151' }}>{activeTab === 'all' && job.date ? `${job.date.split('-').reverse().join('/')} 18:00` : '04/04/2026 14:15'}</td>
+                    <td style={{ padding: '16px 8px', fontSize: '14px', color: '#374151' }}>{job.date ? `${job.date}` : new Date(job.createdAt).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'})}</td>
                     {activeTab === 'all' && (
                       <td style={{ padding: '16px 8px', fontSize: '13px', fontWeight: 700 }}>
-                        {job.racketModel} <span style={{color: '#9CA3AF'}}>[1]</span><br/>
-                        <span style={{color: '#6B7280', fontWeight: 500}}>18x20 L3</span>
+                        {job.racketModel}
                       </td>
                     )}
                     <td style={{ padding: '16px 8px', fontSize: '14px' }}>
-                       <div style={{fontWeight: 700}}>Solinco Hyper-G Green 115 <span style={{color: '#4B5563'}}>@{job.tension?.split('/')[0] || '55'}lbs</span></div>
+                       <div style={{fontWeight: 700}}>{job.stringMains || '-'} <span style={{color: '#4B5563'}}>@{job.tensionMain || job.tension?.split('/')[0] || '-'} {job.tensionUnit || 'Lbs'}</span></div>
                     </td>
                     <td style={{ padding: '16px 8px', fontSize: '14px' }}>
-                       <div style={{fontWeight: 700}}>Solinco Hyper-G Green 115 <span style={{color: '#4B5563'}}>@{job.tension?.split('/')[1] || '55'}lbs</span></div>
+                       <div style={{fontWeight: 700}}>{job.stringCross || job.stringMains || '-'} <span style={{color: '#4B5563'}}>@{job.tensionCross || job.tension?.split('/')[1] || job.tension?.split('/')[0] || '-'} {job.tensionUnit || 'Lbs'}</span></div>
                     </td>
-                    <td style={{ padding: '16px 8px', fontSize: '14px' }}></td>
-                    <td style={{ padding: '16px 8px', fontSize: '14px' }}></td>
-                    <td style={{ padding: '16px 8px', fontSize: '14px' }}></td>
-                    <td style={{ padding: '16px 8px', fontSize: '13px', color: '#6B7280' }}>{job.stringer || 'Tester Ernesto'}</td>
+                    <td style={{ padding: '16px 8px', fontSize: '14px' }}>-</td>
+                    <td style={{ padding: '16px 8px', fontSize: '14px' }}>-</td>
+                    <td style={{ padding: '16px 8px', fontSize: '14px' }}>-</td>
+                    <td style={{ padding: '16px 8px', fontSize: '13px', color: '#6B7280' }}>{job.stringerName ? job.stringerName : job.commissionedProfessorId ? 'Prof. Comissionado' : '-'}</td>
                     {activeTab === 'all' && (
                       <td style={{ padding: '16px 8px', fontSize: '13px', color: '#6B7280' }}>
-                        {job.date ? job.date.split('-').reverse().join('/') : '---'}
+                        {job.updatedAt ? new Date(job.updatedAt).toLocaleString('pt-BR', {day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit'}) : '---'}
                       </td>
                     )}
                     <td style={{ padding: '16px 8px', fontSize: '14px', fontWeight: 800 }}>
                       <span style={{color: '#6B7280', fontSize: '12px', fontWeight: 600}}>BRL</span> {job.price ? job.price.toFixed(2) : '120.00'}
                     </td>
-                    <td style={{ padding: '16px 8px', fontSize: '14px' }}>0</td>
+                    <td style={{ padding: '16px 8px', fontSize: '14px' }}>-</td>
                     <td style={{ padding: '16px 8px' }}>
                       <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                        <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: job.feedback?.comments || job.feedback?.power ? '#1a1a2e' : '#10B981', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title={job.feedback?.comments || job.feedback?.power ? "Ver Feedback" : "Sem Feedback"}><Smile size={14} /></button>
+                        <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: '#10B981', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><Smile size={14} /></button>
                         <button onClick={() => onEdit(job)} style={{ background: '#4298E7', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><Edit size={14} /></button>
                         <button onClick={() => { if(window.confirm('Tem certeza que deseja excluir?')) setJobs(jobs.filter((j: any) => j.id !== job.id)); }} style={{ background: '#D93B65', border: 'none', width: '28px', height: '28px', borderRadius: '4px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}><Trash2 size={14} /></button>
                       </div>
