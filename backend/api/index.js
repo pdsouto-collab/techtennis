@@ -537,7 +537,7 @@ app.get('/api/professors', authenticateToken, async (req, res) => {
   const db = getDB();
   try {
     await db.connect();
-    const result = await db.query('SELECT * FROM "ProfessorProfile" ORDER BY "createdAt" DESC');
+    const result = await db.query('SELECT * FROM "ProfessorProfile" ORDER BY "name" ASC');
     res.json(result.rows);
   } catch (err) {
     console.error(err);

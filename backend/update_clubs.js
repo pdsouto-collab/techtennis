@@ -49,25 +49,21 @@ const clubsList = [
 "Wave"
 ];
 
-// Deduplicate
 const uniqueClubs = [...new Set(clubsList)].sort((a,b) => a.localeCompare(b));
 
 db.connect()
-  .then(() => db.query('SELECT value FROM "Setting" WHERE key = \'appSettings\' LIMIT 1'))
+  .then(() => db.query('SELECT value FROM "SystemSetting" WHERE key = \'appSettings\' LIMIT 1'))
   .then(res => {
-    let settings = {};
-    if (res.rows.length > 0) {
-      settings = JSON.parse(res.rows[0].value);
-    }
+    let val = res.rows[0].value;
+    if (typeof val === 'string') val = JSON.parse(val);
+    let settings = val || {};
     let existing = settings.clubs || [];
     let combined = [...new Set([...existing, ...uniqueClubs])].sort((a,b) => a.localeCompare(b));
     settings.clubs = combined;
     if (res.rows.length > 0) {
-      return db.query('UPDATE "Setting" SET value = $1 WHERE key = \'appSettings\'', [JSON.stringify(settings)]);
-    } else {
-      return db.query('INSERT INTO "Setting" (id, key, value, "createdAt", "updatedAt") VALUES (gen_random_uuid(), \'appSettings\', $1, NOW(), NOW())', [JSON.stringify(settings)]);
+      return db.query('UPDATE "SystemSetting" SET value = $1 WHERE key = \'appSettings\'', [JSON.stringify(settings)]);
     }
   })
-  .then(() => console.log('Clubs updated successfully'))
+  .then(() => console.log('Clubs updated successfully in SystemSetting'))
   .catch(console.error)
   .finally(() => db.end());
