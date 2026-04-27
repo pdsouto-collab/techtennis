@@ -2167,6 +2167,12 @@ export const StringerDashboard = () => {
                     <button type="button" onClick={() => setIsProfessorModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X /></button>
                   </div>
                   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    {selectedProfessor?.id && (
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px' }}>ID TechTennis</label>
+                        <input readOnly value={selectedProfessor?.numericId || 'Gerado internamente'} style={{ ...inputStyle, opacity: 0.7, cursor: 'not-allowed' }} />
+                      </div>
+                    )}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
