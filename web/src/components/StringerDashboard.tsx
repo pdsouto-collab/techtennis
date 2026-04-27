@@ -2167,10 +2167,72 @@ export const StringerDashboard = () => {
                     <button type="button" onClick={() => setIsProfessorModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X /></button>
                   </div>
                   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                    <div>
-    <label style={{ display: 'block', marginBottom: '8px', color: '#10B981', fontWeight: 600 }}>[ESTÁ AQUI!] ID TechTennis</label>
-    <input readOnly value={selectedProfessor?.numericId || 'Será gerado após salvar'} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.1)', color: '#9CA3AF', marginBottom: '16px' }} />
-</div>
+                    {selectedProfessor?.id && (
+                      <div>
+                        <label style={{ display: 'block', marginBottom: '8px' }}>ID TechTennis</label>
+                        <input readOnly value={selectedProfessor?.numericId || 'Gerado internamente'} style={{ ...inputStyle, opacity: 0.7, cursor: 'not-allowed' }} />
+                      </div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Telefone</label><input name="phone" onChange={(e) => e.target.value = applyPhoneMask(e.target.value)} defaultValue={selectedProfessor?.phone ? applyPhoneMask(selectedProfessor.phone) : ''} style={inputStyle} /></div>
+                      <div><label style={{ display: 'block', marginBottom: '8px' }}>Anos de Experiência</label><input type="number" name="yearsOfExperience" defaultValue={selectedProfessor?.yearsOfExperience || ''} style={inputStyle} /></div>
+                    </div>
+                    <div><label style={{ display: 'block', marginBottom: '8px' }}>Tipos de Treino (ex: Competitivo, Rebatedor)</label><input type="text" name="trainingTypes" defaultValue={selectedProfessor?.trainingTypes || ''} style={inputStyle} /></div>
+                  </div>
+                  <div style={{ padding: '24px', display: 'flex', justifyContent: 'flex-end', gap: '16px' }}>
+                    <button type="submit" className="button-primary" style={{ padding: '12px 32px' }}>{selectedProfessor ? 'Salvar Professor' : 'Criar Professor'}</button>
+                  </div>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+
+          {isPaymentModalOpen && activePaymentJob && (
+            <div style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0, background: 'rgba(0,0,0,0.8)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1000 }}>
+              <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} className="glass-panel" style={{ width: '90%', maxWidth: '800px', background: 'var(--bg-card)', borderRadius: '16px', overflow: 'hidden' }}>
+                <div style={{ padding: '24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.1)', background: 'var(--bg-panel)' }}>
+                  <h2 style={{ margin: 0, fontSize: '20px' }}>Preços</h2>
+                  <button onClick={() => setIsPaymentModalOpen(false)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer' }}><X size={24} /></button>
+                </div>
+                <div style={{ padding: '32px' }}>
+                  <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr', padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)', fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      <div>Item</div>
+                      <div>Preço</div>
+                      <div>Notas</div>
+                    </div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 2fr', padding: '16px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
+                      <div>Encordoamento</div>
+                      <div>{activePaymentJob.price ? activePaymentJob.price.toFixed(2) : '120.00'} BRL</div>
+                      <div>-</div>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', padding: '16px', fontWeight: 600 }}>
+                      <span style={{ marginRight: '16px', color: 'var(--text-secondary)' }}>Total</span>
+                      <span>{activePaymentJob.price ? activePaymentJob.price.toFixed(2) : '120.00'} BRL</span>
+                    </div>
+                  </div>
+
+                  <div style={{ marginTop: '24px', fontSize: '14px', fontWeight: 600, minHeight: '24px' }}>
+                    {activePaymentJob.paid && (
+                      <span>Pagamento recebido em: {new Date().toLocaleDateString('pt-BR')} 19:34</span>
+                    )}
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '32px', paddingTop: '24px', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
+                    {activePaymentJob.paid ? (
+                      <button onClick={async () => {
+                        const previousJobs = [...jobs];
+                        setJobs(jobs.map(j => j.id === activePaymentJob.id ? { ...j, paid: false } : j));
+                        setIsPaymentModalOpen(false);
+                        try {
+                          await fetch(`${API_URL}/api/jobs/${activePaymentJob.id}/status`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json', ...getAuthHeader() },
+                            body: JSON.stringify({ paid: false })
                           });
                         } catch (err) {
                           console.error(err);
