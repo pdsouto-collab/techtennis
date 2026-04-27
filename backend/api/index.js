@@ -570,10 +570,7 @@ app.post('/api/professors', authenticateToken, async (req, res) => {
     await db.end();
   }
 });
-  } finally {
-    await db.end();
-  }
-});
+
 
 app.put('/api/professors/:id', authenticateToken, async (req, res) => {
   const { name, email, phone, yearsOfExperience, trainingTypes, numericId } = req.body;
@@ -594,10 +591,7 @@ app.put('/api/professors/:id', authenticateToken, async (req, res) => {
     await db.end();
   }
 });
-  } finally {
-    await db.end();
-  }
-});
+
 
 app.delete('/api/professors/:id', authenticateToken, async (req, res) => {
   const db = getDB();
