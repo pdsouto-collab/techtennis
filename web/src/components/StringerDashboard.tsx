@@ -1473,12 +1473,12 @@ export const StringerDashboard = () => {
 
                     return paginated.map((customer: any, index: number) => (
                     <tr key={customer.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
-                      <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.stringingPoint || 'Não informado'}</td>
-                        <td style={{ padding: '16px', fontSize: '14px' }}>{professors.find((p: any) => p.id === customer.professorId)?.name || 'Nenhum'}</td>
+                                            <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{customer.name}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.numericId || 'Não informado'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{customer.stringingPoint || 'Nenhum'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{professors.find((p: any) => p.id === customer.professorId)?.name || 'Não informado'}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.originClub || 'Não informado'}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.email || 'Não informado'}</td>
-                        <td style={{ padding: '16px', fontSize: '14px' }}>{customer.landline ? applyPhoneMask(customer.landline) : ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{customer.phone ? applyPhoneMask(customer.phone) : ''}</td>
                       <td style={{ padding: '16px' }}>
                         <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
@@ -1739,10 +1739,10 @@ export const StringerDashboard = () => {
                     </div>
                     <div>
                       <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Professor / Treinador</label>
-                      <select name="professor" defaultValue={selectedCustomer?.professor || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
+                      <select name="professorId" defaultValue={selectedCustomer?.professorId || ''} style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }}>
                         <option value="">Selecione um professor...</option>
                         {professors.map(p => (
-                          <option key={p.id} value={p.name}>{p.name}</option>
+                          <option key={p.id} value={p.id}>{p.name}</option>
                         ))}
                       </select>
                     </div>
