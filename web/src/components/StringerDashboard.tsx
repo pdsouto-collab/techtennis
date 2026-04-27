@@ -1441,6 +1441,7 @@ export const StringerDashboard = () => {
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+<th style={{ padding: '16px', fontWeight: 600 }}>ID TechTennis</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Ponto de Encordoamento</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Professor</th>
                     <th style={{ padding: '16px', fontWeight: 600 }}>Clube</th>
