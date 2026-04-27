@@ -366,7 +366,7 @@ app.get('/api/customers', authenticateToken, async (req, res) => {
 
 
 app.post('/api/customers', authenticateToken, async (req, res) => {
-  const { name, email, phone, originClub, professorId, birthDate, cpfCnpj, landline, address, cep, city, country, stringingPoint, racketpediaCode, customerType, notes, numericId } = req.body;
+  const { name, email, phone, originClub, professorId, birthDate, cpfCnpj, landline, address, cep, city, country, stringingPoint, racketpediaCode, customerType, notes, numericId, gender } = req.body;
   const db = getDB();
   try {
     await db.connect();
