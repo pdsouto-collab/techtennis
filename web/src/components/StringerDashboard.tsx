@@ -2133,16 +2133,17 @@ export const StringerDashboard = () => {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               style={{ position: 'fixed', inset: 0, background: 'rgba(0,12,60,0.8)', backdropFilter: 'blur(10px)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px' }}>
               <motion.div initial={{ scale: 0.95 }} animate={{ scale: 1 }} style={{ background: 'var(--bg-panel-solid)', width: '100%', maxWidth: '500px', borderRadius: '24px', overflow: 'hidden', border: '1px solid var(--border-light)' }}>
-                <form onSubmit={async (e) => {
-                  e.preventDefault();
-                  const fd = new FormData(e.currentTarget);
+                                  <form key={selectedProfessor?.id || 'new'} onSubmit={async (e) => {
+                    e.preventDefault();
+                    const fd = new FormData(e.currentTarget);
                     const newProf = {
-                      name: fd.get('name') as string,
-                      email: fd.get('email') as string,
-                      phone: fd.get('phone') as string,
-                      yearsOfExperience: fd.get('yearsOfExperience') as string,
-                      trainingTypes: fd.get('trainingTypes') as string
-                    };
+                        name: fd.get('name') as string,
+                        email: fd.get('email') as string,
+                        phone: fd.get('phone') as string,
+                        yearsOfExperience: fd.get('yearsOfExperience') as string,
+                        trainingTypes: fd.get('trainingTypes') as string,
+                        numericId: fd.get('numericId') ? parseInt(fd.get('numericId') as string, 10) : undefined
+                      };
                                     try {
                     let res;
                     if (selectedProfessor && selectedProfessor.id) {
