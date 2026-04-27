@@ -548,15 +548,20 @@ app.get('/api/professors', authenticateToken, async (req, res) => {
 });
 
 app.post('/api/professors', authenticateToken, async (req, res) => {
-  const { name, email, phone, yearsOfExperience, trainingTypes } = req.body;
+  const { name, email, phone, yearsOfExperience, trainingTypes, numericId } = req.body;
   const db = getDB();
   try {
     await db.connect();
+    let numId = numericId;
+    if (!numId) {
+      const seqRes = await db.query("SELECT nextval('client_numeric_id_seq') AS id");
+      numId = seqRes.rows[0].id;
+    }
     const insertQ = `
-      INSERT INTO "ProfessorProfile" ("name", "email", "phone", "yearsOfExperience", "trainingTypes")
-      VALUES ($1, $2, $3, $4, $5) RETURNING *
+      INSERT INTO "ProfessorProfile" ("name", "email", "phone", "yearsOfExperience", "trainingTypes", "numericId")
+      VALUES ($1, $2, $3, $4, $5, $6) RETURNING *
     `;
-    const result = await db.query(insertQ, [name, email, phone, yearsOfExperience, trainingTypes]);
+    const result = await db.query(insertQ, [name, email, phone, yearsOfExperience, trainingTypes, numId]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     console.error(err);
@@ -565,21 +570,30 @@ app.post('/api/professors', authenticateToken, async (req, res) => {
     await db.end();
   }
 });
+  } finally {
+    await db.end();
+  }
+});
 
 app.put('/api/professors/:id', authenticateToken, async (req, res) => {
-  const { name, email, phone, yearsOfExperience, trainingTypes } = req.body;
+  const { name, email, phone, yearsOfExperience, trainingTypes, numericId } = req.body;
   const db = getDB();
   try {
     await db.connect();
     const updateQ = `
-      UPDATE "ProfessorProfile" SET "name"=$1, "email"=$2, "phone"=$3, "yearsOfExperience"=$4, "trainingTypes"=$5
-      WHERE "id"=$6 RETURNING *
+      UPDATE "ProfessorProfile" SET "name"=$1, "email"=$2, "phone"=$3, "yearsOfExperience"=$4, "trainingTypes"=$5, "numericId"=$6
+      WHERE "id"=$7 RETURNING *
     `;
-    const result = await db.query(updateQ, [name, email, phone, yearsOfExperience, trainingTypes, req.params.id]);
+    const numId = numericId ? parseInt(numericId, 10) : null;
+    const result = await db.query(updateQ, [name, email, phone, yearsOfExperience, trainingTypes, numId, req.params.id]);
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Erro ao atualizar professor.' });
+  } finally {
+    await db.end();
+  }
+});
   } finally {
     await db.end();
   }

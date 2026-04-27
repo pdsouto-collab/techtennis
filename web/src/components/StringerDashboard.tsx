@@ -2168,9 +2168,9 @@ export const StringerDashboard = () => {
                   </div>
                   <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div>
-                      <label style={{ display: 'block', marginBottom: '8px' }}>ID TechTennis (Automático)</label>
-                      <input readOnly value={selectedProfessor ? (selectedProfessor.numericId || 'Gerado internamente') : 'Será gerado após salvar'} style={{ ...inputStyle, opacity: 0.7, cursor: 'not-allowed' }} />
-                    </div>
+                        <label style={{ display: 'block', marginBottom: '8px' }}>ID TechTennis (Automático)</label>
+                        <input name="numericId" type="number" defaultValue={selectedProfessor?.numericId || ''} placeholder="Ex: 104151 (ou deixe em branco para gerar novo)" style={inputStyle} />
+                      </div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Nome Completo *</label><input required name="name" defaultValue={selectedProfessor?.name || ''} style={inputStyle} /></div>
                       <div><label style={{ display: 'block', marginBottom: '8px' }}>Email</label><input type="email" name="email" defaultValue={selectedProfessor?.email || ''} style={inputStyle} /></div>
