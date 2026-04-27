@@ -9,6 +9,7 @@ export interface User {
   password?: string;
   role: UserRole;
   status: 'active' | 'pending' | 'blocked';
+  numericId?: number;
   phone?: string;
   yearsOfExperience?: string;
   trainingTypes?: string;
@@ -22,7 +23,7 @@ interface AuthContextType {
   logout: () => void;
   registerClient: (name: string, email: string, pass: string, phone: string) => void;
   registerProfessor: (name: string, email: string, pass: string, phone: string, experience: string, training: string) => void;
-  updateUserStatus: (id: string, status: User['status'], role?: UserRole) => void;
+  updateUserStatus: (id: string, status: User['status'], role?: UserRole, numericId?: number) => void;
   deleteUser: (id: string) => void;
   adminCreateUser: (user: Partial<User>) => void;
   adminUpdateUser: (id: string, updates: Partial<User>) => void;
@@ -241,11 +242,11 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers(prev => [...prev, newUser]);
   };
 
-  const updateUserStatus = (id: string, status: User['status'], role?: UserRole) => {
+  const updateUserStatus = (id: string, status: User['status'], role?: UserRole, numericId?: number) => {
     setUsers(prev => {
       const updated = prev.map(u => {
         if (u.id === id) {
-          const mod = { ...u, status, ...(role ? { role } : {}) };
+          const mod = { ...u, status, ...(role ? { role } : {}), ...(numericId !== undefined ? { numericId } : {}) };
           if (status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
              setTimeout(() => syncToProfessors(mod), 100);
           }

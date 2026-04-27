@@ -135,7 +135,7 @@ export const UserManagement = () => {
                         phone: fd.get('phone') as string,
                         role: fd.get('role') as UserRole,
                         status: fd.get('status') as User['status'],
-                        numericId: fd.get('numericId') ? parseInt(fd.get('numericId') as string, 10) : null
+                        numericId: fd.get('numericId') ? parseInt(fd.get('numericId') as string, 10) : undefined
                     };
                     if (selectedUser) {
                         adminUpdateUser(selectedUser.id, userData);
