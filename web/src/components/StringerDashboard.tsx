@@ -1664,7 +1664,8 @@ export const StringerDashboard = () => {
                     stringingPoint: fd.get('stringingPoint') as string,
                     racketpediaCode: fd.get('racketpediaCode') as string,
                     customerType: fd.get('customerType') as string,
-                    notes: fd.get('notes') as string
+                    notes: fd.get('notes') as string,
+                    numericId: fd.get('numericId') ? parseInt(fd.get('numericId') as string, 10) : undefined
                   };
                   try {
                     if (selectedCustomer) {
@@ -1696,7 +1697,7 @@ export const StringerDashboard = () => {
                   
                   <div style={{ marginBottom: '24px' }}>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>ID TechTennis (Automático)</label>
-                    <input type="text" disabled style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.5)', fontSize: '15px', fontWeight: 600 }} value={selectedCustomer?.numericId ? String(selectedCustomer.numericId).padStart(6, '0') : 'Gerado automaticamente ao salvar'} />
+                    <input name="numericId" type="number" style={{ width: '100%', padding: '14px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white', fontSize: '15px' }} defaultValue={selectedCustomer?.numericId || ''} placeholder="Ex: 104151 (ou deixe em branco para gerar novo)" />
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '24px' }}>
