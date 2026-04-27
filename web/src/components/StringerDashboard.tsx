@@ -1440,16 +1440,15 @@ export const StringerDashboard = () => {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)', whiteSpace: 'nowrap' }}>
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
-<th style={{ padding: '16px', fontWeight: 600 }}>ID TechTennis</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Ponto de Encordoamento</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Professor</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Clube</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Telefone Fixo</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Celular</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}></th>
-                  </tr>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>ID TechTennis</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Ponto de Encordoamento</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Professor</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Clube</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Celular</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}></th>
+                    </tr>
                 </thead>
                 <tbody>
                   {(() => {
@@ -1560,11 +1559,11 @@ export const StringerDashboard = () => {
               <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', color: 'var(--text-dark)' }}>
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}>Telefone Fixo</th>
-                    <th style={{ padding: '16px', fontWeight: 600 }}></th>
-                  </tr>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>Celular</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}></th>
+                    </tr>
                 </thead>
                 <tbody>
                   {professors.map((prof: any, index: number) => (
@@ -1653,7 +1652,7 @@ export const StringerDashboard = () => {
                     email: fd.get('email') as string,
                     originClub: fd.get('originClub') as string,
                     gender: fd.get('gender') as string,
-                    professor: fd.get('professor') as string,
+                                          professorId: fd.get('professorId') as string,
                     birthDate: fd.get('birthDate') as string,
                     cpfCnpj: fd.get('cpfCnpj') as string,
                     landline: fd.get('landline') as string,
