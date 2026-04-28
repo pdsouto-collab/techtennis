@@ -475,19 +475,19 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          data.sort((a,b) => b.col2 - a.col2);
      } else if (type === 'professors') {
          title = "Encordoamentos por professor";
-         headers = ["Professor indicado", "Encordoamentos", "Ganhos"];
-         const stats: Record<string, { count: number, earnings: number }> = {};
+         headers = ["Professor indicado", "ID TechTennis", "Encordoamentos", "Ganhos"];
+         const stats: Record<string, { name: string, numericId: string, count: number, earnings: number }> = {};
          jobs.forEach((j:any) => {
              if (j.commissionedProfessorId) {
                  const p = professors.find((p:any) => p.id === j.commissionedProfessorId);
-                 const name = p ? `${p.name} ${p.numericId ? `(ID: ${p.numericId})` : ''}` : 'Desconhecido';
-                 if (!stats[name]) stats[name] = { count: 0, earnings: 0 };
-                 stats[name].count += 1; // 1 per job = 1 per racket
-                 stats[name].earnings += (j.price || 0);
+                 const idKey = j.commissionedProfessorId;
+                 if (!stats[idKey]) stats[idKey] = { name: p ? p.name : 'Desconhecido', numericId: p?.numericId || '-', count: 0, earnings: 0 };
+                 stats[idKey].count += 1; // 1 per job = 1 per racket
+                 stats[idKey].earnings += (j.price || 0);
              }
          });
-         data = Object.entries(stats).map(([name, s]) => ({ col1: name, col2: s.count, col3: `BRL ${s.earnings.toFixed(2)}` }));
-         data.sort((a,b) => b.col2 - a.col2);
+         data = Object.values(stats).map((s) => ({ col1: s.name, col2: s.numericId, col3: s.count, col4: `BRL ${s.earnings.toFixed(2)}` }));
+         data.sort((a,b) => b.col3 - a.col3);
      } else if (type === 'clubs') {
          title = "Encordoamentos por clube";
          headers = ["Clube indicado", "Encordoamentos", "Ganhos"];
@@ -955,6 +955,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                          <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col1}</td>
                          {row.col2 !== undefined && <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col2}</td>}
                          {row.col3 !== undefined && <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col3}</td>}
+                         {row.col4 !== undefined && <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid #E5E7EB' }}>{row.col4}</td>}
                        </tr>
                      ))
                    )}
