@@ -27,7 +27,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        if (!dateStr) return false;
        let d: Date;
        if (dateStr.includes('/')) {
-         const parts = dateStr.split(' ')[0].split('/');
+         const datePart = dateStr.split(' ')[0].replace(',', '');
+         const parts = datePart.split('/');
          if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
          else d = new Date();
        } else {
@@ -98,7 +99,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
        if (!dateStr) return;
        let d: Date;
        if (dateStr.includes('/')) {
-         const parts = dateStr.split(' ')[0].split('/');
+         const datePart = dateStr.split(' ')[0].replace(',', '');
+         const parts = datePart.split('/');
          if (parts.length === 3) d = new Date(`${parts[2]}-${parts[1]}-${parts[0]}T12:00:00Z`);
          else d = new Date();
        } else {
