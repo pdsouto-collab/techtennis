@@ -1,28 +1,27 @@
 /* src/index.css */
 :root {
-  /* Brand Colors - Australian Open Theme */
-  --primary-color: #E1FF00; /* Amarelo Tênis (Destaque) */
-  --primary-color-dim: rgba(225, 255, 0, 0.3);
+  /* Brand Colors - Stitch Theme */
+  --primary-color: #058F4A; 
+  --primary-color-dim: rgba(5, 143, 74, 0.3);
   
-  /* The core AO blues based on the reference image */
-  --bg-gradient-top: #4298E7; /* Light AO Blue */
-  --bg-gradient-bottom: #2652B0; /* Deep AO Blue */
-  --secondary-color: #0091D2; /* Process Blue */
+  --bg-gradient-top: #241B3D; 
+  --bg-gradient-bottom: #160f27; 
+  --secondary-color: #CEBDFF; 
 
   /* Glass Panels */
-  --bg-panel: rgba(255, 255, 255, 0.15);
-  --bg-panel-solid: #2A6DB3;
+  --bg-panel: rgba(77, 66, 110, 0.5);
+  --bg-panel-solid: #4D426E;
   
   /* Text */
-  --text-primary: #ffffff; /* For dark backgrounds */
-  --text-dark: #000C3C; /* Navy text */
-  --text-secondary: rgba(255, 255, 255, 0.8);
+  --text-primary: #ffffff; 
+  --text-dark: #241B3D; 
+  --text-secondary: #CEBDFF;
   
   /* Borders */
-  --border-light: rgba(0, 145, 210, 0.4);
+  --border-light: rgba(206, 189, 255, 0.2);
   
   /* Typography */
-  --font-heading: 'Outfit', sans-serif;
+  --font-heading: 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
 }
 
@@ -81,12 +80,12 @@ a {
 }
 
 .button-primary {
-  background-color: var(--text-primary); /* White pill buttons */
-  color: var(--bg-gradient-bottom);
+  background-color: var(--primary-color);
+  color: #ffffff;
   font-family: var(--font-heading);
   font-weight: 700;
   padding: 16px 32px;
-  border-radius: 100px; /* Pill shape */
+  border-radius: 100px;
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -99,6 +98,7 @@ a {
 
 .button-primary:hover {
   transform: translateY(-2px);
+  background-color: #047A3E;
   box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 

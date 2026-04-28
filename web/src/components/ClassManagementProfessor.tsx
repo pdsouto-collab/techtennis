@@ -78,13 +78,13 @@ export const ClassManagementProfessor = () => {
           
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '32px', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '18px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '18px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Calendar size={20} /> Agenda
             </div>
-            <div onClick={() => setActiveTab('students')} style={{ fontSize: '18px', fontWeight: activeTab === 'students' ? 800 : 600, color: activeTab === 'students' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('students')} style={{ fontSize: '18px', fontWeight: activeTab === 'students' ? 800 : 600, color: activeTab === 'students' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Users size={20} /> Meus Alunos
             </div>
-            <div onClick={() => setActiveTab('reports')} style={{ fontSize: '18px', fontWeight: activeTab === 'reports' ? 800 : 600, color: activeTab === 'reports' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('reports')} style={{ fontSize: '18px', fontWeight: activeTab === 'reports' ? 800 : 600, color: activeTab === 'reports' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BarChart2 size={20} /> Relatórios Financeiros
             </div>
           </div>
