@@ -58,6 +58,10 @@ export const StringerDashboard = () => {
   const [customerItemsPerPage, setCustomerItemsPerPage] = useState<number | 'all'>(10);
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
 
+  useEffect(() => {
+    setCustomerCurrentPage(1);
+  }, [customerFilters]);
+
   const [professors, setProfessors] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
 
