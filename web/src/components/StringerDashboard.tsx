@@ -833,7 +833,7 @@ export const StringerDashboard = () => {
                         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                           style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg-panel-solid)', zIndex: 10, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                           
-                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString() === customerQuery.trim())).map((customer: any) => (
+                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString().startsWith(customerQuery.trim()))).map((customer: any) => (
                             <div 
                               key={customer.id} 
                               onClick={() => {
@@ -847,7 +847,7 @@ export const StringerDashboard = () => {
                             </div>
                           ))}
 
-                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString() === customerQuery.trim())).length === 0 && (
+                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString().startsWith(customerQuery.trim()))).length === 0 && (
                             <div style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>Nenhum cliente encontrado</div>
                           )}
                         </motion.div>
