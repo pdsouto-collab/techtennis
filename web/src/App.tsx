@@ -44,7 +44,7 @@ const Navbar = () => {
               <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
                 height: '72px', 
                 objectFit: 'contain',
-                mixBlendMode: 'multiply'
+                filter: 'brightness(0) invert(1)'
               }} />
             </Link>
           </div>
@@ -164,7 +164,7 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
         alignItems: textPosition === 'right' ? 'flex-end' : 'flex-start',
         textAlign: textPosition === 'right' ? 'right' : 'left'
       }}>
-        {subtitle && <span style={{ color: 'var(--primary-color)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>}
+        {subtitle && <span style={{ color: 'var(--secondary-color)', fontSize: '12px', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '1px' }}>{subtitle}</span>}
         <h3 style={{
           color: '#fff', fontSize: fullWidth ? '32px' : '24px',
           fontFamily: 'var(--font-heading)', fontWeight: 800, textTransform: 'uppercase',
