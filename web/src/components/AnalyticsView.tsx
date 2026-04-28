@@ -506,34 +506,43 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          data.sort((a,b) => b.col2 - a.col2);
      } else if (type === 'top_customers_stringings') {
          title = "Top clientes (encordoamentos)";
-         headers = ["Cliente", "Encordoamentos"];
+         headers = ["Cliente", "ID TechTennis", "Encordoamentos"];
          const counts: Record<string, number> = {};
          jobs.forEach((j:any) => {
              const name = j.customerName || 'Desconhecido';
              counts[name] = (counts[name] || 0) + 1;
          });
-         data = Object.entries(counts).map(([name, count]) => ({ col1: name, col2: count }));
-         data.sort((a,b) => b.col2 - a.col2);
+         data = Object.entries(counts).map(([name, count]) => {
+             const cust = customers.find((c: any) => c.name === name);
+             return { col1: name, col2: cust?.numericId || '-', col3: count };
+         });
+         data.sort((a,b) => b.col3 - a.col3);
      } else if (type === 'top_customers_orders') {
          title = "Top clientes (ordens)";
-         headers = ["Cliente", "Ordens"];
+         headers = ["Cliente", "ID TechTennis", "Ordens"];
          const stats: Record<string, Set<string>> = {};
          jobs.forEach((j:any) => {
              const name = j.customerName || 'Desconhecido';
              if (!stats[name]) stats[name] = new Set();
              if (j.orderCode) stats[name].add(j.orderCode);
          });
-         data = Object.entries(stats).map(([name, set]) => ({ col1: name, col2: set.size }));
-         data.sort((a,b) => b.col2 - a.col2);
+         data = Object.entries(stats).map(([name, set]) => {
+             const cust = customers.find((c: any) => c.name === name);
+             return { col1: name, col2: cust?.numericId || '-', col3: set.size };
+         });
+         data.sort((a,b) => b.col3 - a.col3);
      } else if (type === 'top_customers_earnings') {
          title = "Top clientes (ganhos)";
-         headers = ["Cliente", "Ganhos"];
+         headers = ["Cliente", "ID TechTennis", "Ganhos"];
          const counts: Record<string, number> = {};
          jobs.forEach((j:any) => {
              const name = j.customerName || 'Desconhecido';
              counts[name] = (counts[name] || 0) + (j.price || 0);
          });
-         data = Object.entries(counts).map(([name, val]) => ({ col1: name, col2: `BRL ${val.toFixed(2)}`, raw: val }));
+         data = Object.entries(counts).map(([name, val]) => {
+             const cust = customers.find((c: any) => c.name === name);
+             return { col1: name, col2: cust?.numericId || '-', col3: `BRL ${val.toFixed(2)}`, raw: val };
+         });
          data.sort((a,b) => b.raw - a.raw);
      }
 
