@@ -88,6 +88,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
     return (
       <tr key={order.id}>
           <td style={{ padding: '16px', fontSize: '14px', color: 'white', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.customerName}</td>
+          <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{cust?.numericId || '---'}</td>
           <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.date}</td>
           <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               <span style={{ padding: '4px 12px', borderRadius: '4px', background: order.type === 'picked_up' ? '#4298E7' : order.type === 'picking_up' ? '#6FCF97' : '#F2C94C', color: order.type === 'picking_up' ? 'var(--text-dark)' : 'white', fontWeight: 600, fontSize: '12px' }}>
@@ -180,6 +181,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
             <thead style={{ borderBottom: '1px solid rgba(255,255,255,0.1)', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
                 <tr>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Cliente</th>
+                <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>ID TechTennis</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>Inserção</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white' }}>Status</th>
                 <th style={{ padding: '16px', fontSize: '13px', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>Previsão Retirada</th>
@@ -193,7 +195,7 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
             </thead>
             <tbody>
                 {displayedOrders.length > 0 ? displayedOrders : (
-                  <tr><td colSpan={10} style={{ padding: '32px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Nenhuma ordem encontrada</td></tr>
+                  <tr><td colSpan={11} style={{ padding: '32px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Nenhuma ordem encontrada</td></tr>
                 )}
             </tbody>
             </table>

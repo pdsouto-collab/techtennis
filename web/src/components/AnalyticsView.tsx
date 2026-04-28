@@ -478,7 +478,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          jobs.forEach((j:any) => {
              if (j.commissionedProfessorId) {
                  const p = professors.find((p:any) => p.id === j.commissionedProfessorId);
-                 const name = p ? p.name : 'Desconhecido';
+                 const name = p ? `${p.name} ${p.numericId ? `(ID: ${p.numericId})` : ''}` : 'Desconhecido';
                  if (!stats[name]) stats[name] = { count: 0, earnings: 0 };
                  stats[name].count += 1; // 1 per job = 1 per racket
                  stats[name].earnings += (j.price || 0);
@@ -849,7 +849,12 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.mainString ? `${j.mainString} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.crossString ? `${j.crossString} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{customers.find((c:any) => c.name === j.customerName)?.originClub || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{professors.find((p:any) => p.id === j.commissionedProfessorId)?.name || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>
+                        {(() => {
+                           const prof = professors.find((p:any) => p.id === j.commissionedProfessorId);
+                           return prof ? `${prof.name} ${prof.numericId ? `(ID: ${prof.numericId})` : ''}` : '-';
+                        })()}
+                      </td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.price ? `R$ ${j.price}` : '-'}</td>
                     </tr>
                   ))}

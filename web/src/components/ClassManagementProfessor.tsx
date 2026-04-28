@@ -69,7 +69,7 @@ export const ClassManagementProfessor = () => {
           style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '250px' }}
         >
           <option value="">Selecione o professor para começar...</option>
-          {professors.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+          {professors.map(p => <option key={p.id} value={p.id}>{p.name} {p.numericId ? `(ID: ${p.numericId})` : ''}</option>)}
         </select>
       </div>
 

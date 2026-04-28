@@ -247,7 +247,7 @@ export const RacketCollection = () => {
               >
                 <option value="">Selecione...</option>
                 <option value="all">Todos os Professores</option>
-                {professors.map(p => <option key={p.id} value={p.id}>{p.name}</option>)}
+                {professors.map(p => <option key={p.id} value={p.id}>{p.name} {p.numericId ? `(ID: ${p.numericId})` : ''}</option>)}
               </select>
             </div>
           )}
@@ -344,7 +344,12 @@ export const RacketCollection = () => {
                              <span style={{ display: 'inline-block', marginTop: '4px', fontSize: '10px', background: '#3b82f6', color: 'white', padding: '2px 6px', borderRadius: '4px', fontWeight: 700 }}>AJUSTE MANUAL</span>
                           )}
                           {!item.isManual && selectedProfessorId === 'all' && (
-                            <div style={{ fontSize: '12px', color: '#E28743', marginTop: '4px', fontWeight: 600 }}>Prof: {professors.find(p => p.id === item.professorId)?.name || 'Desconhecido'}</div>
+                            <div style={{ fontSize: '12px', color: '#E28743', marginTop: '4px', fontWeight: 600 }}>
+                              Prof: {(() => {
+                                const prof = professors.find(p => p.id === item.professorId);
+                                return prof ? `${prof.name} ${prof.numericId ? `(ID: ${prof.numericId})` : ''}` : 'Desconhecido';
+                              })()}
+                            </div>
                           )}
                         </td>
                         <td style={{ padding: '16px 24px', fontSize: '14px', color: 'var(--text-secondary)' }}>

@@ -280,7 +280,7 @@ export const StringerDashboard = () => {
       o.type === 'picked_up' ? 'Entregue' : o.type === 'picking_up' ? 'Pronta' : o.type === 'to_string' ? 'Para Encordoar' : 'Aguardando',
       (o.price || 120).toFixed(2)
     ]);
-    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    const csvContent = [headers.map(h => `"${h}"`).join(';'), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))].join('\n');
     let mimeType = 'text/csv';
     let ext = '.csv';
     if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
@@ -309,7 +309,7 @@ export const StringerDashboard = () => {
       c.email || 'Não informado',
       c.phone || ''
     ]);
-    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    const csvContent = [headers.map(h => `"${h}"`).join(';'), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))].join('\n');
     let mimeType = 'text/csv';
     let ext = '.csv';
     if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
@@ -334,7 +334,7 @@ export const StringerDashboard = () => {
       p.email || '',
       p.phone || ''
     ]);
-    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    const csvContent = [headers.map(h => `"${h}"`).join(';'), ...rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(';'))].join('\n');
     let mimeType = 'text/csv';
     let ext = '.csv';
     if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
@@ -669,7 +669,13 @@ export const StringerDashboard = () => {
                         )}
                       </div>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: '16px' }}>{job.customerName}</div>
+                        <div style={{ fontWeight: 700, fontSize: '16px' }}>
+                          {job.customerName}
+                          {(() => {
+                            const c = customers.find((c: any) => c.name === job.customerName);
+                            return c?.numericId ? <span style={{ fontSize: '13px', color: 'var(--text-secondary)', marginLeft: '6px' }}>(ID: {c.numericId})</span> : null;
+                          })()}
+                        </div>
                         <div style={{ color: 'var(--text-secondary)', fontSize: '13px' }}>{job.racketModel}</div>
                       </div>
                       <div>
@@ -827,7 +833,7 @@ export const StringerDashboard = () => {
                         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
                           style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg-panel-solid)', zIndex: 10, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                           
-                          {customers.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).map(customer => (
+                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString() === customerQuery.trim())).map((customer: any) => (
                             <div 
                               key={customer.id} 
                               onClick={() => {
@@ -837,11 +843,11 @@ export const StringerDashboard = () => {
                               }}
                               style={{ padding: '12px 16px', cursor: 'pointer', borderBottom: '1px solid rgba(255,255,255,0.05)', color: 'white', fontWeight: 500 }}
                             >
-                              {customer.name}
+                              {customer.name} {customer.numericId ? `(ID: ${customer.numericId})` : ''}
                             </div>
                           ))}
 
-                          {customers.filter(c => c.name.toLowerCase().includes(customerQuery.toLowerCase())).length === 0 && (
+                          {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString() === customerQuery.trim())).length === 0 && (
                             <div style={{ padding: '12px 16px', color: 'var(--text-secondary)' }}>Nenhum cliente encontrado</div>
                           )}
                         </motion.div>
@@ -1357,7 +1363,13 @@ export const StringerDashboard = () => {
                  <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                     <div style={{ background: 'rgba(111, 207, 151, 0.1)', border: '1px solid rgba(111, 207, 151, 0.2)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: '#6FCF97', marginBottom: '4px' }}>Cliente</div>
-                       <div style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}>{activeStringingJob.customerName}</div>
+                       <div style={{ fontSize: '18px', fontWeight: 600, color: 'white' }}>
+                         {activeStringingJob.customerName}
+                         {(() => {
+                           const c = customers.find((c: any) => c.name === activeStringingJob.customerName);
+                           return c?.numericId ? <span style={{ fontSize: '14px', color: 'var(--text-secondary)', marginLeft: '6px' }}>(ID: {c.numericId})</span> : null;
+                         })()}
+                       </div>
                     </div>
                     <div style={{ background: 'rgba(255, 255, 255, 0.05)', border: '1px solid rgba(255, 255, 255, 0.1)', borderRadius: '12px', padding: '16px', textAlign: 'center' }}>
                        <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Data de retirada</div>
