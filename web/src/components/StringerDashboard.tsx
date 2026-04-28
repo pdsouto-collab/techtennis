@@ -293,6 +293,60 @@ export const StringerDashboard = () => {
     document.body.removeChild(link);
   };
 
+  const exportCustomersData = (format: 'csv' | 'excel' | 'pdf') => {
+    if (format === 'pdf') {
+       window.print();
+       return;
+    }
+    const headers = ['Nome', 'ID TechTennis', 'Gênero', 'Ponto de Encordoamento', 'Professor', 'Clube', 'E-mail', 'Celular'];
+    const rows = customers.map((c: any) => [
+      c.name || '',
+      c.numericId || '',
+      c.gender === 'F' ? 'Feminino' : c.gender === 'M' ? 'Masculino' : 'Outro',
+      c.stringingPoint || 'Loja 1 - LaVille Mall',
+      professors.find((p: any) => p.id === c.professorId)?.name || 'Não informado',
+      c.originClub || 'Não informado',
+      c.email || 'Não informado',
+      c.phone || ''
+    ]);
+    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    let mimeType = 'text/csv';
+    let ext = '.csv';
+    if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
+    const blob = new Blob(['\ufeff' + csvContent], { type: `${mimeType};charset=utf-8;` });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `base_clientes_${new Date().toISOString().split('T')[0]}${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const exportProfessorsData = (format: 'csv' | 'excel' | 'pdf') => {
+    if (format === 'pdf') {
+       window.print();
+       return;
+    }
+    const headers = ['Nome', 'ID TechTennis', 'E-mail', 'Celular'];
+    const rows = professors.map((p: any) => [
+      p.name || '',
+      p.numericId || '',
+      p.email || '',
+      p.phone || ''
+    ]);
+    const csvContent = [headers.join('\t'), ...rows.map(r => r.join('\t'))].join('\n');
+    let mimeType = 'text/csv';
+    let ext = '.csv';
+    if (format === 'excel') { mimeType = 'application/vnd.ms-excel'; ext = '.xls'; }
+    const blob = new Blob(['\ufeff' + csvContent], { type: `${mimeType};charset=utf-8;` });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `professores_comissionados_${new Date().toISOString().split('T')[0]}${ext}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   // Calculate computed discounts and final price
   const basePriceValue = Number(price) || 0;
   const baseDiscountVal = Number(priceDiscountPercent) || 0;
@@ -1442,6 +1496,11 @@ export const StringerDashboard = () => {
                 <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                   Fechar
                 </button>
+                <div style={{ display: 'flex', gap: '2px' }}>
+                  <button onClick={() => exportCustomersData('excel')} style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar Excel"><FileSpreadsheet size={16} /></button>
+                  <button onClick={() => exportCustomersData('pdf')} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar PDF"><FileText size={16} /></button>
+                  <button onClick={() => exportCustomersData('csv')} style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar CSV"><FileJson size={16} /></button>
+                </div>
                 <button className="button-primary" onClick={() => setIsCustomerModalOpen(true)} style={{ padding: '8px 24px', fontSize: '14px' }}>
                   <UserPlus size={18} /> Adicionar Cliente
                 </button>
@@ -1602,6 +1661,11 @@ export const StringerDashboard = () => {
                 <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                   Fechar
                 </button>
+                <div style={{ display: 'flex', gap: '2px', marginRight: '12px' }}>
+                  <button onClick={() => exportProfessorsData('excel')} style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar Excel"><FileSpreadsheet size={16} /></button>
+                  <button onClick={() => exportProfessorsData('pdf')} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar PDF"><FileText size={16} /></button>
+                  <button onClick={() => exportProfessorsData('csv')} style={{ background: '#F2C94C', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '0 4px 4px 0', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar CSV"><FileJson size={16} /></button>
+                </div>
                 <button className="button-primary" onClick={() => { setSelectedProfessor(null); setIsProfessorModalOpen(true); }} style={{ padding: '8px 24px', fontSize: '14px' }}>
                   <UserPlus size={18} /> Novo Professor
                 </button>
@@ -1613,6 +1677,7 @@ export const StringerDashboard = () => {
                 <thead>
                   <tr style={{ color: '#6B7280', fontSize: '13px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
                       <th style={{ padding: '16px', fontWeight: 600 }}>Nome</th>
+                      <th style={{ padding: '16px', fontWeight: 600 }}>ID TechTennis</th>
                       <th style={{ padding: '16px', fontWeight: 600 }}>E-mail</th>
                       <th style={{ padding: '16px', fontWeight: 600 }}>Celular</th>
                       <th style={{ padding: '16px', fontWeight: 600 }}></th>
@@ -1622,6 +1687,7 @@ export const StringerDashboard = () => {
                   {professors.map((prof: any, index: number) => (
                     <tr key={prof.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
                       <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{prof.name}</td>
+                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.numericId || ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{prof.email || ''}</td>
                       <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone ? applyPhoneMask(prof.phone) : ''}</td>
                       <td style={{ padding: '16px' }}>
