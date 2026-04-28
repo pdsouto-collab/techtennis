@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign, Truck } from 'lucide-react';
 import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditOrder, onPayment, onDelivery, onViewOrder }: any) => {
+export const OrdersView = ({ onAddOrder, jobs, customers, professors, onDeleteOrder, onEditOrder, onPayment, onDelivery, onViewOrder }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -28,7 +28,9 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
         status: job.status,
         paid: job.paid,
         price: job.price || 120,
-        racketsCount: 0
+        racketsCount: 0,
+        commissionedProfessorId: job.commissionedProfessorId,
+        updatedAt: job.updatedAt
       };
     }
     acc[code].racketsCount += 1;
@@ -37,6 +39,8 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
     } else {
       acc[code].price += (job.price || 120);
     }
+    if (job.commissionedProfessorId) acc[code].commissionedProfessorId = job.commissionedProfessorId;
+    if (job.updatedAt && (!acc[code].updatedAt || new Date(job.updatedAt) > new Date(acc[code].updatedAt))) acc[code].updatedAt = job.updatedAt;
     // Assume if one is unpaid, order is unpaid
     if (!job.paid) acc[code].paid = false;
     return acc;
@@ -96,9 +100,9 @@ export const OrdersView = ({ onAddOrder, jobs, customers, onDeleteOrder, onEditO
               </span>
           </td>
           <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.pickupDate ? new Date(order.pickupDate).toLocaleString('pt-BR') : '---'}</td>
-          <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>---</td>
+          <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{order.type === 'picked_up' && order.updatedAt ? new Date(order.updatedAt).toLocaleString('pt-BR') : '---'}</td>
           <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{cust?.originClub || 'Não informado'}</td>
-          <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>---</td>
+          <td style={{ padding: '16px', fontSize: '14px', color: 'rgba(255,255,255,0.7)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>{professors?.find((p: any) => p.id === order.commissionedProfessorId)?.name || '---'}</td>
           <td style={{ padding: '16px', fontSize: '14px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
               <div style={{ fontWeight: 700, color: 'white' }}>{order.orderCode}</div>
               <div style={{ color: 'rgba(255,255,255,0.7)', fontSize: '12px' }}>Raquetes: {order.racketsCount}</div>

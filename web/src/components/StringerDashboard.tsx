@@ -1725,6 +1725,7 @@ export const StringerDashboard = () => {
         {view === 'orders' && <OrdersView 
           jobs={jobs} 
           customers={customers} 
+          professors={professors} 
           onAddOrder={() => { setView('new_job'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); }} 
           onDeleteOrder={(orderCode: string) => setJobs(prev => prev.filter(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) !== orderCode))}
           onEditOrder={(orderCode: string) => { 
