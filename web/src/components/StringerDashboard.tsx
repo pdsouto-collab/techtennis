@@ -206,6 +206,11 @@ export const StringerDashboard = () => {
   const [pickupDate, setPickupDate] = useState('');
   const [pickupNotes, setPickupNotes] = useState('');
   const [jobStringingPoint, setJobStringingPoint] = useState('');
+  const [hasOwnReel, setHasOwnReel] = useState(false);
+  const [hasOwnSet, setHasOwnSet] = useState(false);
+  const [hasLogo, setHasLogo] = useState(false);
+  const [logoNotes, setLogoNotes] = useState('');
+  const [racketNotes, setRacketNotes] = useState('');
 
   // Apply Club Discount rules
   useEffect(() => {
@@ -1077,12 +1082,12 @@ export const StringerDashboard = () => {
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
                       <span>Usa rolo próprio</span>
-                      <input type="checkbox" style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
+                      <input type="checkbox" checked={hasOwnReel} onChange={e => setHasOwnReel(e.target.checked)} style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '16px', background: 'rgba(255,255,255,0.05)', borderRadius: '12px' }}>
                       <span>Usa set próprio</span>
-                      <input type="checkbox" style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
+                      <input type="checkbox" checked={hasOwnSet} onChange={e => setHasOwnSet(e.target.checked)} style={{ accentColor: '#D93B65', width: '20px', height: '20px' }} />
                     </div>
 
                     {auxServices.map((svc, idx) => (
@@ -1240,15 +1245,15 @@ export const StringerDashboard = () => {
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr 2fr', gap: '16px' }}>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Logo</label>
-                        <select style={inputStyle}><option>Não</option><option>Sim</option></select>
+                        <select value={hasLogo ? 'Sim' : 'Não'} onChange={e => setHasLogo(e.target.value === 'Sim')} style={inputStyle}><option value="Não">Não</option><option value="Sim">Sim</option></select>
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Notas do Logo</label>
-                        <textarea rows={2} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                        <textarea rows={2} value={logoNotes} onChange={e => setLogoNotes(e.target.value)} style={{ ...inputStyle, resize: 'none' }}></textarea>
                       </div>
                       <div>
                         <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Notas sobre a raquete</label>
-                        <textarea rows={2} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                        <textarea rows={2} value={racketNotes} onChange={e => setRacketNotes(e.target.value)} style={{ ...inputStyle, resize: 'none' }}></textarea>
                       </div>
                     </div>
                   </div>
