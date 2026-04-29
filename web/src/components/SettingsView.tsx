@@ -290,13 +290,11 @@ export const SettingsView = ({ settings, setSettings }: any) => {
           ) : (
             (() => {
               const renderList = currentList.map((item: any, idx: number) => ({ item, originalIndex: idx }));
-              if (activeTab === 'strings') {
-                renderList.sort((a: any, b: any) => {
-                  const nameA = typeof a.item === 'string' ? a.item : a.item.name;
-                  const nameB = typeof b.item === 'string' ? b.item : b.item.name;
-                  return nameA.localeCompare(nameB);
-                });
-              }
+              renderList.sort((a: any, b: any) => {
+                let nameA = typeof a.item === 'string' ? a.item : (a.item.name || a.item.club || '');
+                let nameB = typeof b.item === 'string' ? b.item : (b.item.name || b.item.club || '');
+                return nameA.localeCompare(nameB);
+              });
               const totalItems = renderList.length;
               const perPage = itemsPerPage === 'all' ? totalItems : itemsPerPage;
               const totalPages = Math.ceil(totalItems / perPage) || 1;
