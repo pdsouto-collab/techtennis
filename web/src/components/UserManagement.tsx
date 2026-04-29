@@ -66,7 +66,7 @@ export const UserManagement = () => {
             {(activeTab === 'active' ? activeUsers : pendingUsers).map(user => (
               <tr key={user.id} style={{ borderBottom: '1px solid #F3F4F6' }}>
                 <td style={{ padding: '16px 24px', display: 'flex', flexDirection: 'column' }}>
-                  <span style={{ fontWeight: 700, color: '#1A112C' }}>{user.name}</span>
+                  <span style={{ fontWeight: 700, color: '#2D1E4B' }}>{user.name}</span>
                   <span style={{ fontSize: '12px', color: '#6B7280' }}>{user.email}</span>
                 </td>
                 <td style={{ padding: '16px 24px', color: '#4B5563', fontSize: '14px' }}>

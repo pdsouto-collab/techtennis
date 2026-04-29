@@ -63,7 +63,7 @@ export const ClassManagementCustomer = () => {
       {activeStudent ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ background: 'var(--bg-panel-solid)', borderRadius: '24px', overflow: 'hidden' }}>
           
-          <div style={{ padding: '24px 40px', background: 'linear-gradient(to right, #2D1E4B, #1A112C)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 40px', background: 'linear-gradient(to right, #483375, #2D1E4B)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
              <div>
                 <h2 style={{ margin: '0 0 4px 0', fontSize: '24px' }}>Olá, {activeStudent.name}</h2>
                 <div style={{ color: '#60A5FA', fontSize: '14px' }}>Professor(a): {activeProfessor?.name || 'Desconhecido'}</div>
@@ -76,10 +76,10 @@ export const ClassManagementCustomer = () => {
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '32px', padding: '16px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '16px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '16px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#483375' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Calendar size={18} /> Aulas Agendadas
             </div>
-            <div onClick={() => setActiveTab('history')} style={{ fontSize: '16px', fontWeight: activeTab === 'history' ? 800 : 600, color: activeTab === 'history' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('history')} style={{ fontSize: '16px', fontWeight: activeTab === 'history' ? 800 : 600, color: activeTab === 'history' ? '#483375' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BarChart2 size={18} /> Histórico e Extrato
             </div>
           </div>
@@ -104,7 +104,7 @@ export const ClassManagementCustomer = () => {
                                    <div style={{ fontSize: '24px', fontWeight: 800 }}>{cls.date.split('-')[2]}</div>
                                  </div>
                                  <div>
-                                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#2D1E4B', marginBottom: '4px' }}>{cls.timeStart} às {cls.timeEnd}</div>
+                                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#483375', marginBottom: '4px' }}>{cls.timeStart} às {cls.timeEnd}</div>
                                    <div style={{ fontSize: '14px', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={14}/> {cls.location || 'Local não informado'}</div>
                                  </div>
                                </div>
@@ -202,8 +202,8 @@ export const ClassManagementCustomer = () => {
                             if (cls.status.includes('cancelled')) statusConfig = { color: '#EF4444', bg: 'rgba(239,68,68,0.1)', label: 'Cancelada' + (cls.willHaveReplacement ? ' (+Repos)' : '') };
 
                             return (
-                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1A112C' }}>
-                                <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1A112C' }}>{cls.date.split('-').reverse().join('/')}</td>
+                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#2D1E4B' }}>
+                                <td style={{ padding: '16px 24px', fontWeight: 600, color: '#2D1E4B' }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '16px 24px', color: '#4B5563' }}>{cls.timeStart} às {cls.timeEnd}</td>
                                 <td style={{ padding: '16px 24px' }}>
                                   <span style={{ background: statusConfig.bg, color: statusConfig.color, padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 600 }}>

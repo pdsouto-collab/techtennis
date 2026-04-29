@@ -4,13 +4,13 @@
   --primary-color: #38D430; /* Neon Green */
   --primary-color-dim: rgba(56, 212, 48, 0.3);
   
-  --bg-gradient-top: #2D1E4B; /* Lighter Purple */
-  --bg-gradient-bottom: #1A112C; /* Dark Purple */
+  --bg-gradient-top: #483375; /* Lighter Purple */
+  --bg-gradient-bottom: #2D1E4B; /* Medium Purple */
   --secondary-color: #E2D9FF; 
 
   /* Glass Panels */
-  --bg-panel: rgba(45, 30, 75, 0.5); /* #2D1E4B with opacity */
-  --bg-panel-solid: #2D1E4B;
+  --bg-panel: rgba(60, 42, 99, 0.5); /* Lighter purple with opacity */
+  --bg-panel-solid: #3C2A63;
   
   /* Text */
   --text-primary: #ffffff; 

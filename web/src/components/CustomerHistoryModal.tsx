@@ -40,7 +40,7 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
         {/* Modal Header */}
         <div style={{ background: '#FFFFFF', padding: '20px 32px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #E5E7EB' }}>
           <div>
-            <h3 style={{ color: '#1A112C', fontSize: '18px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <h3 style={{ color: '#2D1E4B', fontSize: '18px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
               {activeTab === 'racket' ? (
                 <>
                   <select 
@@ -72,13 +72,13 @@ export const CustomerHistoryModal = ({ isOpen, onClose, customer, jobs, setJobs,
           <div style={{ display: 'flex', gap: '32px', padding: '24px 32px', borderBottom: '1px solid #E5E7EB' }}>
             <div 
               onClick={() => setActiveTab('racket')} 
-              style={{ fontSize: '18px', fontWeight: activeTab === 'racket' ? 800 : 700, color: activeTab === 'racket' ? '#1A112C' : '#60A5FA', cursor: 'pointer' }}
+              style={{ fontSize: '18px', fontWeight: activeTab === 'racket' ? 800 : 700, color: activeTab === 'racket' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer' }}
             >
               Encordoamentos da raquete
             </div>
             <div 
               onClick={() => setActiveTab('all')} 
-              style={{ fontSize: '18px', fontWeight: activeTab === 'all' ? 800 : 700, color: activeTab === 'all' ? '#1A112C' : '#60A5FA', cursor: 'pointer' }}
+              style={{ fontSize: '18px', fontWeight: activeTab === 'all' ? 800 : 700, color: activeTab === 'all' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer' }}
             >
               Todos encordoamentos do cliente
             </div>
