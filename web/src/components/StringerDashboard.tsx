@@ -781,7 +781,7 @@ export const StringerDashboard = () => {
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
                           <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>{job.status.toUpperCase()}</div>
                           {job.feedback && (
-                            <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: 'rgba(94, 136, 214, 0.15)', border: '1px solid #5E88D6', padding: '6px 12px', borderRadius: '8px', color: '#5E88D6', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13px' }} title="Ver Feedback">
+                            <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: 'rgba(83, 142, 85, 0.15)', border: '1px solid #538E55', padding: '6px 12px', borderRadius: '8px', color: '#538E55', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13px' }} title="Ver Feedback">
                               <Smile size={16} /> Avaliação
                             </button>
                           )}
