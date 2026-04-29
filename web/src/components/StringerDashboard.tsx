@@ -1772,6 +1772,10 @@ export const StringerDashboard = () => {
             const job = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode);
             if (job) { setActiveOrderJob(job); setView('order_details'); }
           }}
+          onViewFeedback={(orderCode: string) => {
+            const jobWithFeedback = jobs.find(j => (j.orderCode || j.id.substring(0,8).toUpperCase()) === orderCode && j.feedback);
+            if (jobWithFeedback) { setActiveFeedbackJob(jobWithFeedback); setIsFeedbackModalOpen(true); }
+          }}
         />}
 
         {view === 'settings' && <SettingsView settings={appSettings} setSettings={setAppSettings} />}
