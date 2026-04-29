@@ -581,7 +581,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                 <div style={{ fontSize: '32px', fontWeight: 800 }}>{ordersCount}</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ordens</div>
              </div>
-             <div style={metricBoxStyle('#6FCF97')} onClick={() => setDetailModalContent('ganhos')}>
+             <div style={metricBoxStyle('#3A8E58')} onClick={() => setDetailModalContent('ganhos')}>
                 <div style={{ fontSize: '32px', fontWeight: 800 }}>{totalEarnings.toFixed(2)} BRL</div>
                 <div style={{ fontSize: '16px', fontWeight: 600 }}>Ganhos</div>
              </div>
@@ -683,7 +683,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
               <div style={{ fontSize: '20px', fontWeight: 700 }}>{tensionStats.max.toFixed(2)} Lbs</div>
               <div style={{ fontSize: '13px' }}>Maior tensão</div>
             </div>
-            <div style={{...metricBoxStyle('#6FCF97'), minHeight: '80px', padding: '16px'}}>
+            <div style={{...metricBoxStyle('#3A8E58'), minHeight: '80px', padding: '16px'}}>
               <div style={{ fontSize: '20px', fontWeight: 700 }}>{tensionStats.min.toFixed(2)} Lbs</div>
               <div style={{ fontSize: '13px' }}>Menor tensão</div>
             </div>
@@ -789,7 +789,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             <div style={{...panelStyle, background: '#F2C94C', color: '#111827', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(242, 201, 76, 0.3)' }} onClick={() => setActiveReport('professors')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Por professor</h4>
             </div>
-            <div style={{...panelStyle, background: '#27AE60', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(39, 174, 96, 0.3)' }} onClick={() => setActiveReport('clubs')}>
+            <div style={{...panelStyle, background: '#3A8E58', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(58, 142, 88, 0.3)' }} onClick={() => setActiveReport('clubs')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Por clube</h4>
             </div>
           </div>
@@ -802,7 +802,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             <div style={{...panelStyle, background: '#EB5757', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(235, 87, 87, 0.3)' }} onClick={() => setActiveReport('top_customers_orders')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ordens)</h4>
             </div>
-            <div style={{...panelStyle, background: '#6FCF97', color: '#111827', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(111, 207, 151, 0.3)' }} onClick={() => setActiveReport('top_customers_earnings')}>
+            <div style={{...panelStyle, background: '#3A8E58', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(58, 142, 88, 0.3)' }} onClick={() => setActiveReport('top_customers_earnings')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ganhos)</h4>
             </div>
           </div>
