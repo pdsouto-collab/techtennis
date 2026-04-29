@@ -63,23 +63,23 @@ export const ClassManagementCustomer = () => {
       {activeStudent ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ background: 'var(--bg-panel-solid)', borderRadius: '24px', overflow: 'hidden' }}>
           
-          <div style={{ padding: '24px 40px', background: 'linear-gradient(to right, #241B3D, #160f27)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <div style={{ padding: '24px 40px', background: 'linear-gradient(to right, #2D1E4B, #1A112C)', color: 'white', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
              <div>
                 <h2 style={{ margin: '0 0 4px 0', fontSize: '24px' }}>Olá, {activeStudent.name}</h2>
                 <div style={{ color: '#60A5FA', fontSize: '14px' }}>Professor(a): {activeProfessor?.name || 'Desconhecido'}</div>
              </div>
              <div style={{ textAlign: 'right' }}>
-               <div style={{ fontSize: '12px', color: 'rgba(255,255,255,0.6)' }}>Valor Hora/Aula Acordado</div>
+               <div style={{ fontSize: '12px', textTransform: 'uppercase', letterSpacing: '1px', opacity: 0.8 }}>Valor/Hora</div>
                <div style={{ fontSize: '20px', fontWeight: 800, color: '#10B981' }}>{activeStudent.hourlyRate ? `R$ ${activeStudent.hourlyRate.toFixed(2)}` : 'À Combinar'}</div>
              </div>
           </div>
 
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '32px', padding: '16px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '16px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '16px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Calendar size={18} /> Aulas Agendadas
             </div>
-            <div onClick={() => setActiveTab('history')} style={{ fontSize: '16px', fontWeight: activeTab === 'history' ? 800 : 600, color: activeTab === 'history' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('history')} style={{ fontSize: '16px', fontWeight: activeTab === 'history' ? 800 : 600, color: activeTab === 'history' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BarChart2 size={18} /> Histórico e Extrato
             </div>
           </div>
@@ -87,23 +87,24 @@ export const ClassManagementCustomer = () => {
           <div style={{ padding: '40px', background: '#F8F9FA', minHeight: '500px' }}>
             
             {activeTab === 'agenda' && (
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                <h3 style={{ fontSize: '20px', fontWeight: 800, color: 'var(--text-dark)', marginBottom: '24px' }}>Próximas Aulas (Planejadas)</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-                  {classes.filter(c => c.studentId === activeStudent.id && c.status === 'planned').length === 0 ? (
-                    <div style={{ padding: '40px', textAlign: 'center', background: 'white', borderRadius: '16px', color: 'var(--text-secondary)' }}>Você não tem aulas futuras agendadas.</div>
+               <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <h3 style={{ fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><Calendar size={20} color="#2563EB"/> Próximas Aulas</h3>
+                  </div>
+
+                  {studentClasses.filter(c => c.status === 'planned').length === 0 ? (
+                      <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280', background: 'white', borderRadius: '16px', border: '1px dashed #D1D5DB' }}>Nenhuma aula agendada para o futuro.</div>
                   ) : (
-                    classes.filter(c => c.studentId === activeStudent.id && c.status === 'planned')
-                           .sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime())
-                           .map(cls => (
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+                          {studentClasses.filter(c => c.status === 'planned').sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map(cls => (
                              <div key={cls.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'white', padding: '24px', borderRadius: '16px', borderLeft: '4px solid #60A5FA', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
-                               <div style={{ display: 'flex', gap: '24px', alignItems: 'center' }}>
+                               <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                  <div style={{ background: 'rgba(96,165,250,0.1)', color: '#2563EB', padding: '12px 20px', borderRadius: '12px', textAlign: 'center' }}>
-                                   <div style={{ fontSize: '13px', fontWeight: 700, textTransform: 'uppercase' }}>{new Date(`${cls.date}T12:00:00`).toLocaleDateString('pt-BR', { weekday: 'short' })}</div>
+                                   <div style={{ fontSize: '13px', textTransform: 'uppercase', fontWeight: 700 }}>{new Date(`${cls.date}T12:00:00`).toLocaleDateString('pt-BR', { month: 'short' })}</div>
                                    <div style={{ fontSize: '24px', fontWeight: 800 }}>{cls.date.split('-')[2]}</div>
                                  </div>
                                  <div>
-                                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#241B3D', marginBottom: '4px' }}>{cls.timeStart} às {cls.timeEnd}</div>
+                                   <div style={{ fontSize: '18px', fontWeight: 700, color: '#2D1E4B', marginBottom: '4px' }}>{cls.timeStart} às {cls.timeEnd}</div>
                                    <div style={{ fontSize: '14px', color: '#6B7280', display: 'flex', alignItems: 'center', gap: '6px' }}><MapPin size={14}/> {cls.location || 'Local não informado'}</div>
                                  </div>
                                </div>
@@ -201,8 +202,8 @@ export const ClassManagementCustomer = () => {
                             if (cls.status.includes('cancelled')) statusConfig = { color: '#EF4444', bg: 'rgba(239,68,68,0.1)', label: 'Cancelada' + (cls.willHaveReplacement ? ' (+Repos)' : '') };
 
                             return (
-                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1a1a2e' }}>
-                                <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
+                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: cls.status !== 'completed' ? 0.7 : 1, color: '#1A112C' }}>
+                                <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1A112C' }}>{cls.date.split('-').reverse().join('/')}</td>
                                 <td style={{ padding: '16px 24px', color: '#4B5563' }}>{cls.timeStart} às {cls.timeEnd}</td>
                                 <td style={{ padding: '16px 24px' }}>
                                   <span style={{ background: statusConfig.bg, color: statusConfig.color, padding: '4px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 600 }}>

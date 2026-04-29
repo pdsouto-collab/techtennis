@@ -78,13 +78,13 @@ export const ClassManagementProfessor = () => {
           
           {/* Tabs */}
           <div style={{ display: 'flex', gap: '32px', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
-            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '18px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('agenda')} style={{ fontSize: '18px', fontWeight: activeTab === 'agenda' ? 800 : 600, color: activeTab === 'agenda' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Calendar size={20} /> Agenda
             </div>
-            <div onClick={() => setActiveTab('students')} style={{ fontSize: '18px', fontWeight: activeTab === 'students' ? 800 : 600, color: activeTab === 'students' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('students')} style={{ fontSize: '18px', fontWeight: activeTab === 'students' ? 800 : 600, color: activeTab === 'students' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <Users size={20} /> Meus Alunos
             </div>
-            <div onClick={() => setActiveTab('reports')} style={{ fontSize: '18px', fontWeight: activeTab === 'reports' ? 800 : 600, color: activeTab === 'reports' ? '#241B3D' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <div onClick={() => setActiveTab('reports')} style={{ fontSize: '18px', fontWeight: activeTab === 'reports' ? 800 : 600, color: activeTab === 'reports' ? '#2D1E4B' : '#60A5FA', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <BarChart2 size={20} /> Relatórios Financeiros
             </div>
           </div>
@@ -112,7 +112,7 @@ export const ClassManagementProfessor = () => {
                     students.filter(s => s.professorId === selectedProfessorId).map(student => (
                       <div key={student.id} style={{ background: 'white', borderRadius: '16px', padding: '24px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)', display: 'flex', flexDirection: 'column', gap: '12px' }}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-                          <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1a1a2e' }}>{student.name}</h3>
+                          <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#1A112C' }}>{student.name}</h3>
                           <div style={{ display: 'flex', gap: '8px' }}>
                             <button onClick={() => { setActiveStudent(student); setFormIsResidential(student.isResidential || false); setIsStudentModalOpen(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#60A5FA' }}><Edit size={16} /></button>
                             <button onClick={() => {
@@ -205,10 +205,10 @@ export const ClassManagementProfessor = () => {
                           return (
                             <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', background: cls.status === 'completed' ? 'rgba(16,185,129,0.05)' : cls.status.includes('cancelled') ? 'rgba(239,68,68,0.05)' : cls.status === 'rain' ? 'rgba(245,158,11,0.05)' : 'white' }}>
                               <td style={{ padding: '16px 24px' }}>
-                                <div style={{ fontWeight: 700, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</div>
+                                <div style={{ fontWeight: 700, color: '#1A112C' }}>{cls.date.split('-').reverse().join('/')}</div>
                                 <div style={{ fontSize: '13px', color: '#6B7280' }}>{cls.timeStart} - {cls.timeEnd}</div>
                               </td>
-                              <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1a1a2e' }}>{student?.name || 'Desconhecido'}</td>
+                              <td style={{ padding: '16px 24px', fontWeight: 600, color: '#1A112C' }}>{student?.name || 'Desconhecido'}</td>
                               <td style={{ padding: '16px 24px', color: '#6B7280', fontSize: '14px' }}><MapPin size={14} style={{ display: 'inline', marginRight: '4px' }}/> {cls.location || 'Não informado'}</td>
                               <td style={{ padding: '16px 24px' }}>
                                 <select 
@@ -343,11 +343,11 @@ export const ClassManagementProfessor = () => {
                             const value = (student && student.hourlyRate && (cls.status === 'completed' || cls.willHaveReplacement)) ? hours * student.hourlyRate : 0;
                             
                             return (
-                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: (cls.status !== 'completed' && !cls.willHaveReplacement) ? 0.6 : 1, color: '#1a1a2e' }}>
-                                <td style={{ padding: '12px 24px', fontWeight: 600, color: '#1a1a2e' }}>{cls.date.split('-').reverse().join('/')}</td>
-                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{student?.name || '-'}</td>
-                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'replacement' ? 'Reposição' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
-                                <td style={{ padding: '12px 24px', color: '#1a1a2e' }}>{hours.toFixed(1)}h</td>
+                              <tr key={cls.id} style={{ borderBottom: '1px solid #F3F4F6', opacity: (cls.status !== 'completed' && !cls.willHaveReplacement) ? 0.6 : 1, color: '#1A112C' }}>
+                                <td style={{ padding: '12px 24px', fontWeight: 600, color: '#1A112C' }}>{cls.date.split('-').reverse().join('/')}</td>
+                                <td style={{ padding: '12px 24px', color: '#1A112C' }}>{student?.name || '-'}</td>
+                                <td style={{ padding: '12px 24px', color: '#1A112C' }}>{cls.status === 'completed' ? 'Realizada' : cls.status === 'replacement' ? 'Reposição' : cls.status === 'rain' ? 'Chuva' : cls.status.includes('cancelled') ? 'Cancelada' : 'Planejada'}</td>
+                                <td style={{ padding: '12px 24px', color: '#1A112C' }}>{hours.toFixed(1)}h</td>
                                 <td style={{ padding: '12px 24px', textAlign: 'right', fontWeight: 700, color: (cls.status === 'completed' || cls.willHaveReplacement) ? '#10B981' : '#6B7280' }}>
                                   R$ {value.toFixed(2)}
                                 </td>
@@ -578,7 +578,7 @@ export const ClassManagementProfessor = () => {
                             <div 
                               key={day.val} 
                               onClick={() => setSelectedDays(prev => prev.includes(day.val) ? prev.filter(d => d !== day.val) : [...prev, day.val])}
-                              style={{ padding: '6px 12px', borderRadius: '100px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, background: selectedDays.includes(day.val) ? '#60A5FA' : 'rgba(255,255,255,0.1)', color: selectedDays.includes(day.val) ? '#1a1a2e' : 'white' }}
+                              style={{ padding: '6px 12px', borderRadius: '100px', cursor: 'pointer', fontSize: '13px', fontWeight: 600, background: selectedDays.includes(day.val) ? '#60A5FA' : 'rgba(255,255,255,0.1)', color: selectedDays.includes(day.val) ? '#1A112C' : 'white' }}
                             >
                               {day.label}
                             </div>

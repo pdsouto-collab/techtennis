@@ -64,7 +64,7 @@ export const CustomerFeedback = () => {
         
         {/* Header Area */}
         <div style={{ background: '#FFFFFF', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', display: 'flex', flexWrap: 'wrap', gap: '24px', justifyContent: 'space-between', alignItems: 'center' }}>
-          <h3 style={{ color: '#1a1a2e', fontSize: '20px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <h3 style={{ color: '#1A112C', fontSize: '20px', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: '16px' }}>
             {activeTab === 'racket' ? (
               <>
                 <select 
@@ -95,13 +95,13 @@ export const CustomerFeedback = () => {
         <div style={{ display: 'flex', gap: '32px', padding: '24px 40px', borderBottom: '1px solid #E5E7EB', background: '#FFFFFF' }}>
           <div 
             onClick={() => setActiveTab('racket')} 
-            style={{ fontSize: '18px', fontWeight: activeTab === 'racket' ? 800 : 600, color: activeTab === 'racket' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
+            style={{ fontSize: '18px', fontWeight: activeTab === 'racket' ? 800 : 600, color: activeTab === 'racket' ? '#1A112C' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
           >
             Encordoamentos da raquete
           </div>
           <div 
             onClick={() => setActiveTab('all')} 
-            style={{ fontSize: '18px', fontWeight: activeTab === 'all' ? 800 : 600, color: activeTab === 'all' ? '#1a1a2e' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
+            style={{ fontSize: '18px', fontWeight: activeTab === 'all' ? 800 : 600, color: activeTab === 'all' ? '#1A112C' : '#60A5FA', cursor: 'pointer', transition: 'color 0.2s' }}
           >
             Todos meus encordoamentos
           </div>
@@ -175,7 +175,7 @@ export const CustomerFeedback = () => {
                       <button 
                         onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} 
                         style={{ 
-                          background: job.feedback?.comments || job.feedback?.rating ? '#1a1a2e' : '#10B981', 
+                          background: job.feedback?.comments || job.feedback?.rating ? '#1A112C' : '#10B981', 
                           border: 'none', padding: '10px 16px', borderRadius: '8px', color: 'white', 
                           display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
                           transition: 'opacity 0.2s'

@@ -285,7 +285,7 @@ export const RacketCollection = () => {
             {selectedProfessorId && selectedProfessorId !== 'all' && role !== 'PROFESSOR' && (
               <button 
                 onClick={() => openManualModal()}
-                style={{ background: 'var(--primary-color)', color: '#1a1a2e', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                style={{ background: 'var(--primary-color)', color: '#1A112C', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
                 <Plus size={18} /> Adicionar Lançamento Manual
               </button>
             )}

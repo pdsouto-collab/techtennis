@@ -1,24 +1,24 @@
 /* src/index.css */
 :root {
-  /* Brand Colors - Stitch Theme */
-  --primary-color: #058F4A; 
-  --primary-color-dim: rgba(5, 143, 74, 0.3);
+  /* Brand Colors - Stitch Theme V2 */
+  --primary-color: #38D430; /* Neon Green */
+  --primary-color-dim: rgba(56, 212, 48, 0.3);
   
-  --bg-gradient-top: #241B3D; 
-  --bg-gradient-bottom: #160f27; 
-  --secondary-color: #CEBDFF; 
+  --bg-gradient-top: #2D1E4B; /* Lighter Purple */
+  --bg-gradient-bottom: #1A112C; /* Dark Purple */
+  --secondary-color: #E2D9FF; 
 
   /* Glass Panels */
-  --bg-panel: rgba(77, 66, 110, 0.5);
-  --bg-panel-solid: #4D426E;
+  --bg-panel: rgba(45, 30, 75, 0.5); /* #2D1E4B with opacity */
+  --bg-panel-solid: #2D1E4B;
   
   /* Text */
   --text-primary: #ffffff; 
-  --text-dark: #241B3D; 
-  --text-secondary: #CEBDFF;
+  --text-dark: #1A112C; 
+  --text-secondary: #E2D9FF;
   
   /* Borders */
-  --border-light: rgba(206, 189, 255, 0.2);
+  --border-light: rgba(226, 217, 255, 0.2);
   
   /* Typography */
   --font-heading: 'Inter', sans-serif;
@@ -80,8 +80,8 @@ a {
 }
 
 .button-primary {
-  background-color: var(--primary-color);
-  color: #ffffff;
+  background-color: var(--secondary-color);
+  color: var(--text-dark);
   font-family: var(--font-heading);
   font-weight: 700;
   padding: 16px 32px;
@@ -98,7 +98,7 @@ a {
 
 .button-primary:hover {
   transform: translateY(-2px);
-  background-color: #047A3E;
+  background-color: #ffffff;
   box-shadow: 0 12px 24px rgba(0,0,0,0.15);
 }
 

@@ -33,7 +33,7 @@ const Navbar = () => {
         position: 'fixed',
         top: '20px', left: '50%', transform: 'translateX(-50%)',
         width: '90%', maxWidth: '1200px', zIndex: 50,
-        background: 'rgba(77, 66, 110, 0.4)', backdropFilter: 'blur(16px)',
+        background: 'rgba(45, 30, 75, 0.5)', backdropFilter: 'blur(16px)',
         border: '1px solid var(--border-light)',
         borderRadius: '100px',
         padding: '12px 32px'
@@ -156,7 +156,7 @@ const HomeTile: React.FC<HomeTileProps> = ({ title, subtitle, backgroundImage, o
       }} />
       <div style={{
         position: 'absolute', inset: 0,
-        background: 'linear-gradient(180deg, rgba(36, 27, 61, 0) 0%, rgba(36, 27, 61, 0) 40%, rgba(36, 27, 61, 0.9) 100%)',
+        background: 'linear-gradient(180deg, rgba(26, 17, 44, 0) 0%, rgba(26, 17, 44, 0) 40%, rgba(26, 17, 44, 0.9) 100%)',
       }} />
       <div style={{
         position: 'absolute', bottom: '24px', left: '24px', right: '24px',
