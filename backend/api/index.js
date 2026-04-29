@@ -1010,7 +1010,13 @@ app.get('/api/single-class/search', authenticateToken, async (req, res) => {
   const db = getDB();
   try {
     await db.connect();
-    const result = await db.query('SELECT * FROM "SingleClassProfessorProfile" WHERE "isOnline" = true ORDER BY random() LIMIT 1');
+    const result = await db.query(`
+      SELECT p.*, prof."name" as "professorName", prof."photoUrl" as "professorPhotoUrl"
+      FROM "SingleClassProfessorProfile" p
+      LEFT JOIN "Professor" prof ON p."professorId"::text = prof."id"::text
+      WHERE p."isOnline" = true 
+      ORDER BY random() LIMIT 1
+    `);
     res.json(result.rows.length > 0 ? result.rows[0] : null);
   } catch (err) {
     res.status(500).json({ error: 'Erro' });
