@@ -36,13 +36,13 @@ const Navbar = () => {
         background: 'rgba(60, 42, 99, 0.5)', backdropFilter: 'blur(16px)',
         border: '1px solid var(--border-light)',
         borderRadius: '100px',
-        padding: '12px 32px'
+        padding: '8px 24px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
               <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
-                height: '72px', 
+                height: '40px', 
                 objectFit: 'contain',
                 filter: 'brightness(0) invert(1)'
               }} />
