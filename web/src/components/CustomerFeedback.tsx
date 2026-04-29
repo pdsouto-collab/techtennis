@@ -3,11 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Smile, CircleDollarSign, X } from 'lucide-react';
 import { FeedbackModal } from './FeedbackModal';
+import { useAuth } from '../contexts/AuthContext';
+
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 export const CustomerFeedback = () => {
   const navigate = useNavigate();
-  // Mock logged in customer for the "Cliente" view
-  const LOGGED_IN_CUSTOMER = 'Rafael Nadal';
+  const { currentUser } = useAuth();
+  const LOGGED_IN_CUSTOMER = currentUser?.name || 'Cliente';
 
   const [jobs, setJobs] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState('racket'); // 'racket' or 'all'
@@ -17,26 +20,32 @@ export const CustomerFeedback = () => {
   const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
 
   useEffect(() => {
-    const saved = localStorage.getItem('tt_jobs_v2');
-    if (saved) {
-      setJobs(JSON.parse(saved));
-    }
-
-    const handleStorage = (e: StorageEvent) => {
-      if (e.key === 'tt_jobs_v2' && e.newValue) {
-        setJobs(JSON.parse(e.newValue));
+    const fetchJobs = async () => {
+      try {
+        const token = localStorage.getItem('tt_auth_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(`${API_URL}/api/jobs`, { headers });
+        if (res.ok) {
+          const data = await res.json();
+          // Initialize feedback if missing (from API, we might not have it yet, but we will store it locally or just leave it)
+          setJobs(data);
+        }
+      } catch (err) {
+        console.error('Error fetching jobs:', err);
       }
     };
-    window.addEventListener('storage', handleStorage);
-    return () => window.removeEventListener('storage', handleStorage);
+    fetchJobs();
   }, []);
 
   const saveJobs = (newJobs: any[]) => {
     setJobs(newJobs);
-    localStorage.setItem('tt_jobs_v2', JSON.stringify(newJobs));
+    // Ideally we would save the feedback back to the API. For now we only update local state since API doesn't support feedback yet.
   };
 
-  const customerJobs = jobs.filter((j: any) => j.customerName === LOGGED_IN_CUSTOMER);
+  const customerJobs = jobs.filter((j: any) => 
+    (currentUser?.numericId && String(j.customerId) === String(currentUser.numericId)) || 
+    (currentUser?.name && j.customerName === currentUser.name)
+  );
   const uniqueRackets = Array.from(new Set(customerJobs.map((j: any) => j.racketModel).filter(Boolean)));
 
   useEffect(() => {
@@ -78,8 +87,6 @@ export const CustomerFeedback = () => {
                     <option value="">Sem raquetes salvas</option>
                   )}
                 </select>
-                {selectedRacket && <span style={{ color: '#9CA3AF', fontWeight: 600 }}>[1]</span>} 
-                {selectedRacket && <span style={{ color: '#9CA3AF', fontWeight: 500, fontSize: '15px' }}>18x20 L3</span>}
               </>
             ) : (
               `Todo o Histórico de ${LOGGED_IN_CUSTOMER}`
@@ -130,18 +137,18 @@ export const CustomerFeedback = () => {
                   
                   {activeTab === 'all' && (
                     <td style={{ padding: '20px 12px', fontSize: '14px', fontWeight: 700 }}>
-                      {job.racketModel} <br />
-                      <span style={{color: '#9CA3AF', fontWeight: 500, fontSize: '12px'}}>18x20 L3</span>
+                      {job.racketModel}
                     </td>
                   )}
                   
                   <td style={{ padding: '20px 12px', fontSize: '15px' }}>
-                    <div style={{fontWeight: 700}}>Solinco Hyper-G Green 115</div>
-                    <div style={{color: '#4B5563', fontSize: '14px'}}>@{job.tension || '55/53 lbs'}</div>
+                    <div style={{fontWeight: 700}}>{job.stringMains || '-'}</div>
+                    {job.isHybrid && <div style={{fontWeight: 700}}>{job.stringCross}</div>}
+                    <div style={{color: '#4B5563', fontSize: '14px'}}>@{job.tension || job.tensionMain || 'N/A'}</div>
                   </td>
                   
                   <td style={{ padding: '20px 12px', fontSize: '14px', color: '#6B7280', fontWeight: 500 }}>
-                    {job.stringer || 'NTC Pro Stringer'}
+                    {job.stringerName || job.stringer || 'NTC Pro Stringer'}
                   </td>
 
                   <td style={{ padding: '20px 12px', fontSize: '13px', fontWeight: 700 }}>
