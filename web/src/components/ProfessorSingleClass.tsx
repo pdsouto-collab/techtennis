@@ -193,12 +193,26 @@ export const ProfessorSingleClass = () => {
                     checked={phase === 'requests'}
                     onChange={async (e) => {
                       const isNowOnline = e.target.checked;
-                      await fetch(`${API_URL}/api/single-class/profile`, {
-                        method: 'POST',
-                        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: isNowOnline })
-                      });
-                      setPhase(isNowOnline ? 'requests' : 'config');
+                      try {
+                        const res = await fetch(`${API_URL}/api/single-class/profile`, {
+                          method: 'POST',
+                          headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ 
+                            price: Number(price), 
+                            experience: Number(experience), 
+                            maxDistance: Number(maxDistance), 
+                            specialty, 
+                            isOnline: isNowOnline 
+                          })
+                        });
+                        if (res.ok) {
+                          setPhase(isNowOnline ? 'requests' : 'config');
+                        } else {
+                          alert('Erro ao atualizar status. Verifique os campos.');
+                        }
+                      } catch (err) {
+                        alert('Erro de conexão.');
+                      }
                     }}
                     style={{ opacity: 0, width: 0, height: 0 }} 
                   />

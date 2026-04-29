@@ -147,7 +147,7 @@ export const ClassManagementProfessor = () => {
                         </div>
                         <div style={{ fontSize: '14px', color: '#4B5563' }}>
                           {student.phone ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>📞 <span style={{ fontWeight: 500 }}>{student.phone ? applyPhoneMask(student.phone) : ''}</span></div> : null}
-                          {student.isResidential ? <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Condomínio / Residencial'}</span></div> : null}
+                          {student.isResidential ? <div style={{ color: '#10B981', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>🏡 <span>{student.condoName ? `${student.condoName}` : 'Clube / Condomínio'}</span></div> : null}
                           {student.level ? <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>⭐ <span style={{ fontWeight: 500 }}>{student.level}</span></div> : null}
                         </div>
                         <div style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -452,12 +452,17 @@ export const ClassManagementProfessor = () => {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', background: 'rgba(0,0,0,0.1)', padding: '12px 16px', borderRadius: '8px' }}>
                     <input name="isResidential" checked={formIsResidential} onChange={(e) => setFormIsResidential(e.target.checked)} type="checkbox" id="resCheckbox" style={{ width: '18px', height: '18px', accentColor: 'var(--primary-color)' }} />
-                    <label htmlFor="resCheckbox" style={{ color: 'white', cursor: 'pointer' }}>Aulas em Condomínio / Residencial</label>
+                    <label htmlFor="resCheckbox" style={{ color: 'white', cursor: 'pointer' }}>Aulas em Clube / Condomínio</label>
                   </div>
                   {formIsResidential && (
                     <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }}>
-                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Qual Condomínio / Residencial?</label>
-                      <input name="condoName" defaultValue={activeStudent?.condoName} type="text" style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white' }} placeholder="Nome do local..." />
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Clube / Condomínio</label>
+                      <select name="condoName" defaultValue={activeStudent?.condoName || ''} style={{ width: '100%', padding: '12px 16px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.2)', color: 'white', appearance: 'none' }}>
+                        <option value="">Selecione o local...</option>
+                        {(appSettings.clubs || []).map((club: string) => (
+                          <option key={club} value={club}>{club}</option>
+                        ))}
+                      </select>
                     </motion.div>
                   )}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
