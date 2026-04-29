@@ -1,12 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Navigation, Info, CheckCircle, Send, ArrowLeft, DollarSign, Award, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const ProfessorSingleClass = () => {
   const navigate = useNavigate();
+
+  const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+  const getAuthHeader = () => {
+    const t = localStorage.getItem('tt_auth_token');
+    return t ? { 'Authorization': `Bearer ${t}` } : {} as HeadersInit;
+  };
+
   const [phase, setPhase] = useState<'config' | 'requests' | 'chat'>('config');
-  const [chatMessages, setChatMessages] = useState<{sender: 'me' | 'client', text: string}[]>([]);
+  const [chatMessages, setChatMessages] = useState<{sender: 'professor' | 'student', text: string}[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
   
   // States para a configuração do Perfil do Professor
@@ -16,36 +23,89 @@ export const ProfessorSingleClass = () => {
   const [specialty, setSpecialty] = useState('');
 
   // Simulating requests pinging in
-  const requests = [
-    {
-      id: 1,
-      studentName: 'Roberto Almeida',
-      distance: 4.2,
-      objective: 'Quero bater bola forte e focar no saque.',
-      timeAgo: 'Agora mesmo'
-    },
-    {
-      id: 2,
-      studentName: 'Carla Dias',
-      distance: 8.5,
-      objective: 'Treino tático para torneio.',
-      timeAgo: 'Há 2 min'
-    }
-  ];
+  
+  const [requests, setRequests] = useState<any[]>([]);
+  const [activeMatch, setActiveMatch] = useState<any>(null);
 
-  const handleSendMessage = () => {
-    if(!currentMessage.trim()) return;
-    setChatMessages([...chatMessages, { sender: 'me', text: currentMessage }]);
+  // Poll requests when online
+  useEffect(() => {
+    let interval: any;
+    if (phase === 'requests') {
+      const fetchReqs = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/single-class/requests`, { headers: getAuthHeader() });
+          if(res.ok) setRequests(await res.json());
+        } catch(e) {}
+      };
+      fetchReqs();
+      interval = setInterval(fetchReqs, 3000);
+    }
+    return () => clearInterval(interval);
+  }, [phase]);
+
+  // Fetch initial profile
+  useEffect(() => {
+    const fetchProf = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/single-class/profile`, { headers: getAuthHeader() });
+        if(res.ok) {
+          const data = await res.json();
+          if(data) {
+            setPrice(data.price || '180');
+            setExperience(data.experience || '12');
+            setMaxDistance(data.maxDistance || 15);
+            setSpecialty(data.specialty || '');
+            if(data.isOnline) setPhase('requests');
+          }
+        }
+      } catch(e) {}
+    };
+    fetchProf();
+  }, []);
+
+
+  
+  useEffect(() => {
+    let interval: any;
+    if (phase === 'chat' && activeMatch) {
+      const fetchChat = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/single-class/chat/${activeMatch.id}`, { headers: getAuthHeader() });
+          if(res.ok) setChatMessages(await res.json());
+        } catch(e) {}
+      };
+      fetchChat();
+      interval = setInterval(fetchChat, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [phase, activeMatch]);
+
+  const handleSendMessage = async () => {
+    if(!currentMessage.trim() || !activeMatch) return;
+    const msg = currentMessage;
     setCurrentMessage('');
-    setTimeout(() => {
-       setChatMessages(prev => [...prev, { sender: 'client', text: 'Excelente! Pode ser na quadra pública ou no meu condomínio?' }]);
-    }, 1500);
+    await fetch(`${API_URL}/api/single-class/chat/${activeMatch.id}`, {
+      method: 'POST',
+      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: msg, sender: 'professor' })
+    });
+    setChatMessages(prev => [...prev, { sender: 'professor', text: msg }]);
   };
 
-  const handleBack = () => {
-    if(phase === 'chat') setPhase('requests');
-    else if(phase === 'requests') setPhase('config');
-    else navigate('/');
+  const handleBack = async () => {
+    if(phase === 'chat') {
+      setPhase('requests');
+      setActiveMatch(null);
+    } else if(phase === 'requests') {
+      await fetch(`${API_URL}/api/single-class/profile`, {
+        method: 'POST',
+        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+        body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: false })
+      });
+      setPhase('config');
+    } else {
+      navigate('/');
+    }
   };
 
   return (
@@ -55,7 +115,7 @@ export const ProfessorSingleClass = () => {
 
         <AnimatePresence mode="wait">
           
-          {/* FASE 1: CONFIGURAÇÃO DO PERFIL */}
+          {/* FASE 1: CONFIGU{activeMatch?.studentName?.substring(0,2).toUpperCase() || 'AL'}ÇÃO DO PERFIL */}
           {phase === 'config' && (
             <motion.div
               key="config"
@@ -129,7 +189,14 @@ export const ProfessorSingleClass = () => {
                 />
               </div>
 
-              <button onClick={() => setPhase('requests')} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
+              <button onClick={async () => {
+    await fetch(`${API_URL}/api/single-class/profile`, {
+      method: 'POST',
+      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: true })
+    });
+    setPhase('requests');
+  }} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
                 <Navigation size={22} /> Ficar Online no Radar
               </button>
             </motion.div>
@@ -168,12 +235,12 @@ export const ProfessorSingleClass = () => {
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
                        <h3 style={{ color: 'white', margin: 0, fontSize: '20px' }}>{req.studentName}</h3>
-                       <span style={{ color: 'var(--primary-color)', fontSize: '13px', fontWeight: 600 }}>{req.timeAgo}</span>
+                       <span style={{ color: 'var(--primary-color)', fontSize: '13px', fontWeight: 600 }}>{new Date(req.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                     </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '16px' }}>
                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--text-secondary)' }}>
-                          <Navigation size={16} /> {req.distance} km de você
+                          <Navigation size={16} /> Aprox. 4.2 km de você
                        </div>
                     </div>
 
@@ -183,7 +250,15 @@ export const ProfessorSingleClass = () => {
                     </div>
 
                     <div style={{ display: 'flex', gap: '12px' }}>
-                       <button onClick={() => setPhase('chat')} className="button-primary" style={{ flex: 1, padding: '12px', fontSize: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
+                       <button onClick={async () => {
+    const res = await fetch(`${API_URL}/api/single-class/match/${req.id}/accept`, {
+      method: 'PUT', headers: getAuthHeader()
+    });
+    if(res.ok) {
+      setActiveMatch(req);
+      setPhase('chat');
+    }
+  }} className="button-primary" style={{ flex: 1, padding: '12px', fontSize: '15px', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px' }}>
                          <CheckCircle size={18} /> Aceitar Aluno
                        </button>
                     </div>
@@ -218,7 +293,7 @@ export const ProfessorSingleClass = () => {
                   RA
                 </div>
                 <div>
-                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>Roberto Almeida</h3>
+                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{activeMatch?.studentName || 'Aluno'}</h3>
                   <div style={{ color: '#10B981', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%'}}></div> Online</div>
                 </div>
               </div>
@@ -231,11 +306,11 @@ export const ProfessorSingleClass = () => {
                  
                  {chatMessages.map((msg, i) => (
                     <div key={i} style={{ 
-                      alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start', 
-                      background: msg.sender === 'me' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)', 
-                      color: msg.sender === 'me' ? 'var(--text-dark)' : 'white', 
+                      alignSelf: msg.sender === 'professor' ? 'flex-end' : 'flex-start', 
+                      background: msg.sender === 'professor' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)', 
+                      color: msg.sender === 'professor' ? 'var(--text-dark)' : 'white', 
                       padding: '12px 16px', 
-                      borderRadius: msg.sender === 'me' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', 
+                      borderRadius: msg.sender === 'professor' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', 
                       maxWidth: '80%' 
                     }}>
                       {msg.text}
