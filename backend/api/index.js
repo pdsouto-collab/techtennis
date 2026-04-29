@@ -981,7 +981,7 @@ app.get('/api/single-class/profile', authenticateToken, async (req, res) => {
   const db = getDB();
   try {
     await db.connect();
-    const result = await db.query('SELECT * FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.id]);
+    const result = await db.query('SELECT * FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.userId]);
     res.json(result.rows.length > 0 ? result.rows[0] : null);
   } catch (err) {
     res.status(500).json({ error: 'Erro' });
@@ -993,12 +993,14 @@ app.post('/api/single-class/profile', authenticateToken, async (req, res) => {
   const { price, experience, maxDistance, specialty, isOnline } = req.body;
   try {
     await db.connect();
-    const check = await db.query('SELECT id FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.id]);
+    const check = await db.query('SELECT id FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.userId]);
     if (check.rows.length > 0) {
-      const result = await db.query('UPDATE "SingleClassProfessorProfile" SET "price"=$1, "experience"=$2, "maxDistance"=$3, "specialty"=$4, "isOnline"=$5, "updatedAt"=now() WHERE "professorId"=$6 RETURNING *', [price, experience, maxDistance, specialty, isOnline, req.user.id]);
+      const result = await db.query('UPDATE "SingleClassProfessorProfile" SET "price"=$1, "experience"=$2, "maxDistance"=$3, "specialty"=$4, "isOnline"=$5, "updatedAt"=now() WHERE "professorId"=$6 RETURNING *', [price, experience, maxDistance, specialty, isOnline, req.user.userId]);
       res.json(result.rows[0]);
     } else {
-      const result = await db.query('INSERT INTO "SingleClassProfessorProfile" ("professorId", "name", "price", "experience", "maxDistance", "specialty", "isOnline") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [req.user.id, req.user.name, price, experience, maxDistance, specialty, isOnline]);
+      const userRes = await db.query('SELECT name FROM "User" WHERE id = $1', [req.user.userId]);
+      const profName = userRes.rows[0]?.name || req.user.email;
+      const result = await db.query('INSERT INTO "SingleClassProfessorProfile" ("professorId", "name", "price", "experience", "maxDistance", "specialty", "isOnline") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [req.user.userId, profName, price, experience, maxDistance, specialty, isOnline]);
       res.json(result.rows[0]);
     }
   } catch (err) {
@@ -1028,7 +1030,9 @@ app.post('/api/single-class/match', authenticateToken, async (req, res) => {
   const { professorId, objective } = req.body;
   try {
     await db.connect();
-    const result = await db.query('INSERT INTO "SingleClassMatch" ("studentId", "studentName", "professorId", "objective") VALUES ($1, $2, $3, $4) RETURNING *', [req.user.id, req.user.name, professorId, objective]);
+    const userRes = await db.query('SELECT name FROM "User" WHERE id = $1', [req.user.userId]);
+    const studentName = userRes.rows[0]?.name || req.user.email;
+    const result = await db.query('INSERT INTO "SingleClassMatch" ("studentId", "studentName", "professorId", "objective") VALUES ($1, $2, $3, $4) RETURNING *', [req.user.userId, studentName, professorId, objective]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
     res.status(500).json({ error: 'Erro' });
@@ -1039,7 +1043,7 @@ app.get('/api/single-class/requests', authenticateToken, async (req, res) => {
   const db = getDB();
   try {
     await db.connect();
-    const result = await db.query('SELECT * FROM "SingleClassMatch" WHERE "professorId" = $1 AND "status" = $2 ORDER BY "createdAt" DESC', [req.user.id, 'pending']);
+    const result = await db.query('SELECT * FROM "SingleClassMatch" WHERE "professorId" = $1 AND "status" = $2 ORDER BY "createdAt" DESC', [req.user.userId, 'pending']);
     res.json(result.rows);
   } catch (err) {
     res.status(500).json({ error: 'Erro' });
