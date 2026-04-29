@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson, MessageCircle } from 'lucide-react';
+import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson, MessageCircle, Smile } from 'lucide-react';
 import { OrderDetailsView } from './OrderDetailsView';
 import { CustomerHistoryModal } from './CustomerHistoryModal';
 import { AnalyticsView } from './AnalyticsView';
 import { OrdersView } from './OrdersView';
 import { SettingsView } from './SettingsView';
 import { applyPhoneMask, applyCpfCnpjMask } from '../utils/masks';
+import { FeedbackModal } from './FeedbackModal';
 // Extended Mock Data for the new functionalities
 // Removed INITIAL_CUSTOMERS to fetch from API
 
@@ -23,6 +24,9 @@ export const StringerDashboard = () => {
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isProfessorModalOpen, setIsProfessorModalOpen] = useState(false);
   const [selectedProfessor, setSelectedProfessor] = useState<any>(null);
+
+  const [isFeedbackModalOpen, setIsFeedbackModalOpen] = useState(false);
+  const [activeFeedbackJob, setActiveFeedbackJob] = useState<any>(null);
   const [isRacketModalOpen, setIsRacketModalOpen] = useState(false);
   const [isCloneRacketModalOpen, setIsCloneRacketModalOpen] = useState(false);
   const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
@@ -760,7 +764,14 @@ export const StringerDashboard = () => {
                           </div>
                         </>
                       ) : (
-                        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>{job.status.toUpperCase()}</div>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', alignItems: 'flex-end' }}>
+                          <div style={{ fontSize: '14px', color: 'var(--text-secondary)', fontWeight: 600 }}>{job.status.toUpperCase()}</div>
+                          {job.feedback && (
+                            <button onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} style={{ background: 'rgba(94, 136, 214, 0.15)', border: '1px solid #5E88D6', padding: '6px 12px', borderRadius: '8px', color: '#5E88D6', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 700, fontSize: '13px' }} title="Ver Feedback">
+                              <Smile size={16} /> Avaliação
+                            </button>
+                          )}
+                        </div>
                       )}
                     </div>
                   ))
@@ -2566,6 +2577,18 @@ export const StringerDashboard = () => {
               </motion.div>
             </div>
           )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isFeedbackModalOpen && activeFeedbackJob && (
+          <FeedbackModal 
+            isOpen={isFeedbackModalOpen} 
+            onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
+            job={activeFeedbackJob}
+            onSaveFeedback={() => {}}
+            readOnly={true}
+          />
+        )}
       </AnimatePresence>
 
     </div>

@@ -37,11 +37,6 @@ export const CustomerFeedback = () => {
     fetchJobs();
   }, []);
 
-  const saveJobs = (newJobs: any[]) => {
-    setJobs(newJobs);
-    // Ideally we would save the feedback back to the API. For now we only update local state since API doesn't support feedback yet.
-  };
-
   const customerJobs = jobs.filter((j: any) => 
     (currentUser?.numericId && String(j.customerId) === String(currentUser.numericId)) || 
     (currentUser?.name && j.customerName === currentUser.name)
@@ -215,9 +210,29 @@ export const CustomerFeedback = () => {
           isOpen={isFeedbackModalOpen} 
           onClose={() => { setIsFeedbackModalOpen(false); setActiveFeedbackJob(null); }} 
           job={activeFeedbackJob}
-          onSaveFeedback={(feedbackData: any) => {
-            const newJobs = jobs.map((j: any) => j.id === activeFeedbackJob.id ? { ...j, feedback: feedbackData } : j);
-            saveJobs(newJobs);
+          onSaveFeedback={async (feedbackData: any) => {
+            try {
+              const token = localStorage.getItem('tt_auth_token');
+              const headers: Record<string, string> = {
+                'Content-Type': 'application/json',
+                ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+              };
+              const updatedJob = { ...activeFeedbackJob, feedback: feedbackData };
+              const res = await fetch(`${API_URL}/api/jobs/${activeFeedbackJob.id}`, {
+                method: 'PUT',
+                headers,
+                body: JSON.stringify(updatedJob)
+              });
+              if (res.ok) {
+                const data = await res.json();
+                const newJobs = jobs.map((j: any) => j.id === activeFeedbackJob.id ? data : j);
+                setJobs(newJobs);
+              } else {
+                console.error('Failed to save feedback');
+              }
+            } catch (err) {
+              console.error('Error saving feedback:', err);
+            }
             setIsFeedbackModalOpen(false);
             setActiveFeedbackJob(null);
           }}
