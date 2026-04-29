@@ -272,23 +272,29 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                     {orderJob.racketModel} 
                     {suffix && <span style={{fontWeight: 600, color: '#888'}}> {suffix}</span>}
                   </div>
-                  <div style={{ fontSize: '14px', color: '#888', fontWeight: 500 }}>18x20 L3</div>
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '6px' }}>Solinco Hyper-G Green</div>
-                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tension || '52 lbs'}</div>
-                </div>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '6px' }}>Solinco Hyper-G Green</div>
-                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tension || '52 lbs'}</div>
-                </div>
-                <div>
-                  <div style={{ display: 'inline-block', background: '#F2C94C', color: 'var(--text-dark)', padding: '6px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 800 }}>
-                    {orderJob.type === 'to_string' ? 'Para Encordoar' : orderJob.type === 'picking_up' ? 'Pronto' : 'Aguardando'}
+                  <div style={{ fontSize: '14px', color: '#888', fontWeight: 500 }}>
+                    {(() => {
+                      const r = rackets?.find((rk: any) => rk.id === orderJob.racketId);
+                      if (!r) return '';
+                      return [r.stringPattern, r.gripSize].filter(Boolean).join(' ');
+                    })()}
                   </div>
                 </div>
-                <div></div>
-                <div></div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '6px' }}>{orderJob.stringMains || orderJob.mainString || 'Não definido'}</div>
+                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tensionMain || orderJob.tension || '?'} {orderJob.tensionUnit || 'Lbs'}</div>
+                </div>
+                <div>
+                  <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '6px' }}>{orderJob.stringCross || orderJob.crossString || orderJob.stringMains || orderJob.mainString || 'Não definido'}</div>
+                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tensionCross || orderJob.tension || '?'} {orderJob.tensionUnit || 'Lbs'}</div>
+                </div>
+                <div>
+                  <div style={{ display: 'inline-block', background: '#F2C94C', color: 'var(--text-dark)', padding: '6px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 800, textTransform: 'capitalize' }}>
+                    {orderJob.status || (orderJob.type === 'to_string' ? 'Para Encordoar' : orderJob.type === 'picking_up' ? 'Pronto' : 'Aguardando')}
+                  </div>
+                </div>
+                <div style={{ fontWeight: 600 }}>{orderJob.stringerName || '-'}</div>
+                <div style={{ fontSize: '14px', color: '#666' }}>{orderJob.updatedAt ? new Date(orderJob.updatedAt).toLocaleDateString('pt-BR') : '-'}</div>
                 <div style={{ fontWeight: 900, fontSize: '16px' }}>{orderJob.price ? orderJob.price.toFixed(2) : '120.00'} BRL</div>
                 <div style={{ display: 'flex', gap: '6px', justifyContent: 'center' }}>
                   <button onClick={() => { setActivePaymentJob(orderJob); setIsPaymentModalOpen(true); }} style={{ background: orderJob.paid ? '#6FCF97' : '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Pagamento"><DollarSign size={16} strokeWidth={3} /></button>
