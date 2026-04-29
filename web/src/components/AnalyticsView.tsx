@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Calendar, Download, X, Filter } from 'lucide-react';
 import { PeriodModal } from './PeriodModal';
 
-export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], professors = [] }: any) => {
+export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], professors = [], rackets = [] }: any) => {
   const [activeTab, setActiveTab] = useState<'overview'|'stringings'>('overview');
   const [isPeriodModalOpen, setIsPeriodModalOpen] = useState(false);
   const [isStringingsFilterOpen, setIsStringingsFilterOpen] = useState(false);
@@ -50,7 +50,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      }
      if (stringingsFilters.customer) res = res.filter((j:any) => (j.customerName || '').toLowerCase().includes(stringingsFilters.customer.toLowerCase()));
      if (stringingsFilters.racket) res = res.filter((j:any) => (j.racketModel || '').toLowerCase().includes(stringingsFilters.racket.toLowerCase()));
-     if (stringingsFilters.strings) res = res.filter((j:any) => (j.mainString || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || (j.crossString || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || (j.tension || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()));
+     if (stringingsFilters.strings) res = res.filter((j:any) => ((j.stringMains || j.mainString) || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || ((j.stringCross || j.crossString) || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()) || (j.tension || '').toLowerCase().includes(stringingsFilters.strings.toLowerCase()));
      if (stringingsFilters.club) res = res.filter((j:any) => {
          const c = customers.find((c:any) => c.name === j.customerName);
          return c && (c.originClub || '').toLowerCase().includes(stringingsFilters.club.toLowerCase());
@@ -71,8 +71,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
           j.customerName || '',
           j.date || j.pickupDate || '',
           j.racketModel || '',
-          j.mainString ? `${j.mainString} ${j.tension?.split('/')[0] || ''}` : (j.tension || ''),
-          j.crossString ? `${j.crossString} ${j.tension?.split('/')[1] || ''}` : '',
+          (j.stringMains || j.mainString) ? `${(j.stringMains || j.mainString)} ${j.tension?.split('/')[0] || ''}` : (j.tension || ''),
+          (j.stringCross || j.crossString) ? `${(j.stringCross || j.crossString)} ${j.tension?.split('/')[1] || ''}` : '',
           customers.find((c:any) => c.name === j.customerName)?.originClub || '',
           professors.find((p:any) => p.id === j.commissionedProfessorId)?.name || '',
           j.stringerName || '',
@@ -267,11 +267,11 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      const stringsConfig = appSettings?.strings || [];
      
      jobs.forEach((j: any) => {
-         if (j.mainString) {
-             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === j.mainString);
+         if ((j.stringMains || j.mainString)) {
+             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === (j.stringMains || j.mainString));
              let type = strConf?.type;
              
-             if (!type && stringsConfig.includes(j.mainString)) {
+             if (!type && stringsConfig.includes((j.stringMains || j.mainString))) {
                  type = 'Monofilamento';
              }
 
@@ -293,8 +293,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
      const stringsConfig = appSettings?.strings || [];
      
      jobs.forEach((j: any) => {
-         if (j.mainString) {
-             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === j.mainString);
+         if ((j.stringMains || j.mainString)) {
+             const strConf = stringsConfig.find((s: any) => typeof s === 'object' && s.name === (j.stringMains || j.mainString));
              const brand = strConf?.brand || 'Desconhecida';
              counts[brand] = (counts[brand] || 0) + 1;
          }
@@ -308,8 +308,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
 
   const topRacketBrands = useMemo(() => {
      const counts: Record<string, number> = {};
-     const savedRackets = localStorage.getItem('tt_rackets');
-     const rackets = savedRackets ? JSON.parse(savedRackets) : [];
+     // rackets passed via props
      
      jobs.forEach((j: any) => {
          if (j.racketModel) {
@@ -415,8 +414,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          headers = ["Marca", "Encordoamentos"];
          const counts: Record<string, number> = {};
          jobs.forEach((j:any) => {
-             if (j.mainString) {
-                 const strConf = (appSettings?.strings || []).find((s: any) => typeof s === 'object' && s.name === j.mainString);
+             if ((j.stringMains || j.mainString)) {
+                 const strConf = (appSettings?.strings || []).find((s: any) => typeof s === 'object' && s.name === (j.stringMains || j.mainString));
                  const brand = strConf?.brand || 'Desconhecida';
                  counts[brand] = (counts[brand] || 0) + 1;
              }
@@ -428,8 +427,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          headers = ["Modelo", "Encordoamentos"];
          const counts: Record<string, number> = {};
          jobs.forEach((j:any) => {
-             if (j.mainString) {
-                 const str = j.isHybrid && j.crossString ? `${j.mainString} / ${j.crossString}` : j.mainString;
+             if ((j.stringMains || j.mainString)) {
+                 const str = j.isHybrid && (j.stringCross || j.crossString) ? `${(j.stringMains || j.mainString)} / ${(j.stringCross || j.crossString)}` : (j.stringMains || j.mainString);
                  counts[str] = (counts[str] || 0) + 1;
              }
          });
@@ -439,8 +438,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
          title = "Raquetes mais usadas";
          headers = ["Marca", "Encordoamentos"];
          const counts: Record<string, number> = {};
-         const savedRackets = localStorage.getItem('tt_rackets');
-         const rackets = savedRackets ? JSON.parse(savedRackets) : [];
+         // rackets passed via props
          jobs.forEach((j:any) => {
              if (j.racketModel) {
                  const matchedRacket = rackets.find((r: any) => r.name === j.racketModel);
@@ -857,8 +855,8 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.customerName || '-'}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.date || j.pickupDate || '-'}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.racketModel || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.mainString ? `${j.mainString} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.crossString ? `${j.crossString} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{(j.stringMains || j.mainString) ? `${(j.stringMains || j.mainString)} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{(j.stringCross || j.crossString) ? `${(j.stringCross || j.crossString)} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{customers.find((c:any) => c.name === j.customerName)?.originClub || '-'}</td>
                       <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>
                         {(() => {
