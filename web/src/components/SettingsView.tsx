@@ -437,7 +437,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   </button>
                 </div>
               </div>
-            ))
+            ));
+            })()
           )}
         </div>
 
