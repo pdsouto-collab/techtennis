@@ -149,8 +149,8 @@ export const OpenAgenda = () => {
         {/* Header */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer' }}>
-              <ArrowLeft size={28} />
+            <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+              <ArrowLeft size={24} />
             </button>
             <h1 style={{ fontSize: '32px', fontWeight: 800, margin: 0, fontFamily: 'var(--font-heading)', textTransform: 'uppercase' }}>
               Agenda Aberta

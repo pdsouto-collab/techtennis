@@ -52,10 +52,6 @@ export const ProfessorSingleClass = () => {
     <div style={{ paddingTop: '100px', minHeight: '100vh', display: 'flex', justifyContent: 'center', background: 'var(--bg-dark)' }}>
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px', position: 'relative' }}>
         
-        {/* Back Button */}
-        <button onClick={handleBack} style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '24px', fontWeight: 600 }}>
-          <ArrowLeft size={20} /> Voltar
-        </button>
 
         <AnimatePresence mode="wait">
           
@@ -69,7 +65,12 @@ export const ProfessorSingleClass = () => {
               className="glass-panel"
               style={{ padding: '32px', borderRadius: '24px' }}
             >
-              <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, marginBottom: '8px' }}>Seu Perfil de Aulas</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+                <button onClick={handleBack} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <ArrowLeft size={24} />
+                </button>
+                <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Seu Perfil de Aulas</h1>
+              </div>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Configure como os alunos verão você no radar de aulas avulsas.</p>
 
               <div style={{ marginBottom: '24px' }}>
@@ -143,7 +144,12 @@ export const ProfessorSingleClass = () => {
               exit={{ opacity: 0, scale: 0.95 }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-                 <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Radar de Aulas</h1>
+                 <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                   <button onClick={handleBack} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                     <ArrowLeft size={24} />
+                   </button>
+                   <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Radar de Aulas</h1>
+                 </div>
                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '6px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%' }} className="pulse-dot"></div>
                     Online ({maxDistance}km)
@@ -205,6 +211,9 @@ export const ProfessorSingleClass = () => {
             >
               {/* Chat Header */}
               <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <button onClick={handleBack} style={{ background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flexShrink: 0 }}>
+                  <ArrowLeft size={20} />
+                </button>
                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'var(--primary-color)', color: 'var(--text-dark)', display: 'flex', justifyContent: 'center', alignItems: 'center', fontWeight: 800, fontSize: '20px' }}>
                   RA
                 </div>
