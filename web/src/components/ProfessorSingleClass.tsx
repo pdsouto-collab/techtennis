@@ -96,13 +96,6 @@ export const ProfessorSingleClass = () => {
     if(phase === 'chat') {
       setPhase('requests');
       setActiveMatch(null);
-    } else if(phase === 'requests') {
-      await fetch(`${API_URL}/api/single-class/profile`, {
-        method: 'POST',
-        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-        body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: false })
-      });
-      setPhase('config');
     } else {
       navigate('/');
     }
@@ -115,8 +108,8 @@ export const ProfessorSingleClass = () => {
 
         <AnimatePresence mode="wait">
           
-          {/* FASE 1: CONFIGU{activeMatch?.studentName?.substring(0,2).toUpperCase() || 'AL'}ÇÃO DO PERFIL */}
-          {phase === 'config' && (
+          {/* FASE 1: CONFIGURAÇÃO DO PERFIL */}
+          {(phase === 'config' || phase === 'requests') && (
             <motion.div
               key="config"
               initial={{ opacity: 0, y: 20 }}
@@ -189,16 +182,40 @@ export const ProfessorSingleClass = () => {
                 />
               </div>
 
-              <button onClick={async () => {
-    await fetch(`${API_URL}/api/single-class/profile`, {
-      method: 'POST',
-      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-      body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: true })
-    });
-    setPhase('requests');
-  }} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
-                <Navigation size={22} /> Ficar Online no Radar
-              </button>
+              <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <h3 style={{ color: 'white', margin: '0 0 4px 0', fontSize: '18px' }}>Status no Radar</h3>
+                  <p style={{ color: 'var(--text-secondary)', margin: 0, fontSize: '14px' }}>Fique online para receber alunos próximos.</p>
+                </div>
+                <label style={{ position: 'relative', display: 'inline-block', width: '60px', height: '34px' }}>
+                  <input 
+                    type="checkbox" 
+                    checked={phase === 'requests'}
+                    onChange={async (e) => {
+                      const isNowOnline = e.target.checked;
+                      await fetch(`${API_URL}/api/single-class/profile`, {
+                        method: 'POST',
+                        headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ price, experience, maxDistance, specialty, isOnline: isNowOnline })
+                      });
+                      setPhase(isNowOnline ? 'requests' : 'config');
+                    }}
+                    style={{ opacity: 0, width: 0, height: 0 }} 
+                  />
+                  <span style={{
+                    position: 'absolute', cursor: 'pointer', top: 0, left: 0, right: 0, bottom: 0,
+                    backgroundColor: phase === 'requests' ? 'var(--primary-color)' : 'rgba(255,255,255,0.2)',
+                    transition: '.4s', borderRadius: '34px'
+                  }}>
+                    <span style={{
+                      position: 'absolute', content: '""', height: '26px', width: '26px', left: '4px', bottom: '4px',
+                      backgroundColor: phase === 'requests' ? 'var(--text-dark)' : 'white',
+                      transition: '.4s', borderRadius: '50%',
+                      transform: phase === 'requests' ? 'translateX(26px)' : 'translateX(0)'
+                    }} />
+                  </span>
+                </label>
+              </div>
             </motion.div>
           )}
 
@@ -212,10 +229,7 @@ export const ProfessorSingleClass = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                   <button onClick={handleBack} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                     <ArrowLeft size={24} />
-                   </button>
-                   <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Radar de Aulas</h1>
+                   <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: 0 }}>Radar Ativo</h2>
                  </div>
                  <div style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10B981', padding: '6px 12px', borderRadius: '100px', fontSize: '13px', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%' }} className="pulse-dot"></div>

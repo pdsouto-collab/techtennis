@@ -12,6 +12,7 @@ import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import { OpenAgenda } from './components/OpenAgenda';
 import { LoginView } from './components/LoginView';
 import { UserManagement } from './components/UserManagement';
+import { GlobalRadarNotification } from './components/GlobalRadarNotification';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProfileSettingsModal } from './components/ProfileSettingsModal';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
@@ -378,6 +379,7 @@ function App() {
           </Routes>
         </main>
       </div>
+      {(currentUser.role === 'PROFESSOR' || currentUser.role === 'PROFESSOR_PREMIUM' || currentUser.role === 'ADMIN') && <GlobalRadarNotification />}
     </>
   );
 }
