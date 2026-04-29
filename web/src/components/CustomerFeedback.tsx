@@ -23,7 +23,7 @@ export const CustomerFeedback = () => {
     const fetchJobs = async () => {
       try {
         const token = localStorage.getItem('tt_auth_token');
-        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const headers: Record<string, string> = token ? { 'Authorization': `Bearer ${token}` } : {};
         const res = await fetch(`${API_URL}/api/jobs`, { headers });
         if (res.ok) {
           const data = await res.json();
