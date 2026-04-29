@@ -296,7 +296,7 @@ app.post('/api/agenda', authenticateToken, async (req, res) => {
       RETURNING *
     `;
     const result = await db.query(insertQ, [
-      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || ''
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || '', professorPhotoUrl || ''
     ]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
