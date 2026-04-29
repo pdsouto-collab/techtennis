@@ -789,7 +789,7 @@ app.get('/api/users', authenticateToken, async (req, res) => {
   try {
     await db.connect();
     // Exclude password from the query for security
-    const result = await db.query('SELECT id, name, email, phone, role, status, "createdAt", "numericId", "photoUrl", "yearsOfExperience", "trainingTypes" FROM "User" ORDER BY "createdAt" DESC');
+    const result = await db.query('SELECT id, name, email, phone, role, status, "createdAt", "numericId", "photoUrl", "experience" AS "yearsOfExperience", "training" AS "trainingTypes" FROM "User" ORDER BY "createdAt" DESC');
     res.json(result.rows);
   } catch (err) {
     console.error('Error fetching users:', err);
