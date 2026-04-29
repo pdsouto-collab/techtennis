@@ -15,6 +15,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
+  const isSameOrder = (j: any) => activeOrderJob.orderCode ? j.orderCode === activeOrderJob.orderCode : j.id === activeOrderJob.id;
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const [customerNotes, setCustomerNotes] = useState<{ id: string, text: string, date: string }[]>([]);
   const [isAddPrepaidModalOpen, setIsAddPrepaidModalOpen] = useState(false);
@@ -36,7 +37,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
   if (view !== 'order_details' || !activeOrderJob) return null;
 
   const activeCustomer = customers?.find((c: any) => c.name === activeOrderJob.customerName);
-  const orderJobs = jobs.filter((j: any) => j.customerName === activeOrderJob.customerName);
+  const orderJobs = jobs.filter(isSameOrder);
   const totalJobs = orderJobs.length;
   const completedJobs = orderJobs.filter((j: any) => j.type === 'picking_up').length;
   const progressPercent = totalJobs > 0 ? Math.round((completedJobs / totalJobs) * 100) : 0;
@@ -114,9 +115,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 <button onClick={() => { if(activeCustomer) { setSelectedCustomer(activeCustomer); setIsCustomerModalOpen(true); } }} style={{ background: '#6136B3', border: 'none', padding: '12px 20px', borderRadius: '8px', color: 'white', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}><Users size={18}/> Perfil do cliente</button>
                 {!isFullyPaid ? (
                   <button onClick={() => {
-                    setJobs(jobs.map((j:any) => j.customerName === activeOrderJob.customerName ? { ...j, paid: true } : j));
-                    for (let j of jobs) {
-                       if(j.customerName === activeOrderJob.customerName && !j.paid) {
+                    setJobs(jobs.map((j:any) => isSameOrder(j) ? { ...j, paid: true } : j));
+                    for (let j of jobs) { if(isSameOrder(j) && !j.paid) {
                            fetch(`${API_URL}/api/jobs/${j.id}/status`, {
                               method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
                               body: JSON.stringify({ paid: true })
@@ -126,9 +126,8 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                   }} style={{ background: '#6FCF97', border: 'none', padding: '12px 20px', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 700, cursor: 'pointer' }}>Marcar como pago</button>
                 ) : (
                   <button onClick={() => {
-                    setJobs(jobs.map((j:any) => j.customerName === activeOrderJob.customerName ? { ...j, paid: false } : j));
-                    for (let j of jobs) {
-                       if(j.customerName === activeOrderJob.customerName && j.paid) {
+                    setJobs(jobs.map((j:any) => isSameOrder(j) ? { ...j, paid: false } : j));
+                    for (let j of jobs) { if(isSameOrder(j) && j.paid) {
                            fetch(`${API_URL}/api/jobs/${j.id}/status`, {
                               method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
                               body: JSON.stringify({ paid: false })
@@ -163,7 +162,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginTop: '32px' }}>
               <div style={{ background: 'rgba(66,152,231,0.1)', border: '1px solid rgba(66,152,231,0.2)', padding: '20px', borderRadius: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '14px', color: '#7EBDF7', marginBottom: '8px', fontWeight: 600 }}>Ponto de encordoamento</div>
-                  <div style={{ fontWeight: 800, fontSize: '18px' }}>Test</div>
+                  <div style={{ fontWeight: 800, fontSize: '18px' }}>{activeOrderJob.stringingPoint || activeCustomer?.stringingPoint || 'Não definido'}</div>
               </div>
               <div style={{ background: 'rgba(217,59,101,0.1)', border: '1px solid rgba(217,59,101,0.2)', padding: '20px', borderRadius: '12px', textAlign: 'center' }}>
                   <div style={{ fontSize: '14px', color: '#F9D0DA', marginBottom: '8px', fontWeight: 600 }}>Código da ordem</div>
@@ -211,7 +210,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                   <button onClick={() => { 
                     setIsEditingPickup(false);
                     // Update all jobs for this customer with the new pickup details
-                    const updatedJobs = jobs.map((j: any) => j.customerName === activeOrderJob.customerName ? { ...j, pickupDate, pickupNotes } : j);
+                    const updatedJobs = jobs.map((j:any) => isSameOrder(j) ? { ...j, pickupDate, pickupNotes } : j);
                     setJobs(updatedJobs);
                   }} style={{ background: '#111', color: 'white', border: 'none', padding: '14px 40px', borderRadius: '8px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>Salvar alterações</button>
                 </div>
@@ -256,7 +255,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
           </div>
           
           {/* Table Rows corresponding to Order */}
-          {jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).map((orderJob: any) => {
+          {jobs.filter(isSameOrder).map((orderJob: any) => {
             const getRacketSuffix = () => {
               if (!rackets || !orderJob.racketId) return '';
               const r = rackets.find((rk: any) => rk.id === orderJob.racketId);
@@ -318,11 +317,11 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
               <div style={{display: 'flex', gap: '8px', alignItems: 'center'}}>
                 Show <select style={{padding: '4px', borderRadius: '4px', border: '1px solid #ccc'}}><option>10</option></select> entries
               </div>
-              <span>Mostrando 1 a {jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).length} de {jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).length} registros</span>
+              <span>Mostrando 1 a {jobs.filter(isSameOrder).length} de {jobs.filter(isSameOrder).length} registros</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '24px', fontWeight: 900 }}>{jobs.filter((j: any) => j.customerName === activeOrderJob.customerName).reduce((acc: number, curr: any) => acc + (curr.price || 120), 0).toFixed(2)} BRL</div>
+                  <div style={{ fontSize: '24px', fontWeight: 900 }}>{jobs.filter(isSameOrder).reduce((acc: number, curr: any) => acc + (curr.price || 120), 0).toFixed(2)} BRL</div>
                 </div>
             </div>
           </div>
