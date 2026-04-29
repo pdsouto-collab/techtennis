@@ -277,9 +277,18 @@ export const SettingsView = ({ settings, setSettings }: any) => {
           {currentList.length === 0 ? (
             <div style={{ padding: '24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Nenhum item cadastrado.</div>
           ) : (
-            currentList.map((item: any, idx: number) => (
-              <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
-                {editingIndex === idx ? (
+            (() => {
+              const renderList = currentList.map((item: any, idx: number) => ({ item, originalIndex: idx }));
+              if (activeTab === 'strings') {
+                renderList.sort((a: any, b: any) => {
+                  const nameA = typeof a.item === 'string' ? a.item : a.item.name;
+                  const nameB = typeof b.item === 'string' ? b.item : b.item.name;
+                  return nameA.localeCompare(nameB);
+                });
+              }
+              return renderList.map(({ item, originalIndex: idx }) => (
+                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                  {editingIndex === idx ? (
                   <div style={{ display: 'flex', gap: '8px', flex: 1, marginRight: '16px', flexWrap: 'wrap' }}>
                     {activeTab === 'clubDiscounts' ? (
                       <>
