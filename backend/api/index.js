@@ -26,7 +26,7 @@ function getDB() {
 }
 
 app.post('/api/auth/register', async (req, res) => {
-  const { name, email, password, phone, role, experience, training } = req.body;
+  const { name, email, password, phone, role, experience, training, numericId } = req.body;
   const db = getDB();
   try {
     await db.connect();
@@ -43,11 +43,11 @@ app.post('/api/auth/register', async (req, res) => {
     const newId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString();
 
     const insertQ = `
-      INSERT INTO "User" (id, name, email, password, phone, role, status, "createdAt", "updatedAt")
-      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
-      RETURNING id, name, email, role, status
+      INSERT INTO "User" (id, name, email, password, phone, role, status, "numericId", "createdAt", "updatedAt")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
+      RETURNING id, name, email, role, status, "numericId"
     `;
-    const inserted = await db.query(insertQ, [newId, name, email, hashedPassword, phone, userRole, finalStatus]);
+    const inserted = await db.query(insertQ, [newId, name, email, hashedPassword, phone, userRole, finalStatus, numericId || null]);
     const newUser = inserted.rows[0];
 
     res.status(201).json({ message: 'Conta criada com sucesso!', user: newUser });
@@ -800,7 +800,7 @@ app.get('/api/users', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/users/:id', authenticateToken, async (req, res) => {
-  const { name, email, phone, role, status, password } = req.body;
+  const { name, email, phone, role, status, password, numericId } = req.body;
   const db = getDB();
   try {
     await db.connect();
@@ -808,11 +808,11 @@ app.put('/api/users/:id', authenticateToken, async (req, res) => {
     let values;
     if (password && password.trim() !== '') {
       const hashedPassword = await bcrypt.hash(password, 10);
-      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "password"=$6, "updatedAt"=NOW() WHERE "id"=$7 RETURNING id, name, email, phone, role, status, "photoUrl"`;
-      values = [name, email, phone, role, status, hashedPassword, req.params.id];
+      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "password"=$6, "numericId"=$7, "updatedAt"=NOW() WHERE "id"=$8 RETURNING id, name, email, phone, role, status, "photoUrl", "numericId"`;
+      values = [name, email, phone, role, status, hashedPassword, numericId || null, req.params.id];
     } else {
-      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "updatedAt"=NOW() WHERE "id"=$6 RETURNING id, name, email, phone, role, status, "photoUrl"`;
-      values = [name, email, phone, role, status, req.params.id];
+      updateQ = `UPDATE "User" SET "name"=$1, "email"=$2, "phone"=$3, "role"=$4, "status"=$5, "numericId"=$6, "updatedAt"=NOW() WHERE "id"=$7 RETURNING id, name, email, phone, role, status, "photoUrl", "numericId"`;
+      values = [name, email, phone, role, status, numericId || null, req.params.id];
     }
     const result = await db.query(updateQ, values);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Usuário não encontrado.' });

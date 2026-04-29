@@ -348,7 +348,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           password: user.password || '123', 
           phone: user.phone || '', 
           role: user.role || 'CLIENTE',
-          status: user.status || 'active'
+          status: user.status || 'active',
+          numericId: user.numericId || null
         })
       });
       
