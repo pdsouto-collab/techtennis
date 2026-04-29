@@ -286,7 +286,7 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 </div>
                 <div>
                   <div style={{ fontWeight: 700, fontSize: '15px', marginBottom: '6px' }}>{orderJob.stringCross || orderJob.crossString || orderJob.stringMains || orderJob.mainString || 'Não definido'}</div>
-                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tensionCross || orderJob.tension || '?'} {orderJob.tensionUnit || 'Lbs'}</div>
+                  <div style={{ display: 'inline-block', background: '#4298E7', color: 'white', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: 800 }}>@ {orderJob.tensionCross || orderJob.tensionMain || orderJob.tension || '?'} {orderJob.tensionUnit || 'Lbs'}</div>
                 </div>
                 <div>
                   <div style={{ display: 'inline-block', background: '#F2C94C', color: 'var(--text-dark)', padding: '6px 16px', borderRadius: '8px', fontSize: '14px', fontWeight: 800, textTransform: 'capitalize' }}>
