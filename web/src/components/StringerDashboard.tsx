@@ -595,20 +595,13 @@ export const StringerDashboard = () => {
               </button>
             </div>
 
-            {/* Configurable Status Tiles */}
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+            {/* Configurable Status Tiles - Row 1 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '16px' }}>
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); setView('new_job'); }}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('dropping_off')}`, background: 'var(--bg-panel)' }}>
                 <PackageOpen size={24} color={getStatusColor('dropping_off')} style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Recebimento</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Raquetes chegando</p>
-              </motion.div>
-
-              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('all')}
-                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid var(--text-secondary)`, background: activeFilter === 'all' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
-                <ClipboardList size={24} color="var(--text-secondary)" style={{ marginBottom: '12px' }} />
-                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Todas: {jobs.length}</h3>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Visão Geral</p>
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('to_string')}
@@ -630,6 +623,16 @@ export const StringerDashboard = () => {
                 <CheckCircle size={24} color="#10B981" style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Entregues: {jobs.filter(j => j.type === 'picked_up').length}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Finalizadas</p>
+              </motion.div>
+            </div>
+
+            {/* Configurable Status Tiles - Row 2 */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '16px', marginBottom: '32px' }}>
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('all')}
+                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid var(--text-secondary)`, background: activeFilter === 'all' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
+                <ClipboardList size={24} color="var(--text-secondary)" style={{ marginBottom: '12px' }} />
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Todas: {jobs.length}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Visão Geral</p>
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setView('customers')}
