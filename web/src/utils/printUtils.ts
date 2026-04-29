@@ -1,14 +1,44 @@
-export const printLabel = (orderJob: any, type: 'full' | 'heart') => {
+export const printLabel = (orderJob: any, type: 'full' | 'heart', racketObj?: any) => {
   // Extract names for layout
   const fullName = orderJob.customerName || '';
   const nameParts = fullName.split(' ');
   const firstName = nameParts[0] || '';
   const lastName = nameParts.length > 1 ? nameParts[nameParts.length - 1] : '';
 
-  const dateStr = orderJob.date || '';
-  const shortDate = dateStr.slice(0, 5); // Assuming DD/MM/YYYY
-  const price = orderJob.price ? orderJob.price.toFixed(2) : '120.00';
-  const tension = orderJob.tension || '52 lbs';
+  const dateStr = orderJob.date || orderJob.createdAt || '';
+  const shortDate = dateStr ? new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' }) : '';
+  const price = orderJob.price ? Number(orderJob.price).toFixed(2) : '0.00';
+  
+  // Format details
+  const rModel = orderJob.racketModel || 'Raquete não def.';
+  const rSuffix = racketObj?.identifier ? ` [${racketObj.identifier}]` : '';
+  const rPattern = racketObj?.stringPattern || '';
+  
+  const mains = orderJob.stringMains || orderJob.mainString || 'Não definido';
+  const crosses = orderJob.isHybrid ? (orderJob.stringCross || orderJob.crossString || 'Não definido') : mains;
+  
+  const tMains = `${orderJob.tensionMain || orderJob.tension || '?'} ${orderJob.tensionUnit || 'Lbs'}`;
+  const tCrosses = `${orderJob.isHybrid ? (orderJob.tensionCross || orderJob.tension || '?') : (orderJob.tensionMain || orderJob.tension || '?')} ${orderJob.tensionUnit || 'Lbs'}`;
+  
+  const psMains = orderJob.preStretchMain ? `${orderJob.preStretchMain}%` : 'No';
+  const psCrosses = orderJob.preStretchCross ? `${orderJob.preStretchCross}%` : 'No';
+  
+  let formattedPickup = 'Não definido';
+  if (orderJob.pickupDate) {
+    try {
+      const d = new Date(orderJob.pickupDate);
+      const day = d.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' });
+      const time = d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      formattedPickup = `${day.replace(/^\w/, c => c.toUpperCase())}<br/>${time}`;
+    } catch(e) {}
+  }
+
+  const hasLogo = orderJob.hasLogo ? 'Yes' : 'No';
+  const aux = Array.isArray(orderJob.auxServices) ? orderJob.auxServices : (typeof orderJob.auxServices === 'string' ? JSON.parse(orderJob.auxServices || '[]') : []);
+  const hasGrip = aux.some((s:any) => s.isActive && s.type.toLowerCase().includes('grip base')) ? 'Yes' : 'No';
+  const hasOvergrip = aux.some((s:any) => s.isActive && s.type.toLowerCase().includes('overgrip')) ? 'Yes' : 'No';
+  
+  const notes = [orderJob.racketNotes, orderJob.logoNotes, orderJob.pickupNotes, orderJob.notes].filter(Boolean).join(' | ');
 
   let htmlContent = '';
 
@@ -41,8 +71,8 @@ export const printLabel = (orderJob: any, type: 'full' | 'heart') => {
       </head>
       <body>
         <div class="header">
-          <span>Order ${orderJob.id || '2E0z8HK5'} - <b>1 of 1</b></span>
-          <span>${dateStr}</span>
+          <span>Order ${orderJob.orderCode || orderJob.id?.slice(0,8) || ''}</span>
+          <span>${shortDate}</span>
         </div>
         <div class="grid">
           <div class="label">Last</div>
@@ -52,40 +82,40 @@ export const printLabel = (orderJob: any, type: 'full' | 'heart') => {
           <div class="value-large">${firstName}</div>
 
           <div class="label row-spacing">Racket</div>
-          <div class="value-med row-spacing">${orderJob.racketModel || 'Head Speed Pro'} [1]<br/>18x20</div>
+          <div class="value-med row-spacing">${rModel}${rSuffix}<br/>${rPattern}</div>
 
           <div class="label">Pattern</div>
-          <div class="value-med">ATW</div>
+          <div class="value-med">${orderJob.stringingType || 'Standard'}</div>
         </div>
 
         <div class="tension-row">
-          <span>${tension}</span><span style="font-weight: normal; font-size: 11px;">PS</span><span>No</span>
+          <span>${tMains}</span><span style="font-weight: normal; font-size: 11px;">PS</span><span>${psMains}</span>
         </div>
         <div class="grid">
           <div class="label">Mains</div>
-          <div class="string-name">Solinco Hyper-G<br/>Green 115</div>
+          <div class="string-name">${mains}</div>
         </div>
 
         <div class="tension-row">
-          <span>${tension}</span><span style="font-weight: normal; font-size: 11px;">PS</span><span>No</span>
+          <span>${tCrosses}</span><span style="font-weight: normal; font-size: 11px;">PS</span><span>${psCrosses}</span>
         </div>
         <div class="grid">
            <div class="label">Crosses</div>
-           <div class="string-name">Solinco Hyper-G<br/>Green 115</div>
+           <div class="string-name">${crosses}</div>
         </div>
 
         <div class="grid" style="margin-top: 3mm; align-items: flex-start;">
            <div class="label" style="padding-top: 1mm;">Pickup</div>
-           <div class="value-large" style="font-size: 16px;">Sábado 4 Abril<br/>2026 12:30</div>
+           <div class="value-large" style="font-size: 15px;">${formattedPickup}</div>
            
-           <div class="label">Logo</div><div>No</div>
-           <div class="label">Grip</div><div>No</div>
-           <div class="label">Overgrip</div><div>No</div>
+           <div class="label">Logo</div><div style="font-weight: 700;">${hasLogo}</div>
+           <div class="label">Grip</div><div style="font-weight: 700;">${hasGrip}</div>
+           <div class="label">Overgrip</div><div style="font-weight: 700;">${hasOvergrip}</div>
            
            <div class="label row-spacing">Price</div>
            <div class="value-large row-spacing" style="font-size: 16px;">${price} BRL ${orderJob.paid ? '(Paid)' : ''}</div>
            
-           <div class="label">Notes</div><div></div>
+           <div class="label">Notes</div><div style="font-size: 10px;">${notes}</div>
         </div>
         
         <script>
@@ -115,8 +145,9 @@ export const printLabel = (orderJob: any, type: 'full' | 'heart') => {
         </style>
       </head>
       <body>
-        <div>${shortDate} ${tension} / ${tension}</div>
-        <div>${lastName} ${firstName}</div>
+        <div style="font-weight: 800; margin-bottom: 1mm;">${tMains} ${orderJob.isHybrid ? '/ ' + tCrosses : ''}</div>
+        <div style="font-size: 9px; margin-bottom: 1mm;">${shortDate} | ${rModel}${rSuffix}</div>
+        <div style="font-size: 11px; font-weight: 800;">${lastName} ${firstName}</div>
         <script>
           window.onload = function() { window.print(); window.close(); }
         </script>
