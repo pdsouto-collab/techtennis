@@ -5,11 +5,24 @@ import { motion } from 'framer-motion';
 
 const TennisRacket = ({ size = 24, color = "currentColor" }: { size?: number, color?: string }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12.18 16.59C15.86 19.34 19.92 18.79 21.24 17.03C22.56 15.27 21.6 11.83 17.92 9.08C14.24 6.33 10.18 6.88 8.86 8.64C7.54 10.4 8.5 13.84 12.18 16.59Z" />
-    <path d="M9.8 11.2L2.6 18.4L5.6 21.4L12.8 14.2" />
-    <path d="M11 15L15 10" />
-    <path d="M13 17L17 12" />
-    <path d="M15 19L19 14" />
+    {/* Strings */}
+    <g strokeWidth="1" opacity="0.4">
+      <line x1="11.5" y1="12.5" x2="18.5" y2="5.5" />
+      <line x1="10.5" y1="9.5" x2="15.5" y2="4.5" />
+      <line x1="14.5" y1="13.5" x2="19.5" y2="8.5" />
+      <line x1="11.5" y1="5.5" x2="18.5" y2="12.5" />
+      <line x1="14.5" y1="5.5" x2="19.5" y2="10.5" />
+      <line x1="10.5" y1="7.5" x2="15.5" y2="12.5" />
+    </g>
+    {/* Racket Head */}
+    <ellipse cx="15" cy="9" rx="5" ry="7" transform="rotate(45 15 9)" />
+    {/* Handle */}
+    <line x1="10.5" y1="13.5" x2="3" y2="21" strokeWidth="2.5" />
+    {/* Grip Tape Details */}
+    <line x1="5" y1="17" x2="7" y2="19" strokeWidth="1" />
+    <line x1="7" y1="15" x2="9" y2="17" strokeWidth="1" />
+    {/* Butt cap */}
+    <line x1="2" y1="20" x2="4" y2="22" strokeWidth="3" />
   </svg>
 );
 
