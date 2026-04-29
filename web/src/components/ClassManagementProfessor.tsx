@@ -24,10 +24,18 @@ export const ClassManagementProfessor = () => {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [appSettings] = useState<any>(() => {
-    const saved = localStorage.getItem('tt_settings');
-    return saved ? JSON.parse(saved) : {};
-  });
+  const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
+  
+  const [appSettings, setAppSettings] = useState<any>({});
+
+  useEffect(() => {
+    fetch(`${API_URL}/api/settings`)
+      .then(res => res.json())
+      .then(data => {
+        if (data && Object.keys(data).length > 0) setAppSettings(data);
+      })
+      .catch(e => console.error('Erro ao buscar configurações:', e));
+  }, []);
 
   // State
   const [selectedProfessorId, setSelectedProfessorId] = useState<string>('');
