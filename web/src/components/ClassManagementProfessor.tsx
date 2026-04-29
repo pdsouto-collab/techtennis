@@ -295,7 +295,7 @@ export const ClassManagementProfessor = () => {
 
                 {/* Report Content */}
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-                  <div style={{ background: '#10B981', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(16,185,129,0.2)' }}>
+                  <div style={{ background: '#3A8E58', color: 'white', padding: '24px', borderRadius: '16px', boxShadow: '0 10px 20px rgba(58,142,88,0.2)' }}>
                     <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', opacity: 0.9 }}>Total Financeiro (Aulas Realizadas)</h3>
                     <div style={{ fontSize: '32px', fontWeight: 800 }}>R$ {
                       classes.filter(c => c.professorId === selectedProfessorId && (c.status === 'completed' || c.willHaveReplacement) && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
@@ -310,7 +310,7 @@ export const ClassManagementProfessor = () => {
                     }</div>
                   </div>
                   <div style={{ background: 'white', border: '1px solid #E5E7EB', padding: '24px', borderRadius: '16px' }}>
-                    <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', color: 'var(--text-secondary)' }}>Horas de Aula (Realizadas/Retidas)</h3>
+                    <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 8px 0', color: '#6B7280' }}>Horas Realizadas</h3>
                     <div style={{ fontSize: '32px', fontWeight: 800, color: 'var(--text-dark)' }}>{
                       classes.filter(c => c.professorId === selectedProfessorId && (c.status === 'completed' || c.willHaveReplacement) && c.date.startsWith(activeReportFilter.month) && (activeReportFilter.student === '' || c.studentId === activeReportFilter.student))
                              .reduce((acc, cls) => {
