@@ -29,23 +29,23 @@ export const UserManagement = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: '32px', border: '1px solid var(--border-light)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
         <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)' }}>Gestão de Usuários</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos ao sistema e aprove novos cadastros vinculando-os aos Perfis Centrais.</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white' }}>Gestão de Usuários</h2>
+          <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos ao sistema</p>
         </div>
-        <button onClick={handleAdd} className="button-primary" style={{ padding: '8px 16px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <button onClick={handleAdd} style={{ background: 'var(--primary-color)', color: '#2D1E4B', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
           <Plus size={18} /> Adicionar Usuário
         </button>
       </div>
 
-      <div style={{ display: 'flex', gap: '24px', marginBottom: '24px', borderBottom: '2px solid #E5E7EB' }}>
+      <div style={{ display: 'flex', gap: '24px', marginBottom: '24px', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
         <button 
           onClick={() => setActiveTab('active')}
-          style={{ padding: '12px 24px', background: 'none', border: 'none', borderBottom: activeTab === 'active' ? '2px solid #2563EB' : '2px solid transparent', color: activeTab === 'active' ? '#2563EB' : '#6B7280', fontWeight: 700, cursor: 'pointer', marginBottom: '-2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          style={{ padding: '12px 24px', background: 'none', border: 'none', borderBottom: activeTab === 'active' ? '2px solid var(--primary-color)' : '2px solid transparent', color: activeTab === 'active' ? 'var(--primary-color)' : 'white', fontWeight: 700, cursor: 'pointer', marginBottom: '-1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Users size={18} /> Usuários Existentes ({activeUsers.length})
         </button>
         <button 
           onClick={() => setActiveTab('pending')}
-          style={{ padding: '12px 24px', background: 'none', border: 'none', borderBottom: activeTab === 'pending' ? '2px solid #F59E0B' : '2px solid transparent', color: activeTab === 'pending' ? '#F59E0B' : '#6B7280', fontWeight: 700, cursor: 'pointer', marginBottom: '-2px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+          style={{ padding: '12px 24px', background: 'none', border: 'none', borderBottom: activeTab === 'pending' ? '2px solid var(--primary-color)' : '2px solid transparent', color: activeTab === 'pending' ? 'var(--primary-color)' : 'white', fontWeight: 700, cursor: 'pointer', marginBottom: '-1px', display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Clock size={18} /> Solicitações Pendentes ({pendingUsers.length})
         </button>
       </div>
