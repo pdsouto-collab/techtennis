@@ -33,7 +33,7 @@ const Navbar = () => {
         position: 'fixed',
         top: '20px', left: '50%', transform: 'translateX(-50%)',
         width: '100%', maxWidth: '700px', zIndex: 50,
-        background: '#058F4A', backdropFilter: 'blur(16px)',
+        background: '#6F8C65', backdropFilter: 'blur(16px)',
         border: '1px solid rgba(255, 255, 255, 0.1)',
         borderRadius: '100px',
         padding: '12px 32px'
