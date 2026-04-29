@@ -1879,7 +1879,7 @@ export const StringerDashboard = () => {
           </motion.div>
         )}
 
-        {view === 'analytics' && <AnalyticsView jobs={filteredJobs} appSettings={appSettings} customers={customers} professors={professors} />}
+        {view === 'analytics' && <AnalyticsView jobs={filteredJobs} appSettings={appSettings} customers={customers} professors={professors} rackets={rackets} />}
         {view === 'orders' && <OrdersView 
           jobs={jobs} 
           customers={customers} 
