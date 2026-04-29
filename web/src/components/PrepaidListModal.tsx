@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { X } from 'lucide-react';
 
-export const PrepaidListModal = ({ isOpen, onClose }: any) => {
+export const PrepaidListModal = ({ isOpen, onClose, prepaids = [], stringingPoint = 'N/A' }: any) => {
   if (!isOpen) return null;
 
   return (
@@ -31,18 +31,28 @@ export const PrepaidListModal = ({ isOpen, onClose }: any) => {
               <thead style={{ background: '#F9FAFB', borderBottom: '1px solid #E5E7EB' }}>
                 <tr>
                   <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Ponto de encordoamento</th>
-                  <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Número de encordoamentos</th>
-                  <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Número de encordoamentos restantes</th>
+                  <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Nº encordoamentos</th>
+                  <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Nº restantes</th>
                   <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Valor</th>
                   <th style={{ padding: '16px', fontSize: '13px', color: '#374151', fontWeight: 600 }}>Data</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td colSpan={5} style={{ padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px', background: '#F9FAFB' }}>
-                    Nenhum dado disponível na tabela
-                  </td>
-                </tr>
+                {prepaids.length > 0 ? prepaids.map((p: any, idx: number) => (
+                  <tr key={idx} style={{ borderBottom: '1px solid #E5E7EB' }}>
+                    <td style={{ padding: '16px', fontSize: '14px' }}>{stringingPoint}</td>
+                    <td style={{ padding: '16px', fontSize: '14px' }}>{p.numStringings}</td>
+                    <td style={{ padding: '16px', fontSize: '14px' }}>{p.numStringings}</td>
+                    <td style={{ padding: '16px', fontSize: '14px' }}>{parseFloat(p.amount).toFixed(2)}</td>
+                    <td style={{ padding: '16px', fontSize: '14px' }}>{new Date(p.date).toLocaleDateString('pt-BR')}</td>
+                  </tr>
+                )) : (
+                  <tr>
+                    <td colSpan={5} style={{ padding: '24px', textAlign: 'center', color: '#6B7280', fontSize: '14px', background: '#F9FAFB' }}>
+                      Nenhum dado disponível na tabela
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
