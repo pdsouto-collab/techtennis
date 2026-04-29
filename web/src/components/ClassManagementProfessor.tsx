@@ -152,7 +152,7 @@ export const ClassManagementProfessor = () => {
                         </div>
                         <div style={{ marginTop: 'auto', paddingTop: '12px', borderTop: '1px solid #E5E7EB', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                           <span style={{ fontSize: '13px', color: '#6B7280' }}>Valor Hora/Aula:</span>
-                          <span style={{ fontWeight: 800, color: '#10B981', fontSize: '16px' }}>{student.hourlyRate ? `R$ ${student.hourlyRate.toFixed(2)}` : 'Não definido'}</span>
+                          <span style={{ fontWeight: 800, color: '#10B981', fontSize: '16px' }}>{student.hourlyRate ? `R$ ${Number(student.hourlyRate).toFixed(2)}` : 'Não definido'}</span>
                         </div>
                       </div>
                     ))

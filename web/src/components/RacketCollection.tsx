@@ -236,7 +236,7 @@ export const RacketCollection = () => {
         description: entry.reason || 'Lançamento Manual',
         orderCode: 'MANUAL',
         paid: true,
-        credit: entry.amount,
+        credit: Number(entry.amount),
         pickupDate: null,
         professorId: entry.professorId,
         originalData: entry
