@@ -87,16 +87,17 @@ export const ClassManagementCustomer = () => {
           <div style={{ padding: '40px', background: '#F8F9FA', minHeight: '500px' }}>
             
             {activeTab === 'agenda' && (
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
                <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <h3 style={{ fontSize: '20px', margin: 0, display: 'flex', alignItems: 'center', gap: '8px' }}><Calendar size={20} color="#2563EB"/> Próximas Aulas</h3>
                   </div>
 
-                  {studentClasses.filter(c => c.status === 'planned').length === 0 ? (
+                  {classes.filter((c: any) => c.studentId === activeStudent.id && c.status === 'planned').length === 0 ? (
                       <div style={{ textAlign: 'center', padding: '40px', color: '#6B7280', background: 'white', borderRadius: '16px', border: '1px dashed #D1D5DB' }}>Nenhuma aula agendada para o futuro.</div>
                   ) : (
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
-                          {studentClasses.filter(c => c.status === 'planned').sort((a,b) => new Date(a.date).getTime() - new Date(b.date).getTime()).map(cls => (
+                          {classes.filter((c: any) => c.studentId === activeStudent.id && c.status === 'planned').sort((a: any, b: any) => new Date(a.date).getTime() - new Date(b.date).getTime()).map((cls: any) => (
                              <div key={cls.id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'white', padding: '24px', borderRadius: '16px', borderLeft: '4px solid #60A5FA', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }}>
                                <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
                                  <div style={{ background: 'rgba(96,165,250,0.1)', color: '#2563EB', padding: '12px 20px', borderRadius: '12px', textAlign: 'center' }}>
@@ -112,7 +113,8 @@ export const ClassManagementCustomer = () => {
                                  Planejada
                                </div>
                              </div>
-                           ))
+                           ))}
+                      </div>
                   )}
                 </div>
               </motion.div>
