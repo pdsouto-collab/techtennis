@@ -22,6 +22,7 @@ export const CustomerSingleClass = () => {
   
   const [activeMatch, setActiveMatch] = useState<any>(null);
   const [professorDetails, setProfessorDetails] = useState<any>(null);
+  const [searchAttempts, setSearchAttempts] = useState(0);
 
   // Poll for match status when searching
   useEffect(() => {
@@ -43,20 +44,39 @@ export const CustomerSingleClass = () => {
     return () => clearInterval(interval);
   }, [phase, activeMatch]);
 
-  // Remove fake timer
   useEffect(() => {
-    // Phase search logic handles via DB polling now
-  }, [phase]);
-
-
-  useEffect(() => {
-    if (phase === 'searching') {
-      const timer = setTimeout(() => {
-        setPhase('matched');
-      }, 4000); // 4 seconds of searching drama
-      return () => clearTimeout(timer);
+    let timeout: any;
+    if (phase === 'searching' && !activeMatch) {
+      if (searchAttempts > 18) { // 90 seconds
+        alert('Nenhum professor encontrado na sua região no momento.');
+        setPhase('config');
+        return;
+      }
+      const doSearch = async () => {
+        try {
+          const profRes = await fetch(`${API_URL}/api/single-class/search`, { headers: getAuthHeader() });
+          if (profRes.ok) {
+            const prof = await profRes.json();
+            if (prof && prof.professorId) {
+              setProfessorDetails(prof);
+              const matchRes = await fetch(`${API_URL}/api/single-class/match`, {
+                method: 'POST',
+                headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                body: JSON.stringify({ professorId: prof.professorId, objective })
+              });
+              if (matchRes.ok) {
+                setActiveMatch(await matchRes.json());
+                return;
+              }
+            }
+          }
+        } catch (e) { console.error(e); }
+        timeout = setTimeout(() => setSearchAttempts(prev => prev + 1), 5000);
+      };
+      doSearch();
     }
-  }, [phase]);
+    return () => clearTimeout(timeout);
+  }, [phase, searchAttempts, activeMatch]);
 
   
   useEffect(() => {
@@ -139,32 +159,9 @@ export const CustomerSingleClass = () => {
                 />
               </div>
 
-              <button onClick={async () => {
+              <button onClick={() => {
+    setSearchAttempts(0);
     setPhase('searching');
-    try {
-      // Find a professor
-      const profRes = await fetch(`${API_URL}/api/single-class/search`, { headers: getAuthHeader() });
-      if (profRes.ok) {
-        const prof = await profRes.json();
-        if (prof) {
-          setProfessorDetails(prof);
-          // Create match
-          const matchRes = await fetch(`${API_URL}/api/single-class/match`, {
-            method: 'POST',
-            headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
-            body: JSON.stringify({ professorId: prof.professorId, objective })
-          });
-          if (matchRes.ok) {
-            setActiveMatch(await matchRes.json());
-            return;
-          }
-        }
-      }
-      alert('Nenhum professor encontrado na sua região no momento.');
-      setPhase('config');
-    } catch(e) {
-      setPhase('config');
-    }
   }} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
                 <Search size={22} /> Buscar Professor Agora
               </button>
@@ -219,9 +216,9 @@ export const CustomerSingleClass = () => {
                 <button onClick={() => setPhase('config')} style={{ position: 'absolute', top: '24px', left: '24px', background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
                   <ArrowLeft size={20} />
                 </button>
-                <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#eee', margin: '0 auto 24px', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
+                <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#eee', margin: '0 auto 24px', backgroundImage: `url(${professorDetails?.professorPhotoUrl || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 
-                <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{(professorDetails?.name || 'Professor')}</h2>
+                <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{(professorDetails?.professorName || 'Professor')}</h2>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
                    <span>{34} anos</span>
                    <span>{(professorDetails?.experience || 12)} anos de exp.</span>
@@ -264,9 +261,9 @@ export const CustomerSingleClass = () => {
                 <button onClick={() => setPhase('matched')} style={{ background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flexShrink: 0 }}>
                   <ArrowLeft size={20} />
                 </button>
-                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
+                <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundImage: `url(${professorDetails?.professorPhotoUrl || 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop'})`, backgroundSize: 'cover', backgroundPosition: 'center' }}></div>
                 <div>
-                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{(professorDetails?.name || 'Professor')}</h3>
+                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{(professorDetails?.professorName || 'Professor')}</h3>
                   <div style={{ color: '#10B981', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%'}}></div> Online</div>
                 </div>
               </div>
