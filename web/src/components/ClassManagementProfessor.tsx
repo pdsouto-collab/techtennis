@@ -14,18 +14,34 @@ export const ClassManagementProfessor = () => {
   });
   
 
-  const [students, setStudents] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_class_students');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [students, setStudents] = useState<any[]>([]);
 
-  const [classes, setClasses] = useState<any[]>(() => {
-    const saved = localStorage.getItem('tt_classes');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [classes, setClasses] = useState<any[]>([]);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
   
+  const getAuthHeader = () => {
+    const token = localStorage.getItem('tt_auth_token');
+    return { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' };
+  };
+
+  const fetchData = async () => {
+    try {
+      const [stdRes, clsRes] = await Promise.all([
+        fetch(`${API_URL}/api/class-students`, { headers: getAuthHeader() }),
+        fetch(`${API_URL}/api/classes`, { headers: getAuthHeader() })
+      ]);
+      if (stdRes.ok) setStudents(await stdRes.json());
+      if (clsRes.ok) setClasses(await clsRes.json());
+    } catch (e) {
+      console.error('Error fetching class data', e);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
   const [appSettings, setAppSettings] = useState<any>({});
 
   useEffect(() => {
@@ -53,9 +69,7 @@ export const ClassManagementProfessor = () => {
   // Analytics State
   const [activeReportFilter, setActiveReportFilter] = useState({ month: new Date().toISOString().substring(0,7), student: '' });
   
-  // Persist Changes
-  useEffect(() => { localStorage.setItem('tt_class_students', JSON.stringify(students)); }, [students]);
-  useEffect(() => { localStorage.setItem('tt_classes', JSON.stringify(classes)); }, [classes]);
+  // Removed persistence to localstorage
 
   return (
     <div style={{ minHeight: '100vh', padding: '120px 5% 40px', maxWidth: '1400px', margin: '0 auto' }}>
@@ -125,6 +139,7 @@ export const ClassManagementProfessor = () => {
                             <button onClick={() => { setActiveStudent(student); setFormIsResidential(student.isResidential || false); setIsStudentModalOpen(true); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#60A5FA' }}><Edit size={16} /></button>
                             <button onClick={() => {
                               if(window.confirm('Excluir este aluno? O histórico de aulas será mantido.')){
+                                fetch(`${API_URL}/api/class-students/${student.id}`, { method: 'DELETE', headers: getAuthHeader() });
                                 setStudents(prev => prev.filter(s => s.id !== student.id));
                               }
                             }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#EF4444' }}><Trash2 size={16} /></button>
@@ -222,7 +237,9 @@ export const ClassManagementProfessor = () => {
                                 <select 
                                   value={cls.status}
                                   onChange={(e) => {
-                                    setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, status: e.target.value } : c));
+                                    const updated = { ...cls, status: e.target.value };
+                                    fetch(`${API_URL}/api/classes/${cls.id}`, { method: 'PUT', headers: getAuthHeader(), body: JSON.stringify(updated) });
+                                    setClasses(prev => prev.map(c => c.id === cls.id ? updated : c));
                                   }}
                                   style={{ padding: '6px 12px', borderRadius: '100px', border: '1px solid #E5E7EB', fontSize: '13px', fontWeight: 600, background: 'white', color: cls.status === 'planned' ? '#60A5FA' : cls.status === 'completed' ? '#10B981' : cls.status === 'rain' ? '#F59E0B' : '#EF4444' }}
                                 >
@@ -237,7 +254,9 @@ export const ClassManagementProfessor = () => {
                                   <div style={{ marginTop: '8px', fontSize: '12px' }}>
                                     <label style={{ display: 'flex', alignItems: 'center', gap: '4px', cursor: 'pointer', color: '#4B5563', fontWeight: 600 }}>
                                       <input type="checkbox" checked={!!cls.willHaveReplacement} onChange={(e) => {
-                                        setClasses(prev => prev.map(c => c.id === cls.id ? { ...c, willHaveReplacement: e.target.checked } : c));
+                                        const updated = { ...cls, willHaveReplacement: e.target.checked };
+                                        fetch(`${API_URL}/api/classes/${cls.id}`, { method: 'PUT', headers: getAuthHeader(), body: JSON.stringify(updated) });
+                                        setClasses(prev => prev.map(c => c.id === cls.id ? updated : c));
                                       }} style={{ accentColor: 'var(--primary-color)' }} />
                                       Haverá Reposição
                                     </label>
@@ -246,7 +265,7 @@ export const ClassManagementProfessor = () => {
                               </td>
                               <td style={{ padding: '16px 24px', textAlign: 'right' }}>
                                 <button onClick={() => {
-                                  if(window.confirm('Excluir esta aula?')) setClasses(prev => prev.filter(c => c.id !== cls.id));
+                                  if(window.confirm('Excluir esta aula?')) { fetch(`${API_URL}/api/classes/${cls.id}`, { method: 'DELETE', headers: getAuthHeader() }); setClasses(prev => prev.filter(c => c.id !== cls.id)); }
                                 }} style={{ background: 'none', border: 'none', color: '#EF4444', cursor: 'pointer' }}><Trash2 size={18} /></button>
                               </td>
                             </tr>
@@ -410,8 +429,10 @@ export const ClassManagementProfessor = () => {
                   createdAt: activeStudent ? activeStudent.createdAt : new Date().toISOString()
                 };
                 if (activeStudent) {
+                  fetch(`${API_URL}/api/class-students/${activeStudent.id}`, { method: 'PUT', headers: getAuthHeader(), body: JSON.stringify(studentData) });
                   setStudents(prev => prev.map(s => s.id === activeStudent.id ? studentData : s));
                 } else {
+                  fetch(`${API_URL}/api/class-students`, { method: 'POST', headers: getAuthHeader(), body: JSON.stringify(studentData) });
                   setStudents(prev => [...prev, studentData]);
                 }
                 setIsStudentModalOpen(false);
@@ -529,6 +550,7 @@ export const ClassManagementProfessor = () => {
                     return;
                   }
                   
+                  newClasses.forEach(nc => fetch(`${API_URL}/api/classes`, { method: 'POST', headers: getAuthHeader(), body: JSON.stringify(nc) }));
                   setClasses(prev => [...prev, ...newClasses]);
                 } else {
                   const classData = {
@@ -541,6 +563,7 @@ export const ClassManagementProfessor = () => {
                     location,
                     status: 'planned'
                   };
+                  fetch(`${API_URL}/api/classes`, { method: 'POST', headers: getAuthHeader(), body: JSON.stringify(classData) });
                   setClasses(prev => [...prev, classData]);
                 }
                 
