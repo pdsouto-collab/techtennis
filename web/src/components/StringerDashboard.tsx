@@ -1511,8 +1511,8 @@ export const StringerDashboard = () => {
                                  <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionMain || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>
-                                 <div style={{ fontWeight: 600 }}>{pJob.stringCross || pJob.stringMains || 'N/A'}</div>
-                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.tensionCross || pJob.tension} {pJob.tensionUnit || 'Lbs'}</div>
+                                 <div style={{ fontWeight: 600 }}>{pJob.isHybrid ? (pJob.stringCross || pJob.stringMains || 'N/A') : (pJob.stringMains || 'N/A')}</div>
+                                 <div style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>@{pJob.isHybrid ? (pJob.tensionCross || pJob.tensionMain || pJob.tension) : (pJob.tensionMain || pJob.tension)} {pJob.tensionUnit || 'Lbs'}</div>
                                </div>
                                <div>-</div><div>-</div><div>-</div>
                                <div>{pJob.stringerName ? pJob.stringerName : '-'}</div>
