@@ -264,24 +264,32 @@ export const ClassManagementProfessor = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px', flexWrap: 'wrap', gap: '16px' }}>
                   <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-dark)', margin: 0 }}>Relatórios Financeiros</h2>
                   <div style={{ display: 'flex', gap: '16px' }}>
-                    <select id="reportMonth" defaultValue={new Date().toISOString().substring(0,7)} style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #E5E7EB', background: 'white' }}>
+                    <select 
+                      value={activeReportFilter.month}
+                      onChange={(e) => setActiveReportFilter(prev => ({ ...prev, month: e.target.value }))}
+                      style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #E5E7EB', background: 'white' }}
+                    >
                       <option value="2026-03">Março 2026</option>
                       <option value="2026-04">Abril 2026</option>
                       <option value="2026-05">Maio 2026</option>
+                      <option value="2026-06">Junho 2026</option>
+                      <option value="2026-07">Julho 2026</option>
+                      <option value="2026-08">Agosto 2026</option>
+                      <option value="2026-09">Setembro 2026</option>
+                      <option value="2026-10">Outubro 2026</option>
+                      <option value="2026-11">Novembro 2026</option>
+                      <option value="2026-12">Dezembro 2026</option>
                     </select>
-                    <select id="reportStudent" defaultValue="" style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #E5E7EB', background: 'white', minWidth: '200px' }}>
+                    <select 
+                      value={activeReportFilter.student}
+                      onChange={(e) => setActiveReportFilter(prev => ({ ...prev, student: e.target.value }))}
+                      style={{ padding: '10px 16px', borderRadius: '8px', border: '1px solid #E5E7EB', background: 'white', minWidth: '200px' }}
+                    >
                       <option value="">Todos os Alunos</option>
                       {students.filter(s => s.professorId === selectedProfessorId).map(s => (
                         <option key={s.id} value={s.id}>{s.name}</option>
                       ))}
                     </select>
-                    <button className="button-primary" style={{ padding: '10px 20px', color: 'var(--text-dark)' }} onClick={() => {
-                        const month = (document.getElementById('reportMonth') as HTMLSelectElement).value;
-                        const student = (document.getElementById('reportStudent') as HTMLSelectElement).value;
-                        setActiveReportFilter({ month, student });
-                    }}>
-                      Filtrar
-                    </button>
                   </div>
                 </div>
 
