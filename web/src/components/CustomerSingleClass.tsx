@@ -43,16 +43,7 @@ export const CustomerSingleClass = () => {
     <div style={{ paddingTop: '100px', minHeight: '100vh', display: 'flex', justifyContent: 'center', background: 'var(--bg-dark)' }}>
       <div style={{ width: '100%', maxWidth: '600px', padding: '24px', position: 'relative' }}>
         
-        {/* Back Button */}
-        {phase !== 'searching' && (
-          <button onClick={() => {
-            if(phase === 'chat') setPhase('matched');
-            else if(phase === 'matched') setPhase('config');
-            else navigate('/');
-          }} style={{ background: 'none', border: 'none', color: 'white', display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '24px', fontWeight: 600 }}>
-            <ArrowLeft size={20} /> Voltar
-          </button>
-        )}
+
 
         <AnimatePresence mode="wait">
           {/* FASE 1: CONFIGURAÇÃO */}
@@ -65,7 +56,12 @@ export const CustomerSingleClass = () => {
               className="glass-panel"
               style={{ padding: '32px', borderRadius: '24px' }}
             >
-              <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, marginBottom: '8px' }}>Encontrar Aulas Avulsas</h1>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '8px' }}>
+                <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <ArrowLeft size={24} />
+                </button>
+                <h1 style={{ color: 'white', fontSize: '28px', fontWeight: 800, margin: 0 }}>Encontrar Aulas Avulsas</h1>
+              </div>
               <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>Ache os melhores professores disponíveis agora no seu perímetro.</p>
 
               <div style={{ marginBottom: '24px' }}>
@@ -146,7 +142,10 @@ export const CustomerSingleClass = () => {
                 </div>
               </div>
 
-              <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px', textAlign: 'center' }}>
+              <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px', textAlign: 'center', position: 'relative' }}>
+                <button onClick={() => setPhase('config')} style={{ position: 'absolute', top: '24px', left: '24px', background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <ArrowLeft size={20} />
+                </button>
                 <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#eee', margin: '0 auto 24px', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
                 
                 <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{matchedProfessor.name}</h2>
@@ -190,6 +189,9 @@ export const CustomerSingleClass = () => {
             >
               {/* Chat Header */}
               <div style={{ background: 'rgba(0,0,0,0.2)', padding: '16px', display: 'flex', alignItems: 'center', gap: '16px', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                <button onClick={() => setPhase('matched')} style={{ background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flexShrink: 0 }}>
+                  <ArrowLeft size={20} />
+                </button>
                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
                 <div>
                   <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{matchedProfessor.name}</h3>

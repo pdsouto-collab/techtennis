@@ -70,6 +70,17 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setNewEndDate('');
   };
 
+  const [itemsPerPage, setItemsPerPage] = useState<number | 'all'>(10);
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Update handleTabChange to reset pagination
+  const handleTabChange = (tabId: any) => {
+    setActiveTab(tabId);
+    setEditingIndex(null);
+    setNewItemText('');
+    setCurrentPage(1);
+  };
+
   const handleDelete = (index: number) => {
     setSettings((prev: any) => {
       const newList = [...(prev[activeTab] || [])];
@@ -152,7 +163,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
         {tabs.map(tab => (
           <button
             key={tab.id}
-            onClick={() => { setActiveTab(tab.id as any); setEditingIndex(null); setNewItemText(''); }}
+            onClick={() => handleTabChange(tab.id)}
             style={{
               padding: '12px 16px',
               borderRadius: '8px',
@@ -286,8 +297,17 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   return nameA.localeCompare(nameB);
                 });
               }
-              return renderList.map(({ item, originalIndex: idx }: { item: any; originalIndex: number }) => (
-                <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+              const totalItems = renderList.length;
+              const perPage = itemsPerPage === 'all' ? totalItems : itemsPerPage;
+              const totalPages = Math.ceil(totalItems / perPage) || 1;
+              const startIndex = totalItems === 0 ? 0 : (currentPage - 1) * perPage;
+              const endIndex = Math.min(startIndex + perPage, totalItems);
+              const paginated = perPage === totalItems ? renderList : renderList.slice(startIndex, endIndex);
+
+              return (
+                <>
+                  {paginated.map(({ item, originalIndex: idx }: { item: any; originalIndex: number }) => (
+                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   {editingIndex === idx ? (
                   <div style={{ display: 'flex', gap: '8px', flex: 1, marginRight: '16px', flexWrap: 'wrap' }}>
                     {activeTab === 'clubDiscounts' ? (
@@ -437,8 +457,30 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   </button>
                 </div>
               </div>
-            ));
-            })()
+            ))}
+              <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '13px', background: 'white', borderRadius: '8px', marginTop: '8px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span>Show</span>
+                  <select value={itemsPerPage} onChange={(e) => { setItemsPerPage(e.target.value === 'all' ? 'all' : parseInt(e.target.value)); setCurrentPage(1); }} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
+                    <option value={10}>10</option>
+                    <option value={20}>20</option>
+                    <option value={30}>30</option>
+                    <option value={40}>40</option>
+                    <option value={50}>50</option>
+                    <option value="all">Todas</option>
+                  </select>
+                  <span>entries</span>
+                  <span style={{ marginLeft: '16px' }}>Showing {totalItems === 0 ? 0 : startIndex + 1} to {endIndex} of {totalItems} entries</span>
+                </div>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  <button onClick={() => setCurrentPage(Math.max(1, currentPage - 1))} disabled={currentPage === 1} style={{ border: 'none', background: 'none', color: currentPage === 1 ? '#9CA3AF' : '#4298E7', cursor: currentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Previous</button>
+                  <button style={{ border: 'none', background: '#4298E7', color: 'white', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>{currentPage}</button>
+                  <button onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))} disabled={currentPage === totalPages} style={{ border: 'none', background: 'none', color: currentPage === totalPages ? '#9CA3AF' : '#4298E7', cursor: currentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Next</button>
+                </div>
+              </div>
+            </>
+          );
+          })()
           )}
         </div>
 
