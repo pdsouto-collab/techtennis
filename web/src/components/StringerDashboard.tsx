@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson, MessageCircle, Smile } from 'lucide-react';
@@ -2615,5 +2615,3 @@ export const StringerDashboard = () => {
     </div>
   );
 };
-/ /   f o r c e   d e p l o y  
- 
