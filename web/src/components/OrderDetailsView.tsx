@@ -5,6 +5,12 @@ import { CustomerNotesModal } from './CustomerNotesModal';
 import { AddPrepaidModal } from './AddPrepaidModal';
 import { PrepaidListModal } from './PrepaidListModal';
 
+const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+const getAuthHeader = () => {
+  const token = localStorage.getItem('tt_auth_token');
+  return { 'Authorization': `Bearer ${token}` };
+};
+
 export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs, setActiveStringingJob, setActivePaymentJob, setIsPaymentModalOpen, customers, setSelectedCustomer, setNewJobStep, setActiveFilter, setIsCustomerModalOpen, startEditingJob, setCurrentOrderCode, resetForm, rackets }: any) => {
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
@@ -80,8 +86,16 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
           </div>
         </div>
         <div className="glass-panel" style={{ display: 'flex', justifyContent: 'space-around', alignItems: 'center', padding: '16px 24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{fontWeight: 700, fontSize: '15px'}}>Rolo próprio</span> <input type="checkbox" style={{ accentColor: '#D93B65', width: '22px', height: '22px' }} /></div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{fontWeight: 700, fontSize: '15px'}}>Set próprio</span> <input type="checkbox" style={{ accentColor: '#D93B65', width: '22px', height: '22px' }} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{fontWeight: 700, fontSize: '15px'}}>Rolo próprio</span> <input type="checkbox" checked={activeOrderJob?.hasOwnReel || false} onChange={(e) => {
+             const val = e.target.checked;
+             setJobs(jobs.map((j:any) => j.id === activeOrderJob.id ? { ...j, hasOwnReel: val } : j));
+             fetch(`${API_URL}/api/jobs/${activeOrderJob.id}`, { method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' }, body: JSON.stringify({ ...activeOrderJob, hasOwnReel: val }) }).catch(console.error);
+          }} style={{ accentColor: '#D93B65', width: '22px', height: '22px' }} /></div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}><span style={{fontWeight: 700, fontSize: '15px'}}>Set próprio</span> <input type="checkbox" checked={activeOrderJob?.hasOwnSet || false} onChange={(e) => {
+             const val = e.target.checked;
+             setJobs(jobs.map((j:any) => j.id === activeOrderJob.id ? { ...j, hasOwnSet: val } : j));
+             fetch(`${API_URL}/api/jobs/${activeOrderJob.id}`, { method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' }, body: JSON.stringify({ ...activeOrderJob, hasOwnSet: val }) }).catch(console.error);
+          }} style={{ accentColor: '#D93B65', width: '22px', height: '22px' }} /></div>
         </div>
       </div>
 
@@ -101,10 +115,26 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                 {!isFullyPaid ? (
                   <button onClick={() => {
                     setJobs(jobs.map((j:any) => j.customerName === activeOrderJob.customerName ? { ...j, paid: true } : j));
+                    for (let j of jobs) {
+                       if(j.customerName === activeOrderJob.customerName && !j.paid) {
+                           fetch(`${API_URL}/api/jobs/${j.id}/status`, {
+                              method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ paid: true })
+                           }).catch(console.error);
+                       }
+                    }
                   }} style={{ background: '#6FCF97', border: 'none', padding: '12px 20px', borderRadius: '8px', color: 'var(--text-dark)', fontWeight: 700, cursor: 'pointer' }}>Marcar como pago</button>
                 ) : (
                   <button onClick={() => {
                     setJobs(jobs.map((j:any) => j.customerName === activeOrderJob.customerName ? { ...j, paid: false } : j));
+                    for (let j of jobs) {
+                       if(j.customerName === activeOrderJob.customerName && j.paid) {
+                           fetch(`${API_URL}/api/jobs/${j.id}/status`, {
+                              method: 'PUT', headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                              body: JSON.stringify({ paid: false })
+                           }).catch(console.error);
+                       }
+                    }
                   }} style={{ background: '#D93B65', border: 'none', padding: '12px 20px', borderRadius: '8px', color: 'white', fontWeight: 700, cursor: 'pointer' }}>Cancelar pagamento</button>
                 )}
               </div>
@@ -304,8 +334,25 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
           setIsNotesModalOpen(false);
       }} />
 
-      <AddPrepaidModal isOpen={isAddPrepaidModalOpen} onClose={() => setIsAddPrepaidModalOpen(false)} onApply={(data: any) => { console.log('Added prepaid:', data); setIsAddPrepaidModalOpen(false); }} />
-      <PrepaidListModal isOpen={isPrepaidListModalOpen} onClose={() => setIsPrepaidListModalOpen(false)} />
+      <AddPrepaidModal isOpen={isAddPrepaidModalOpen} onClose={() => setIsAddPrepaidModalOpen(false)} onApply={(data: any) => { 
+          const activeC = customers?.find((c: any) => c.name === activeOrderJob.customerName);
+          if (activeC) {
+              const currentPrepaid = (typeof activeC.prepaid === 'string' ? JSON.parse(activeC.prepaid) : activeC.prepaid) || [];
+              const updatedPrepaid = [...currentPrepaid, { ...data, date: new Date().toISOString() }];
+              activeC.prepaid = updatedPrepaid;
+              fetch(`${API_URL}/api/customers/${activeC.id}`, {
+                  method: 'PUT',
+                  headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ ...activeC, prepaid: updatedPrepaid })
+              }).catch(console.error);
+          }
+          setIsAddPrepaidModalOpen(false); 
+      }} />
+      <PrepaidListModal isOpen={isPrepaidListModalOpen} onClose={() => setIsPrepaidListModalOpen(false)} prepaids={(() => {
+          const c = customers?.find((c: any) => c.name === activeOrderJob.customerName);
+          if (!c || !c.prepaid) return [];
+          return typeof c.prepaid === 'string' ? JSON.parse(c.prepaid) : c.prepaid;
+      })()} stringingPoint={activeCustomer?.stringingPoint || 'Loja 1'} />
     </motion.div>
   );
 };
