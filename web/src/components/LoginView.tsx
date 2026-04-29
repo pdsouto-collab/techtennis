@@ -133,7 +133,7 @@ export const LoginView = () => {
                   </button>
                 </div>
               </div>
-              <button disabled={isLoading} type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px', background: 'var(--bg-panel-solid)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
+              <button disabled={isLoading} type="submit" className="button-primary" style={{ padding: '16px', fontSize: '16px', fontWeight: 800, marginTop: '8px', background: 'var(--bg-gradient-top)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
                 {isLoading ? 'Conectando...' : 'Acessar Plataforma'}
               </button>
 
@@ -210,7 +210,7 @@ export const LoginView = () => {
                 <button type="button" onClick={() => setMode('login')} style={{ flex: 1, padding: '14px', background: 'transparent', border: '1px solid rgba(255,255,255,0.2)', color: 'white', borderRadius: '100px', cursor: 'pointer', fontWeight: 600 }}>
                   Voltar
                 </button>
-                <button type="submit" className="button-primary" style={{ flex: 1, padding: '14px', background: 'var(--bg-panel-solid)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
+                <button type="submit" className="button-primary" style={{ flex: 1, padding: '14px', background: 'var(--bg-gradient-top)', color: 'white', border: '1px solid rgba(255,255,255,0.2)' }}>
                   Concluir Cadastro
                 </button>
               </div>

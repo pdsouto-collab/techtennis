@@ -9,8 +9,8 @@
   --secondary-color: #E2D9FF; 
 
   /* Glass Panels */
-  --bg-panel: rgba(60, 42, 99, 0.5); /* Lighter purple with opacity */
-  --bg-panel-solid: #3C2A63;
+  --bg-panel: rgba(255, 255, 255, 0.05); /* Frosty transparent */
+  --bg-panel-solid: rgba(255, 255, 255, 0.12); /* Slightly brighter */
   
   /* Text */
   --text-primary: #ffffff; 
