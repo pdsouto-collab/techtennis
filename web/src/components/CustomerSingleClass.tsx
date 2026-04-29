@@ -1,24 +1,53 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, Search, CheckCircle, MessageCircle, ArrowLeft, Star, Send } from 'lucide-react';
+import { MapPin, Search, CheckCircle, MessageCircle, ArrowLeft, Send } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 export const CustomerSingleClass = () => {
   const navigate = useNavigate();
+
+  const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
+  const getAuthHeader = () => {
+    const t = localStorage.getItem('tt_auth_token');
+    return t ? { 'Authorization': `Bearer ${t}` } : {} as HeadersInit;
+  };
+
   const [phase, setPhase] = useState<'config' | 'searching' | 'matched' | 'chat'>('config');
   const [radius, setRadius] = useState<number>(10);
   const [objective, setObjective] = useState('');
-  const [chatMessages, setChatMessages] = useState<{sender: 'me' | 'prof', text: string}[]>([]);
+  const [chatMessages, setChatMessages] = useState<{sender: 'professor' | 'student', text: string}[]>([]);
   const [currentMessage, setCurrentMessage] = useState('');
 
   // Professor mockado que aceitou corrida
-  const matchedProfessor = {
-    name: 'Carlos Oliveira',
-    age: 34,
-    experienceYears: 12,
-    price: 180,
-    distance: 4.2
-  };
+  
+  const [activeMatch, setActiveMatch] = useState<any>(null);
+  const [professorDetails, setProfessorDetails] = useState<any>(null);
+
+  // Poll for match status when searching
+  useEffect(() => {
+    let interval: any;
+    if (phase === 'searching' && activeMatch) {
+      const checkStatus = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/single-class/match/${activeMatch.id}/status`, { headers: getAuthHeader() });
+          if(res.ok) {
+            const data = await res.json();
+            if(data && data.status === 'accepted') {
+              setPhase('matched');
+            }
+          }
+        } catch(e) {}
+      };
+      interval = setInterval(checkStatus, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [phase, activeMatch]);
+
+  // Remove fake timer
+  useEffect(() => {
+    // Phase search logic handles via DB polling now
+  }, [phase]);
+
 
   useEffect(() => {
     if (phase === 'searching') {
@@ -29,13 +58,32 @@ export const CustomerSingleClass = () => {
     }
   }, [phase]);
 
-  const handleSendMessage = () => {
-    if(!currentMessage.trim()) return;
-    setChatMessages([...chatMessages, { sender: 'me', text: currentMessage }]);
+  
+  useEffect(() => {
+    let interval: any;
+    if (phase === 'chat' && activeMatch) {
+      const fetchChat = async () => {
+        try {
+          const res = await fetch(`${API_URL}/api/single-class/chat/${activeMatch.id}`, { headers: getAuthHeader() });
+          if(res.ok) setChatMessages(await res.json());
+        } catch(e) {}
+      };
+      fetchChat();
+      interval = setInterval(fetchChat, 2000);
+    }
+    return () => clearInterval(interval);
+  }, [phase, activeMatch]);
+
+  const handleSendMessage = async () => {
+    if(!currentMessage.trim() || !activeMatch) return;
+    const msg = currentMessage;
     setCurrentMessage('');
-    setTimeout(() => {
-       setChatMessages(prev => [...prev, { sender: 'prof', text: 'Perfeito! Qual horário funciona melhor para você?' }]);
-    }, 1500);
+    await fetch(`${API_URL}/api/single-class/chat/${activeMatch.id}`, {
+      method: 'POST',
+      headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: msg, sender: 'student' })
+    });
+    setChatMessages(prev => [...prev, { sender: 'student', text: msg }]);
   };
 
   return (
@@ -91,7 +139,33 @@ export const CustomerSingleClass = () => {
                 />
               </div>
 
-              <button onClick={() => setPhase('searching')} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
+              <button onClick={async () => {
+    setPhase('searching');
+    try {
+      // Find a professor
+      const profRes = await fetch(`${API_URL}/api/single-class/search`, { headers: getAuthHeader() });
+      if (profRes.ok) {
+        const prof = await profRes.json();
+        if (prof) {
+          setProfessorDetails(prof);
+          // Create match
+          const matchRes = await fetch(`${API_URL}/api/single-class/match`, {
+            method: 'POST',
+            headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+            body: JSON.stringify({ professorId: prof.professorId, objective })
+          });
+          if (matchRes.ok) {
+            setActiveMatch(await matchRes.json());
+            return;
+          }
+        }
+      }
+      alert('Nenhum professor encontrado na sua região no momento.');
+      setPhase('config');
+    } catch(e) {
+      setPhase('config');
+    }
+  }} className="button-primary" style={{ width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '8px', padding: '16px', fontSize: '18px' }}>
                 <Search size={22} /> Buscar Professor Agora
               </button>
             </motion.div>
@@ -147,21 +221,21 @@ export const CustomerSingleClass = () => {
                 </button>
                 <div style={{ width: '120px', height: '120px', borderRadius: '50%', background: '#eee', margin: '0 auto 24px', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
                 
-                <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{matchedProfessor.name}</h2>
+                <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{(professorDetails?.name || 'Professor')}</h2>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                   <span>{matchedProfessor.age} anos</span>
-                   <span>{matchedProfessor.experienceYears} anos de exp.</span>
+                   <span>{34} anos</span>
+                   <span>{(professorDetails?.experience || 12)} anos de exp.</span>
                 </div>
 
                 <div style={{ background: 'rgba(255,255,255,0.05)', padding: '16px', borderRadius: '16px', display: 'flex', justifyContent: 'space-around', marginBottom: '32px' }}>
                    <div>
                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Distância</div>
-                     <div style={{ color: 'white', fontWeight: 700, fontSize: '18px' }}>{matchedProfessor.distance} km</div>
+                     <div style={{ color: 'white', fontWeight: 700, fontSize: '18px' }}>{(professorDetails?.maxDistance || 5)} km</div>
                    </div>
                    <div style={{ width: '1px', background: 'rgba(255,255,255,0.1)' }}></div>
                    <div>
                      <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '4px' }}>Valor p/ Hr</div>
-                     <div style={{ color: 'var(--primary-color)', fontWeight: 700, fontSize: '18px' }}>R$ {matchedProfessor.price}</div>
+                     <div style={{ color: 'var(--primary-color)', fontWeight: 700, fontSize: '18px' }}>R$ {(professorDetails?.price || 180)}</div>
                    </div>
                 </div>
 
@@ -192,7 +266,7 @@ export const CustomerSingleClass = () => {
                 </button>
                 <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundImage: 'url(https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=200&auto=format&fit=crop)', backgroundSize: 'cover' }}></div>
                 <div>
-                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{matchedProfessor.name}</h3>
+                  <h3 style={{ color: 'white', margin: '0 0 4px 0' }}>{(professorDetails?.name || 'Professor')}</h3>
                   <div style={{ color: '#10B981', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}><div style={{ width: '8px', height: '8px', background: '#10B981', borderRadius: '50%'}}></div> Online</div>
                 </div>
               </div>
@@ -203,17 +277,15 @@ export const CustomerSingleClass = () => {
                    Feche o local, data e hora com o professor pelo chat.
                  </div>
                  
-                 <div style={{ alignSelf: 'flex-start', background: 'rgba(255,255,255,0.1)', color: 'white', padding: '12px 16px', borderRadius: '16px 16px 16px 4px', maxWidth: '80%' }}>
-                   Olá! Vi que você quer uma aula avulsa num raio de {radius}km. Onde prefere jogar?
-                 </div>
+                 
 
                  {chatMessages.map((msg, i) => (
                     <div key={i} style={{ 
-                      alignSelf: msg.sender === 'me' ? 'flex-end' : 'flex-start', 
-                      background: msg.sender === 'me' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)', 
-                      color: msg.sender === 'me' ? 'var(--text-dark)' : 'white', 
+                      alignSelf: msg.sender === 'student' ? 'flex-end' : 'flex-start', 
+                      background: msg.sender === 'student' ? 'var(--primary-color)' : 'rgba(255,255,255,0.1)', 
+                      color: msg.sender === 'student' ? 'var(--text-dark)' : 'white', 
                       padding: '12px 16px', 
-                      borderRadius: msg.sender === 'me' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', 
+                      borderRadius: msg.sender === 'student' ? '16px 16px 4px 16px' : '16px 16px 16px 4px', 
                       maxWidth: '80%' 
                     }}>
                       {msg.text}
