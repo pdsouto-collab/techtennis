@@ -817,9 +817,9 @@ export const StringerDashboard = () => {
                         setShowCustomerDropdown(true);
                         setCustomerError(false);
                       }}
-                      onFocus={() => setShowCustomerDropdown(true)}
+                      onClick={() => setShowCustomerDropdown(prev => !prev)}
                       required 
-                      style={{ ...inputStyle, borderColor: customerError ? '#D93B65' : 'var(--border-light)' }} 
+                      style={{ ...inputStyle, borderColor: customerError ? '#D93B65' : 'var(--border-light)', cursor: 'pointer' }} 
                     />
                     {customerError && (
                       <span style={{ color: '#D93B65', fontSize: '13px', marginTop: '6px', display: 'block' }}>
@@ -831,7 +831,7 @@ export const StringerDashboard = () => {
                     <AnimatePresence>
                       {showCustomerDropdown && (
                         <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -5 }}
-                          style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: 'var(--bg-panel-solid)', zIndex: 10, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
+                          style={{ position: 'absolute', top: '100%', left: 0, right: 0, background: '#2D1E4B', zIndex: 50, borderRadius: '12px', marginTop: '8px', maxHeight: '200px', overflowY: 'auto', border: '1px solid var(--border-light)', boxShadow: '0 10px 30px rgba(0,0,0,0.5)' }}>
                           
                           {customers.filter((c: any) => c.name.toLowerCase().includes(customerQuery.toLowerCase()) || (c.numericId && c.numericId.toString().startsWith(customerQuery.trim()))).map((customer: any) => (
                             <div 
