@@ -1490,10 +1490,10 @@ export const StringerDashboard = () => {
                              <div>Horas</div>
                           </div>
                           
-                          {jobs.filter(j => j.racketId === activeStringingJob.racketId && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).length === 0 ? (
+                          {jobs.filter(j => j.racketId === activeStringingJob.racketId).length === 0 ? (
                             <div style={{ padding: '32px', textAlign: 'center', color: 'var(--text-secondary)' }}>Nenhum encordoamento finalizado encontrado.</div>
                           ) : (
-                            jobs.filter(j => j.racketId === activeStringingJob.racketId && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).map(pJob => (
+                            jobs.filter(j => j.racketId === activeStringingJob.racketId).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()).map(pJob => (
                              <div key={pJob.id} style={{ minWidth: '800px', display: 'grid', gridTemplateColumns: '1.2fr 2fr 2fr 0.5fr 0.5fr 0.5fr 1fr 0.8fr 0.5fr', padding: '16px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)', fontSize: '13px', color: 'white' }}>
                                <div>{new Date(pJob.updatedAt).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}</div>
                                <div>
@@ -2483,7 +2483,7 @@ export const StringerDashboard = () => {
                     }
 
                     return custRackets.map(racket => {
-                      const racketJobs = jobs.filter(j => j.racketId === racket.id && (j.status === 'finished' || j.type === 'ready' || j.type === 'picked_up')).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+                      const racketJobs = jobs.filter(j => j.racketId === racket.id).sort((a,b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
                       const lastJob = racketJobs[0];
                       return (
                         <div key={racket.id} style={{ display: 'grid', gridTemplateColumns: 'minmax(200px, 3fr) 2fr 3fr 1fr', padding: '16px 24px', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
