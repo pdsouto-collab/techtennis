@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign, Truck } from 'lucide-react';
+import { FileSpreadsheet, FileText, FileJson, Plus, Filter, Trash2, Edit, DollarSign, Truck, Smile } from 'lucide-react';
 import { OrdersFilterModal } from './OrdersFilterModal';
 
-export const OrdersView = ({ onAddOrder, jobs, customers, professors, onDeleteOrder, onEditOrder, onPayment, onDelivery, onViewOrder }: any) => {
+export const OrdersView = ({ onAddOrder, jobs, customers, professors, onDeleteOrder, onEditOrder, onPayment, onDelivery, onViewOrder, onViewFeedback }: any) => {
   const [activeTab, setActiveTab] = useState('unpaid');
   const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
   const [statusFilter, setStatusFilter] = useState('all');
@@ -30,9 +30,11 @@ export const OrdersView = ({ onAddOrder, jobs, customers, professors, onDeleteOr
         price: job.price || 120,
         racketsCount: 0,
         commissionedProfessorId: job.commissionedProfessorId,
-        updatedAt: job.updatedAt
+        updatedAt: job.updatedAt,
+        hasFeedback: !!job.feedback
       };
     }
+    if (job.feedback) acc[code].hasFeedback = true;
     acc[code].racketsCount += 1;
     if (acc[code].racketsCount === 1) {
       acc[code].price = (job.price || 120);
@@ -119,6 +121,11 @@ export const OrdersView = ({ onAddOrder, jobs, customers, professors, onDeleteOr
                 <button onClick={() => onPayment?.(order.orderCode)} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Pagamento"><DollarSign size={16} /></button>
                 {order.type === 'picking_up' && (
                   <button onClick={() => onDelivery?.(order.orderCode)} style={{ background: '#1A202C', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer' }} title="Entregar"><Truck size={16} /></button>
+                )}
+                {order.hasFeedback && (
+                  <button onClick={() => onViewFeedback?.(order.orderCode)} style={{ background: '#538E55', border: 'none', color: 'white', padding: '6px', borderRadius: '4px', cursor: 'pointer', marginLeft: '4px' }} title="Ver Avaliação">
+                    <Smile size={16} />
+                  </button>
                 )}
               </div>
           </td>
