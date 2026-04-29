@@ -204,6 +204,8 @@ export const StringerDashboard = () => {
     { type: 'Outros serviços', isActive: false, price: 0, discountPercent: '', discountValue: '', notes: '' }
   ]);
   const [pickupDate, setPickupDate] = useState('');
+  const [pickupNotes, setPickupNotes] = useState('');
+  const [jobStringingPoint, setJobStringingPoint] = useState('');
 
   // Apply Club Discount rules
   useEffect(() => {
@@ -408,7 +410,9 @@ export const StringerDashboard = () => {
       pickupDate,
       commissionedProfessorId: commissionedProfessorId || null,
       auxServices,
-      stringerName: dashboardStringer
+      stringerName: dashboardStringer,
+      pickupNotes,
+      stringingPoint: jobStringingPoint
     };
     // Envia para API
     fetch(editingJobId ? `${API_URL}/api/jobs/${editingJobId}` : `${API_URL}/api/jobs`, {
@@ -463,6 +467,8 @@ export const StringerDashboard = () => {
     ]);
     setPickupDate('');
     setDashboardStringer('');
+    setPickupNotes('');
+    setJobStringingPoint('');
   };
 
   const startEditingJob = (job: any, cust: any) => {
@@ -521,6 +527,8 @@ export const StringerDashboard = () => {
     setPickupDate(job.pickupDate || '');
     setCommissionedProfessorId(job.commissionedProfessorId || '');
     setDashboardStringer(job.stringerName || '');
+    setPickupNotes(job.pickupNotes || '');
+    setJobStringingPoint(job.stringingPoint || '');
     setView('new_job'); 
     setNewJobStep(2);
   };
@@ -809,9 +817,11 @@ export const StringerDashboard = () => {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '32px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <button onClick={() => newJobStep === 2 ? setNewJobStep(1) : setView('dashboard')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <ArrowLeft size={24} />
-                </button>
+                {newJobStep === 2 && (
+                  <button onClick={() => setNewJobStep(1)} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <ArrowLeft size={24} />
+                  </button>
+                )}
                 <h2 style={{ fontSize: '28px', margin: 0 }}>
                   {newJobStep === 1 ? 'Recebimento' : 'Detalhes do Encordoamento'}
                 </h2>
@@ -919,7 +929,7 @@ export const StringerDashboard = () => {
                   </div>
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Ponto de Encordoamento</label>
-                    <select style={inputStyle}>
+                    <select value={jobStringingPoint} onChange={e => setJobStringingPoint(e.target.value)} style={inputStyle}>
                       <option value="">Selecione...</option>
                       {appSettings.pickupPoints.map((p: string) => <option key={p} value={p}>{p}</option>)}
                     </select>
@@ -927,8 +937,8 @@ export const StringerDashboard = () => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações (Notes)</label>
-                  <textarea rows={4} style={{ ...inputStyle, resize: 'none' }}></textarea>
+                  <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)' }}>Observações</label>
+                  <textarea rows={4} value={pickupNotes} onChange={e => setPickupNotes(e.target.value)} style={{ ...inputStyle, resize: 'none' }}></textarea>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px', gap: '16px' }}>
                   <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '16px 40px', borderRadius: '24px', fontWeight: 700, fontSize: '16px', cursor: 'pointer' }}>
