@@ -1384,8 +1384,8 @@ export const StringerDashboard = () => {
                  </div>
                  <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     <button onClick={() => setView('dashboard')} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Fechar</button>
-                    <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'heart')); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta (coração)</button>
-                    <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'full')); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta</button>
+                    <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'heart', rackets?.find((r:any) => r.id === activeStringingJob.racketId))); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta (coração)</button>
+                    <button onClick={() => { import('../utils/printUtils').then(m => m.printLabel(activeStringingJob, 'full', rackets?.find((r:any) => r.id === activeStringingJob.racketId))); }} style={{ padding: '8px 16px', background: 'rgba(255,255,255,0.1)', border: 'none', borderRadius: '8px', color: 'white', fontWeight: 600, cursor: 'pointer' }}>Imprimir etiqueta</button>
                     <button onClick={() => { 
                       const cust = customers.find((c: any) => c.name === activeStringingJob.customerName);
                       startEditingJob(activeStringingJob, cust); 
