@@ -542,8 +542,11 @@ export const StringerDashboard = () => {
       {/* Top Navbar / Tabs (Dashboard specific) */}
       <div style={{ 
         width: '100%', maxWidth: '1200px', padding: '0 24px', marginBottom: '24px',
-        display: 'flex', gap: '24px', overflowX: 'auto', borderBottom: '1px solid var(--border-light)'
+        display: 'flex', alignItems: 'center', gap: '24px', overflowX: 'auto', borderBottom: '1px solid var(--border-light)'
       }}>
+        <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '40px', height: '40px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)', flexShrink: 0 }}>
+          <ArrowLeft size={20} />
+        </button>
         <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); }} style={{
           background: 'none', border: 'none', padding: '12px 0', 
           color: view === 'dashboard' ? 'var(--primary-color)' : 'var(--text-secondary)',
@@ -590,9 +593,6 @@ export const StringerDashboard = () => {
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
-                  <ArrowLeft size={24} />
-                </button>
                 <h2 style={{ fontSize: '24px', color: 'var(--text-primary)', margin: 0 }}>Gestão e Operação</h2>
               </div>
               <button onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); setView('new_job'); }} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
