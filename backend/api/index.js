@@ -974,6 +974,117 @@ app.delete('/api/classes/:id', authenticateToken, async (req, res) => {
   }
 });
 
+
+// --- SINGLE CLASS MATCHMAKING (UBER/TINDER) ---
+
+app.get('/api/single-class/profile', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.id]);
+    res.json(result.rows.length > 0 ? result.rows[0] : null);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.post('/api/single-class/profile', authenticateToken, async (req, res) => {
+  const db = getDB();
+  const { price, experience, maxDistance, specialty, isOnline } = req.body;
+  try {
+    await db.connect();
+    const check = await db.query('SELECT id FROM "SingleClassProfessorProfile" WHERE "professorId" = $1', [req.user.id]);
+    if (check.rows.length > 0) {
+      const result = await db.query('UPDATE "SingleClassProfessorProfile" SET "price"=$1, "experience"=$2, "maxDistance"=$3, "specialty"=$4, "isOnline"=$5, "updatedAt"=now() WHERE "professorId"=$6 RETURNING *', [price, experience, maxDistance, specialty, isOnline, req.user.id]);
+      res.json(result.rows[0]);
+    } else {
+      const result = await db.query('INSERT INTO "SingleClassProfessorProfile" ("professorId", "name", "price", "experience", "maxDistance", "specialty", "isOnline") VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *', [req.user.id, req.user.name, price, experience, maxDistance, specialty, isOnline]);
+      res.json(result.rows[0]);
+    }
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.get('/api/single-class/search', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "SingleClassProfessorProfile" WHERE "isOnline" = true ORDER BY random() LIMIT 1');
+    res.json(result.rows.length > 0 ? result.rows[0] : null);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.post('/api/single-class/match', authenticateToken, async (req, res) => {
+  const db = getDB();
+  const { professorId, objective } = req.body;
+  try {
+    await db.connect();
+    const result = await db.query('INSERT INTO "SingleClassMatch" ("studentId", "studentName", "professorId", "objective") VALUES ($1, $2, $3, $4) RETURNING *', [req.user.id, req.user.name, professorId, objective]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.get('/api/single-class/requests', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "SingleClassMatch" WHERE "professorId" = $1 AND "status" = $2 ORDER BY "createdAt" DESC', [req.user.id, 'pending']);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.put('/api/single-class/match/:id/accept', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('UPDATE "SingleClassMatch" SET "status" = $1 WHERE "id" = $2 RETURNING *', ['accepted', req.params.id]);
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.get('/api/single-class/chat/:matchId', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "ChatMessage" WHERE "matchId" = $1 ORDER BY "createdAt" ASC', [req.params.matchId]);
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.post('/api/single-class/chat/:matchId', authenticateToken, async (req, res) => {
+  const db = getDB();
+  const { text, sender } = req.body;
+  try {
+    await db.connect();
+    const result = await db.query('INSERT INTO "ChatMessage" ("matchId", "sender", "text") VALUES ($1, $2, $3) RETURNING *', [req.params.matchId, sender, text]);
+    res.status(201).json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
+app.get('/api/single-class/match/:id/status', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT "status" FROM "SingleClassMatch" WHERE "id" = $1', [req.params.id]);
+    res.json(result.rows[0] || null);
+  } catch (err) {
+    res.status(500).json({ error: 'Erro' });
+  } finally { await db.end(); }
+});
+
 module.exports = app;
 
 
