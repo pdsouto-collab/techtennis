@@ -417,7 +417,12 @@ export const StringerDashboard = () => {
       auxServices,
       stringerName: dashboardStringer,
       pickupNotes,
-      stringingPoint: jobStringingPoint
+      stringingPoint: jobStringingPoint,
+      hasOwnReel,
+      hasOwnSet,
+      hasLogo,
+      logoNotes,
+      racketNotes
     };
     // Envia para API
     fetch(editingJobId ? `${API_URL}/api/jobs/${editingJobId}` : `${API_URL}/api/jobs`, {
