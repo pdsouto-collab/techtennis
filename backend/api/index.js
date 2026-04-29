@@ -784,6 +784,21 @@ app.put('/api/users/profile', authenticateToken, async (req, res) => {
 // API RESTful: GERENCIAMENTO DE USUA?RIOS (ADMIN)
 // ==========================================
 
+app.get('/api/users', authenticateToken, async (req, res) => {
+  const db = getDB();
+  try {
+    await db.connect();
+    // Exclude password from the query for security
+    const result = await db.query('SELECT id, name, email, phone, role, status, "createdAt", "numericId", "photoUrl", "yearsOfExperience", "trainingTypes" FROM "User" ORDER BY "createdAt" DESC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Error fetching users:', err);
+    res.status(500).json({ error: 'Erro ao buscar usuários.' });
+  } finally {
+    await db.end();
+  }
+});
+
 app.put('/api/users/:id', authenticateToken, async (req, res) => {
   const { name, email, phone, role, status, password } = req.body;
   const db = getDB();

@@ -81,6 +81,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     if (currentUser) {
       localStorage.setItem('tt_current_user', JSON.stringify(currentUser));
+      // Carrega lista atualizada do backend se tiver token
+      const token = localStorage.getItem('tt_auth_token');
+      if (token && (currentUser.role === 'ADMIN' || currentUser.role === 'ENCORDOADOR')) {
+         fetch(`${API_URL}/api/users`, {
+            headers: { 'Authorization': `Bearer ${token}` }
+         }).then(res => res.json()).then(data => {
+            if (Array.isArray(data)) setUsers(data);
+         }).catch(err => console.error('Erro ao buscar users:', err));
+      }
     } else {
       localStorage.removeItem('tt_current_user');
     }
@@ -242,71 +251,118 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUsers(prev => [...prev, newUser]);
   };
 
-  const updateUserStatus = (id: string, status: User['status'], role?: UserRole, numericId?: number) => {
-    setUsers(prev => {
-      const updated = prev.map(u => {
-        if (u.id === id) {
-          const mod = { ...u, status, ...(role ? { role } : {}), ...(numericId !== undefined ? { numericId } : {}) };
-          if (status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
-             setTimeout(() => syncToProfessors(mod), 100);
-          }
-          if (status === 'active' && mod.role === 'CLIENTE') {
-             setTimeout(() => syncToCustomers(mod.name, mod.email, mod.phone || ''), 100);
-          }
-          return mod;
-        }
-        return u;
+  const updateUserStatus = async (id: string, status: User['status'], role?: UserRole, numericId?: number) => {
+    const userToUpdate = users.find(u => u.id === id);
+    if (!userToUpdate) return;
+    
+    const updates = { status, ...(role ? { role } : {}), ...(numericId !== undefined ? { numericId } : {}) };
+    const payload = { ...userToUpdate, ...updates };
+    
+    try {
+      const res = await fetch(`${API_URL}/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('tt_auth_token')}`
+        },
+        body: JSON.stringify(payload)
       });
-      return updated;
-    });
-  };
-
-  const adminUpdateUser = (id: string, updates: Partial<User>) => {
-    setUsers(prev => prev.map(u => {
-        if (u.id === id) {
-            const mod = { ...u, ...updates };
-            if (mod.status === 'active' && (mod.role.includes('PROFESSOR') || mod.role === 'ENCORDOADOR' || mod.role === 'ADMIN')) {
-                setTimeout(() => syncToProfessors(mod as User), 100);
-            }
-            if (mod.status === 'active' && mod.role === 'CLIENTE') {
-                setTimeout(() => syncToCustomers(mod.name, mod.email, mod.phone || ''), 100);
-            }
-            return mod as User;
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(prev => prev.map(u => u.id === id ? data : u));
+        
+        if (status === 'active' && (data.role.includes('PROFESSOR') || data.role === 'ENCORDOADOR' || data.role === 'ADMIN')) {
+           setTimeout(() => syncToProfessors(data), 100);
         }
-        return u;
-    }));
+        if (status === 'active' && data.role === 'CLIENTE') {
+           setTimeout(() => syncToCustomers(data.name, data.email, data.phone || ''), 100);
+        }
+      } else {
+        alert('Erro ao atualizar status.');
+      }
+    } catch(e) {
+      console.error('Erro ao atualizar status', e);
+    }
   };
 
-  const deleteUser = (id: string) => {
-    setUsers(prev => prev.filter(u => u.id !== id));
+  const adminUpdateUser = async (id: string, updates: Partial<User>) => {
+    const userToUpdate = users.find(u => u.id === id);
+    if (!userToUpdate) return;
+    
+    try {
+      const res = await fetch(`${API_URL}/api/users/${id}`, {
+        method: 'PUT',
+        headers: { 
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('tt_auth_token')}`
+        },
+        body: JSON.stringify({ ...userToUpdate, ...updates })
+      });
+      
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(prev => prev.map(u => u.id === id ? data : u));
+        
+        if (data.status === 'active' && (data.role.includes('PROFESSOR') || data.role === 'ENCORDOADOR' || data.role === 'ADMIN')) {
+            setTimeout(() => syncToProfessors(data), 100);
+        }
+        if (data.status === 'active' && data.role === 'CLIENTE') {
+            setTimeout(() => syncToCustomers(data.name, data.email, data.phone || ''), 100);
+        }
+      } else {
+        const errData = await res.json();
+        alert(errData.error || 'Erro ao atualizar usuário');
+      }
+    } catch(e) {
+      console.error('Erro ao atualizar usuario', e);
+      alert('Erro de conexão ao atualizar usuário');
+    }
+  };
+
+  const deleteUser = async (id: string) => {
+    try {
+      const res = await fetch(`${API_URL}/api/users/${id}`, {
+        method: 'DELETE',
+        headers: { 
+          'Authorization': `Bearer ${localStorage.getItem('tt_auth_token')}`
+        }
+      });
+      if (res.ok) {
+        setUsers(prev => prev.filter(u => u.id !== id));
+      } else {
+        alert('Erro ao deletar usuário');
+      }
+    } catch(e) {
+      console.error('Erro ao deletar usuario', e);
+    }
   };
 
   const adminCreateUser = async (user: Partial<User>) => {
-    const newUser: User = {
-        id: Date.now().toString(),
-        name: user.name || '',
-        email: user.email || '',
-        password: user.password || '123',
-        phone: user.phone || '',
-        role: user.role || 'CLIENTE',
-        status: user.status || 'active'
-    };
-    setUsers(prev => [...prev, newUser]);
-    
     try {
-      await fetch(`${API_URL}/api/auth/register`, {
+      const res = await fetch(`${API_URL}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          name: newUser.name, 
-          email: newUser.email, 
-          password: newUser.password, 
-          phone: newUser.phone, 
-          role: newUser.role 
+          name: user.name || '', 
+          email: user.email || '', 
+          password: user.password || '123', 
+          phone: user.phone || '', 
+          role: user.role || 'CLIENTE',
+          status: user.status || 'active'
         })
       });
+      
+      const data = await res.json();
+      if (!res.ok) {
+        alert(data.error || 'Erro ao criar usuário no banco.');
+        return;
+      }
+      
+      // Update local state exactly as DB returned
+      setUsers(prev => [...prev, data.user]);
     } catch(e) {
       console.error('Erro ao salvar usuario no banco de dados', e);
+      alert('Erro de conexão ao criar usuário');
     }
   };
 
