@@ -286,7 +286,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   return nameA.localeCompare(nameB);
                 });
               }
-              return renderList.map(({ item, originalIndex: idx }) => (
+              return renderList.map(({ item, originalIndex: idx }: { item: any; originalIndex: number }) => (
                 <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'rgba(255,255,255,0.05)', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
                   {editingIndex === idx ? (
                   <div style={{ display: 'flex', gap: '8px', flex: 1, marginRight: '16px', flexWrap: 'wrap' }}>
@@ -437,7 +437,8 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   </button>
                 </div>
               </div>
-            ))
+            ));
+            })()
           )}
         </div>
 
