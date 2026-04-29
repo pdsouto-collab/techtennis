@@ -32,17 +32,17 @@ const Navbar = () => {
       <nav style={{
         position: 'fixed',
         top: '20px', left: '50%', transform: 'translateX(-50%)',
-        width: '90%', maxWidth: '1200px', zIndex: 50,
-        background: 'rgba(60, 42, 99, 0.5)', backdropFilter: 'blur(16px)',
-        border: '1px solid var(--border-light)',
+        width: '100%', maxWidth: '700px', zIndex: 50,
+        background: 'rgba(255, 255, 255, 0.05)', backdropFilter: 'blur(16px)',
+        border: '1px solid rgba(255, 255, 255, 0.1)',
         borderRadius: '100px',
-        padding: '8px 24px'
+        padding: '12px 32px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
             <Link to="/" style={{ display: 'flex', alignItems: 'center' }}>
               <img src={brandLogo} alt="TechTennis Pro Stringer Logo" style={{ 
-                height: '40px', 
+                height: '72px', 
                 objectFit: 'contain',
                 filter: 'brightness(0) invert(1)'
               }} />
