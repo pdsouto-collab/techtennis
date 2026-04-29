@@ -35,7 +35,7 @@ export const UserManagement = () => {
           <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos ao sistema</p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => navigate('/stringer')} style={{ background: 'white', color: 'var(--text-primary)', border: '1px solid var(--border-light)', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+          <button onClick={() => navigate('/')} style={{ background: 'white', color: '#2D1E4B', border: '1px solid var(--border-light)', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
             <X size={18} /> Fechar
           </button>
           <button onClick={handleAdd} style={{ background: 'var(--primary-color)', color: '#2D1E4B', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
