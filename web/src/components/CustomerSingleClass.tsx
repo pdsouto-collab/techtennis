@@ -16,7 +16,6 @@ export const CustomerSingleClass = () => {
     name: 'Carlos Oliveira',
     age: 34,
     experienceYears: 12,
-    rating: 4.9,
     price: 180,
     distance: 4.2
   };
@@ -150,7 +149,6 @@ export const CustomerSingleClass = () => {
                 
                 <h2 style={{ color: 'white', fontSize: '24px', fontWeight: 800, margin: '0 0 8px 0' }}>{matchedProfessor.name}</h2>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
-                   <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Star size={16} color="#F59E0B" fill="#F59E0B" /> {matchedProfessor.rating}</span>
                    <span>{matchedProfessor.age} anos</span>
                    <span>{matchedProfessor.experienceYears} anos de exp.</span>
                 </div>
