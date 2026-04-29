@@ -228,12 +228,14 @@ export const RacketCollection = () => {
       
       {/* Header */}
       <div className="glass-panel" style={{ padding: '32px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '24px' }}>
-        <div>
-          <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', color: 'var(--primary-color)', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', fontWeight: 600 }}>
-            <ArrowLeft size={20} /> Voltar ao Início
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <ArrowLeft size={24} />
           </button>
-          <h1 style={{ fontSize: '32px', color: 'white', fontFamily: 'var(--font-heading)', margin: 0 }}>Extrato de Coleta</h1>
-          <p style={{ color: 'var(--text-secondary)', marginTop: '8px' }}>Relatório de comissionamento de raquetes</p>
+          <div>
+            <h1 style={{ fontSize: '32px', color: 'white', fontFamily: 'var(--font-heading)', margin: 0 }}>Extrato de Coleta</h1>
+            <p style={{ color: 'var(--text-secondary)', marginTop: '8px', marginBottom: 0 }}>Relatório de comissionamento de raquetes</p>
+          </div>
         </div>
 
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>

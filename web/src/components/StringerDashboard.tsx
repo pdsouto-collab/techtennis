@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Users, Plus, ArrowLeft, PackageOpen, Scissors, CheckCircle, UserPlus, X, Search, Copy, ArrowRightCircle, Trash2, Edit, ClipboardList, Grid, DollarSign, Truck, UserSquare, FolderPlus, FileSpreadsheet, FileText, FileJson, MessageCircle, Smile } from 'lucide-react';
@@ -61,10 +61,19 @@ export const StringerDashboard = () => {
   const activeCustomerFiltersCount = Object.values(customerFilters).filter(v => typeof v === 'string' && v.trim() !== '').length;
   const [customerItemsPerPage, setCustomerItemsPerPage] = useState<number | 'all'>(10);
   const [customerCurrentPage, setCustomerCurrentPage] = useState(1);
+  const [professorFilters, setProfessorFilters] = useState({ name: '', numericId: '', email: '', phone: '' });
+  const [isProfessorSearchModalOpen, setIsProfessorSearchModalOpen] = useState(false);
+  const activeProfessorFiltersCount = Object.values(professorFilters).filter(v => typeof v === 'string' && v.trim() !== '').length;
+  const [professorItemsPerPage, setProfessorItemsPerPage] = useState<number | 'all'>(10);
+  const [professorCurrentPage, setProfessorCurrentPage] = useState(1);
 
   useEffect(() => {
     setCustomerCurrentPage(1);
   }, [customerFilters]);
+
+  useEffect(() => {
+    setProfessorCurrentPage(1);
+  }, [professorFilters]);
 
   const [professors, setProfessors] = useState<any[]>([]);
   const [jobs, setJobs] = useState<any[]>([]);
@@ -535,15 +544,6 @@ export const StringerDashboard = () => {
         width: '100%', maxWidth: '1200px', padding: '0 24px', marginBottom: '24px',
         display: 'flex', gap: '24px', overflowX: 'auto', borderBottom: '1px solid var(--border-light)'
       }}>
-        <button onClick={() => navigate('/')} style={{
-          background: 'none', border: 'none', padding: '12px 0', 
-          color: 'var(--text-secondary)',
-          fontWeight: 500, fontSize: '15px',
-          borderBottom: '2px solid transparent',
-          cursor: 'pointer', whiteSpace: 'nowrap'
-        }}>
-          Início
-        </button>
         <button onClick={() => { setView('dashboard'); setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); }} style={{
           background: 'none', border: 'none', padding: '12px 0', 
           color: view === 'dashboard' ? 'var(--primary-color)' : 'var(--text-secondary)',
@@ -589,7 +589,12 @@ export const StringerDashboard = () => {
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
             
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-              <h2 style={{ fontSize: '24px', color: 'var(--text-primary)' }}>Gestão e Operação</h2>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'var(--text-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+                  <ArrowLeft size={24} />
+                </button>
+                <h2 style={{ fontSize: '24px', color: 'var(--text-primary)', margin: 0 }}>Gestão e Operação</h2>
+              </div>
               <button onClick={() => { setNewJobStep(1); setSelectedCustomer(null); setCustomerQuery(''); setSelectedJobRacket(''); setCurrentOrderCode(''); setEditingJobId(null); setView('new_job'); }} className="button-primary" style={{ padding: '8px 24px', fontSize: '14px' }}>
                 <Plus size={18} /> Novo Encordoamento
               </button>
@@ -1701,6 +1706,16 @@ export const StringerDashboard = () => {
                 <button type="button" onClick={() => setView('dashboard')} style={{ background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '8px 24px', borderRadius: '24px', fontWeight: 600, fontSize: '14px', cursor: 'pointer' }}>
                   Fechar
                 </button>
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {activeProfessorFiltersCount > 0 && (
+                    <button onClick={() => setProfessorFilters({ name: '', numericId: '', email: '', phone: '' })} style={{ background: 'transparent', border: 'none', color: '#FECACA', fontSize: '13px', cursor: 'pointer', padding: 0 }}>
+                      Limpar Filtros
+                    </button>
+                  )}
+                  <button className="button-primary" style={{ padding: '8px 16px', fontSize: '14px', background: activeProfessorFiltersCount > 0 ? '#6136B3' : 'rgba(255,255,255,0.1)', color: 'white', border: 'none', borderRadius: '24px', display: 'flex', gap: '6px', alignItems: 'center' }} onClick={() => setIsProfessorSearchModalOpen(true)}>
+                    <Search size={16} /> Busca Avançada {activeProfessorFiltersCount > 0 && `(${activeProfessorFiltersCount})`}
+                  </button>
+                </div>
                 <div style={{ display: 'flex', gap: '2px', marginRight: '12px' }}>
                   <button onClick={() => exportProfessorsData('excel')} style={{ background: '#6FCF97', border: 'none', color: 'white', padding: '8px 12px', borderRadius: '4px 0 0 4px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar Excel"><FileSpreadsheet size={16} /></button>
                   <button onClick={() => exportProfessorsData('pdf')} style={{ background: '#D93B65', border: 'none', color: 'white', padding: '8px 12px', cursor: 'pointer', display: 'flex', alignItems: 'center' }} title="Gerar PDF"><FileText size={16} /></button>
@@ -1724,27 +1739,122 @@ export const StringerDashboard = () => {
                     </tr>
                 </thead>
                 <tbody>
-                  {professors.map((prof: any, index: number) => (
-                    <tr key={prof.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
-                      <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{prof.name}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.numericId || ''}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.email || ''}</td>
-                      <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone ? applyPhoneMask(prof.phone) : ''}</td>
-                      <td style={{ padding: '16px' }}>
-                        <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
-                          <button onClick={async () => {
-                            if(window.confirm('Apagar professor?')) {
-                              await fetch(`${API_URL}/api/professors/${prof.id}`, { method: 'DELETE', headers: getAuthHeader() });
-                              fetchProfessors();
-                            }
-                          }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
-                          <button onClick={() => { setSelectedProfessor(prof); setIsProfessorModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {(() => {
+                    const filtered = professors.filter((p: any) => {
+                      let matches = true;
+                      if (professorFilters.name) matches = matches && (p.name || '').toLowerCase().includes(professorFilters.name.toLowerCase());
+                      if (professorFilters.email) matches = matches && (p.email || '').toLowerCase().includes(professorFilters.email.toLowerCase());
+                      if (professorFilters.phone) matches = matches && ((p.phone || '').includes(professorFilters.phone));
+                      if (professorFilters.numericId) {
+                        const q = professorFilters.numericId.trim();
+                        if (q.includes(',')) {
+                          const parts = q.split(',').map(s => s.trim());
+                          matches = matches && parts.includes(String(p.numericId));
+                        } else if (q.includes('-')) {
+                          const parts = q.split('-').map(s => parseInt(s.trim(), 10));
+                          const min = parts[0];
+                          const max = parts[1];
+                          const val = parseInt(p.numericId, 10);
+                          if (!isNaN(min) && !isNaN(max) && !isNaN(val)) {
+                            matches = matches && (val >= min && val <= max);
+                          } else {
+                            matches = false;
+                          }
+                        } else {
+                          matches = matches && String(p.numericId || '').includes(q);
+                        }
+                      }
+                      return matches;
+                    });
+
+                    const totalItems = filtered.length;
+                    const itemsPerPage = professorItemsPerPage === 'all' ? totalItems : professorItemsPerPage;
+                    const startIndex = totalItems === 0 ? 0 : (professorCurrentPage - 1) * itemsPerPage;
+                    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+                    const paginated = itemsPerPage === totalItems ? filtered : filtered.slice(startIndex, endIndex);
+
+                    return (
+                      <>
+                        {paginated.map((prof: any, index: number) => (
+                          <tr key={prof.id} style={{ borderBottom: '1px solid #F3F4F6', background: index % 2 === 0 ? '#F8F9FA' : '#FFFFFF' }}>
+                            <td style={{ padding: '16px', fontSize: '14px', fontWeight: 600 }}>{prof.name}</td>
+                            <td style={{ padding: '16px', fontSize: '14px' }}>{prof.numericId || ''}</td>
+                            <td style={{ padding: '16px', fontSize: '14px' }}>{prof.email || ''}</td>
+                            <td style={{ padding: '16px', fontSize: '14px' }}>{prof.phone ? applyPhoneMask(prof.phone) : ''}</td>
+                            <td style={{ padding: '16px' }}>
+                              <div style={{ display: 'flex', gap: '6px', justifyContent: 'flex-end' }}>
+                                <button onClick={async () => {
+                                  if(window.confirm('Apagar professor?')) {
+                                    await fetch(`${API_URL}/api/professors/${prof.id}`, { method: 'DELETE', headers: getAuthHeader() });
+                                    fetchProfessors();
+                                  }
+                                }} style={{ background: '#D93B65', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Excluir"><Trash2 size={16} /></button>
+                                <button onClick={() => { setSelectedProfessor(prof); setIsProfessorModalOpen(true); }} style={{ background: '#4298E7', border: 'none', width: '32px', height: '32px', borderRadius: '6px', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }} title="Editar"><Edit size={16} /></button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                      </>
+                    );
+                  })()}
                 </tbody>
               </table>
+              
+              {(() => {
+                const filtered = professors.filter((p: any) => {
+                  let matches = true;
+                  if (professorFilters.name) matches = matches && (p.name || '').toLowerCase().includes(professorFilters.name.toLowerCase());
+                  if (professorFilters.email) matches = matches && (p.email || '').toLowerCase().includes(professorFilters.email.toLowerCase());
+                  if (professorFilters.phone) matches = matches && ((p.phone || '').includes(professorFilters.phone));
+                  if (professorFilters.numericId) {
+                    const q = professorFilters.numericId.trim();
+                    if (q.includes(',')) {
+                      const parts = q.split(',').map(s => s.trim());
+                      matches = matches && parts.includes(String(p.numericId));
+                    } else if (q.includes('-')) {
+                      const parts = q.split('-').map(s => parseInt(s.trim(), 10));
+                      const min = parts[0];
+                      const max = parts[1];
+                      const val = parseInt(p.numericId, 10);
+                      if (!isNaN(min) && !isNaN(max) && !isNaN(val)) {
+                        matches = matches && (val >= min && val <= max);
+                      } else {
+                        matches = false;
+                      }
+                    } else {
+                      matches = matches && String(p.numericId || '').includes(q);
+                    }
+                  }
+                  return matches;
+                });
+                const totalItems = filtered.length;
+                const itemsPerPage = professorItemsPerPage === 'all' ? totalItems : professorItemsPerPage;
+                const totalPages = Math.ceil(totalItems / itemsPerPage) || 1;
+                const startIndex = totalItems === 0 ? 0 : (professorCurrentPage - 1) * itemsPerPage + 1;
+                const endIndex = Math.min((professorCurrentPage - 1) * itemsPerPage + itemsPerPage, totalItems);
+                return (
+                  <div style={{ padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#6B7280', fontSize: '13px', background: 'white' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span>Show</span>
+                      <select value={professorItemsPerPage} onChange={(e) => { setProfessorItemsPerPage(e.target.value === 'all' ? 'all' : parseInt(e.target.value)); setProfessorCurrentPage(1); }} style={{ padding: '4px 8px', borderRadius: '4px', border: '1px solid #E5E7EB', background: '#F8F9FA' }}>
+                        <option value={10}>10</option>
+                        <option value={20}>20</option>
+                        <option value={30}>30</option>
+                        <option value={40}>40</option>
+                        <option value={50}>50</option>
+                        <option value="all">Todas</option>
+                      </select>
+                      <span>entries</span>
+                      <span style={{ marginLeft: '16px' }}>Showing {startIndex} to {endIndex} of {totalItems} entries</span>
+                    </div>
+                    <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                      <button onClick={() => setProfessorCurrentPage(Math.max(1, professorCurrentPage - 1))} disabled={professorCurrentPage === 1} style={{ border: 'none', background: 'none', color: professorCurrentPage === 1 ? '#9CA3AF' : '#4298E7', cursor: professorCurrentPage === 1 ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Previous</button>
+                      <button style={{ border: 'none', background: '#4298E7', color: 'white', width: '28px', height: '28px', borderRadius: '4px', cursor: 'pointer', fontWeight: 600 }}>{professorCurrentPage}</button>
+                      <button onClick={() => setProfessorCurrentPage(Math.min(totalPages, professorCurrentPage + 1))} disabled={professorCurrentPage === totalPages} style={{ border: 'none', background: 'none', color: professorCurrentPage === totalPages ? '#9CA3AF' : '#4298E7', cursor: professorCurrentPage === totalPages ? 'not-allowed' : 'pointer', fontWeight: 600 }}>Next</button>
+                    </div>
+                  </div>
+                );
+              })()}
             </div>
           </motion.div>
         )}
@@ -1839,6 +1949,53 @@ export const StringerDashboard = () => {
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '12px' }}>
                     <button type="button" onClick={() => setCustomerFilters({ name: '', numericId: '', originClub: '', professorId: '', email: '', phone: '', stringingPoint: '' })} style={{ padding: '12px 24px', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '24px', color: 'white', cursor: 'pointer' }}>Limpar</button>
+                    <button type="submit" className="button-primary" style={{ padding: '12px 24px', borderRadius: '24px' }}>Aplicar Filtros</button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Professor Advanced Search Modal */}
+      <AnimatePresence>
+        {isProfessorSearchModalOpen && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+            background: 'rgba(0,0,0,0.4)', backdropFilter: 'blur(4px)',
+            zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '24px'
+          }}>
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
+              style={{ width: '100%', maxWidth: '700px', background: 'var(--bg-panel)', backdropFilter: 'blur(16px)', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', overflow: 'hidden', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+              <div style={{ background: '#6136B3', padding: '20px 24px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <h3 style={{ color: 'white', fontSize: '20px', fontWeight: 700, margin: 0 }}>Pesquisa Avançada de Professores</h3>
+                <button onClick={() => setIsProfessorSearchModalOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer', display: 'flex' }}><X size={24} /></button>
+              </div>
+              <div style={{ padding: '32px', overflowY: 'auto' }}>
+                <form onSubmit={(e) => { e.preventDefault(); setIsProfessorSearchModalOpen(false); }} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Nome</label>
+                      <input type="text" value={professorFilters.name} onChange={e => setProfessorFilters({...professorFilters, name: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white' }} placeholder="Parte do nome..." />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>ID TechTennis (Múltiplos ou Range)</label>
+                      <input type="text" value={professorFilters.numericId} onChange={e => setProfessorFilters({...professorFilters, numericId: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white' }} placeholder="Ex: 1045, 1046 ou 1045-1050" />
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>E-mail</label>
+                      <input type="text" value={professorFilters.email} onChange={e => setProfessorFilters({...professorFilters, email: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white' }} placeholder="Email..." />
+                    </div>
+                    <div>
+                      <label style={{ display: 'block', marginBottom: '8px', color: 'white' }}>Celular</label>
+                      <input type="text" value={professorFilters.phone} onChange={e => setProfessorFilters({...professorFilters, phone: e.target.value})} style={{ width: '100%', padding: '12px', borderRadius: '8px', border: 'none', background: 'rgba(0,0,0,0.1)', color: 'white' }} placeholder="Telefone..." />
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '12px' }}>
+                    <button type="button" onClick={() => setProfessorFilters({ name: '', numericId: '', email: '', phone: '' })} style={{ padding: '12px 24px', background: 'transparent', border: '1px solid rgba(255,255,255,0.4)', borderRadius: '24px', color: 'white', cursor: 'pointer' }}>Limpar</button>
                     <button type="submit" className="button-primary" style={{ padding: '12px 24px', borderRadius: '24px' }}>Aplicar Filtros</button>
                   </div>
                 </form>

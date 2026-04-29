@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { applyPhoneMask } from '../utils/masks';
 import { motion } from 'framer-motion';
-import { Trash2, Edit, X, Plus, CheckCircle, Ban, Users, Clock } from 'lucide-react';
+import { Trash2, Edit, X, Plus, CheckCircle, Ban, Users, Clock, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import type { User, UserRole } from '../contexts/AuthContext';
 
@@ -30,14 +30,16 @@ export const UserManagement = () => {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ padding: '32px', border: '1px solid var(--border-light)' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <div>
-          <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white' }}>Gestão de Usuários</h2>
-          <p style={{ color: 'var(--text-secondary)' }}>Gerencie os acessos ao sistema</p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button onClick={() => navigate('/')} style={{ background: 'var(--bg-panel)', border: 'none', width: '48px', height: '48px', borderRadius: '50%', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', boxShadow: '0 4px 12px rgba(0,0,0,0.1)' }}>
+            <ArrowLeft size={24} />
+          </button>
+          <div>
+            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'white', margin: 0 }}>Gestão de Usuários</h2>
+            <p style={{ color: 'var(--text-secondary)', margin: 0 }}>Gerencie os acessos ao sistema</p>
+          </div>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
-          <button onClick={() => navigate('/')} style={{ background: 'white', color: '#2D1E4B', border: '1px solid var(--border-light)', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
-            <X size={18} /> Fechar
-          </button>
           <button onClick={handleAdd} style={{ background: 'var(--primary-color)', color: '#2D1E4B', border: 'none', padding: '10px 16px', borderRadius: '8px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
             <Plus size={18} /> Adicionar Usuário
           </button>
