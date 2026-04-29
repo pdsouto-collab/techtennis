@@ -802,7 +802,7 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
             <div style={{...panelStyle, background: '#EB5757', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(235, 87, 87, 0.3)' }} onClick={() => setActiveReport('top_customers_orders')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ordens)</h4>
             </div>
-            <div style={{...panelStyle, background: '#3A8E58', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(58, 142, 88, 0.3)' }} onClick={() => setActiveReport('top_customers_earnings')}>
+            <div style={{...panelStyle, background: '#6F8C65', color: 'white', cursor: 'pointer', padding: '24px', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'all 0.2s', border: 'none', boxShadow: '0 4px 12px rgba(111, 140, 101, 0.3)' }} onClick={() => setActiveReport('top_customers_earnings')}>
               <h4 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Top clientes (ganhos)</h4>
             </div>
           </div>
