@@ -19,7 +19,7 @@ export const StringerDashboard = () => {
   const [view, setView] = useState<'dashboard' | 'new_job' | 'customers' | 'professors' | 'stringing' | 'order_details' | 'analytics' | 'orders' | 'settings'>('dashboard');
   const [activeOrderJob, setActiveOrderJob] = useState<any>(null);
   const [activeStringingJob, setActiveStringingJob] = useState<any>(null);
-  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up'>('all');
+  const [activeFilter, setActiveFilter] = useState<'all' | 'to_string' | 'picking_up' | 'picked_up'>('all');
   const [dateFilter, setDateFilter] = useState<'all'|'today'>('all');
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isProfessorModalOpen, setIsProfessorModalOpen] = useState(false);
@@ -604,6 +604,13 @@ export const StringerDashboard = () => {
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Raquetes chegando</p>
               </motion.div>
 
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('all')}
+                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid var(--text-secondary)`, background: activeFilter === 'all' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
+                <ClipboardList size={24} color="var(--text-secondary)" style={{ marginBottom: '12px' }} />
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Todas: {jobs.length}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Visão Geral</p>
+              </motion.div>
+
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('to_string')}
                 style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid ${getStatusColor('to_string')}`, background: activeFilter === 'to_string' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
                 <Scissors size={24} color={getStatusColor('to_string')} style={{ marginBottom: '12px' }} />
@@ -616,6 +623,13 @@ export const StringerDashboard = () => {
                 <CheckCircle size={24} color={getStatusColor('picking_up')} style={{ marginBottom: '12px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Para Retirar: {jobs.filter(j => j.type === 'picking_up').length}</h3>
                 <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Prontas</p>
+              </motion.div>
+
+              <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setActiveFilter('picked_up')}
+                style={{ padding: '20px', cursor: 'pointer', borderLeft: `4px solid #10B981`, background: activeFilter === 'picked_up' ? 'rgba(255,255,255,0.2)' : 'var(--bg-panel)' }}>
+                <CheckCircle size={24} color="#10B981" style={{ marginBottom: '12px' }} />
+                <h3 style={{ fontSize: '18px', fontWeight: 700 }}>Entregues: {jobs.filter(j => j.type === 'picked_up').length}</h3>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '14px', marginTop: '4px' }}>Finalizadas</p>
               </motion.div>
 
               <motion.div whileHover={{ scale: 1.02 }} className="glass-panel" onClick={() => setView('customers')}
