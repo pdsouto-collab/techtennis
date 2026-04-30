@@ -32,11 +32,10 @@ const Navbar = () => {
     <>
       <nav style={{
         position: 'fixed',
-        top: '20px', left: '50%', transform: 'translateX(-50%)',
-        width: '100%', maxWidth: '700px', zIndex: 50,
-        background: '#3A8E58', backdropFilter: 'blur(16px)',
-        border: '1px solid rgba(255, 255, 255, 0.1)',
-        borderRadius: '100px',
+        top: 0, left: 0, right: 0,
+        width: '100%', zIndex: 100,
+        background: '#3A8E58',
+        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
         padding: '12px 32px'
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
