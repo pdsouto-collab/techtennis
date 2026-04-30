@@ -15,7 +15,10 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
   const [isEditingPickup, setIsEditingPickup] = useState(false);
   const [pickupDate, setPickupDate] = useState(activeOrderJob?.pickupDate || '2026-04-04T12:30');
   const [pickupNotes, setPickupNotes] = useState(activeOrderJob?.pickupNotes || '');
-  const isSameOrder = (j: any) => activeOrderJob.orderCode ? j.orderCode === activeOrderJob.orderCode : j.id === activeOrderJob.id;
+  const isSameOrder = (j: any) => {
+    const targetCode = activeOrderJob.orderCode || activeOrderJob.id;
+    return j.orderCode === targetCode || j.id === activeOrderJob.id || (j.orderCode === activeOrderJob.orderCode && activeOrderJob.orderCode);
+  };
   const [isNotesModalOpen, setIsNotesModalOpen] = useState(false);
   const [customerNotes, setCustomerNotes] = useState<{ id: string, text: string, date: string }[]>([]);
   const [isAddPrepaidModalOpen, setIsAddPrepaidModalOpen] = useState(false);
@@ -232,7 +235,19 @@ export const OrderDetailsView = ({ view, setView, activeOrderJob, jobs, setJobs,
                    if (cust) {
                       setSelectedCustomer(cust);
                    }
-                   if (setCurrentOrderCode) setCurrentOrderCode(activeOrderJob.orderCode);
+                   if (setCurrentOrderCode) {
+                     const codeToUse = activeOrderJob.orderCode || activeOrderJob.id;
+                     setCurrentOrderCode(codeToUse);
+                     
+                     // If the active job didn't have an orderCode, we should update it so they group together
+                     if (!activeOrderJob.orderCode) {
+                        fetch(`${API_URL}/api/jobs/${activeOrderJob.id}`, {
+                          method: 'PUT',
+                          headers: { 'Authorization': `Bearer ${localStorage.getItem('tt_auth_token')}`, 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ orderCode: codeToUse })
+                        }).catch(console.error);
+                     }
+                   }
                    setNewJobStep(2);
                    setView('new_job');
                 }}
