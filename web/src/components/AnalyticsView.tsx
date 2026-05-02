@@ -852,19 +852,19 @@ export const AnalyticsView = ({ jobs: rawJobs, appSettings, customers = [], prof
                     </tr>
                   ) : filteredStringings.map((j: any, i: number) => (
                     <tr key={i} style={{ borderBottom: '1px solid #E5E7EB' }}>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.customerName || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.date || j.pickupDate || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.racketModel || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{(j.stringMains || j.mainString) ? `${(j.stringMains || j.mainString)} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{(j.stringCross || j.crossString) ? `${(j.stringCross || j.crossString)} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{customers.find((c:any) => c.name === j.customerName)?.originClub || '-'}</td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{j.customerName || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{j.date || j.pickupDate || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{j.racketModel || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{(j.stringMains || j.mainString) ? `${(j.stringMains || j.mainString)} ${j.tension?.split('/')[0] || ''}` : (j.tension || '-')}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{(j.stringCross || j.crossString) ? `${(j.stringCross || j.crossString)} ${j.tension?.split('/')[1] || ''}` : '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{customers.find((c:any) => c.name === j.customerName)?.originClub || '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>
                         {(() => {
                            const prof = professors.find((p:any) => p.id === j.commissionedProfessorId);
                            return prof ? `${prof.name} ${prof.numericId ? `(ID: ${prof.numericId})` : ''}` : '-';
                         })()}
                       </td>
-                      <td style={{ padding: '16px', fontSize: '14px', color: '#111827' }}>{j.price ? `R$ ${j.price}` : '-'}</td>
+                      <td style={{ padding: '16px', fontSize: '14px', color: 'white' }}>{j.price ? `R$ ${j.price}` : '-'}</td>
                     </tr>
                   ))}
                 </tbody>
