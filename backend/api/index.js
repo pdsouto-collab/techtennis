@@ -285,18 +285,18 @@ app.get('/api/agenda', async (req, res) => {
 });
 
 app.post('/api/agenda', authenticateToken, async (req, res) => {
-  const { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl } = req.body;
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl, audienceAdult, audienceKids } = req.body;
   const db = getDB();
   try {
     await db.connect();
     const insertQ = `
       INSERT INTO "AgendaSlot" 
-      ("professorName", "timeAndDay", "region", "price", "type", "trainingTypes", "phone", "resumeSummary", "professorPhotoUrl")
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      ("professorName", "timeAndDay", "region", "price", "type", "trainingTypes", "phone", "resumeSummary", "professorPhotoUrl", "audienceAdult", "audienceKids")
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *
     `;
     const result = await db.query(insertQ, [
-      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || '', professorPhotoUrl || ''
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || '', professorPhotoUrl || '', !!audienceAdult, !!audienceKids
     ]);
     res.status(201).json(result.rows[0]);
   } catch (err) {
@@ -308,18 +308,18 @@ app.post('/api/agenda', authenticateToken, async (req, res) => {
 });
 
 app.put('/api/agenda/:id', authenticateToken, async (req, res) => {
-  const { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl } = req.body;
+  const { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl, audienceAdult, audienceKids } = req.body;
   const slotId = req.params.id;
   const db = getDB();
   try {
     await db.connect();
     const updateQ = `
       UPDATE "AgendaSlot" 
-      SET "professorName"=$1, "timeAndDay"=$2, "region"=$3, "price"=$4, "type"=$5, "trainingTypes"=$6, "phone"=$7, "resumeSummary"=$8, "professorPhotoUrl"=$9
-      WHERE id=$10 RETURNING *
+      SET "professorName"=$1, "timeAndDay"=$2, "region"=$3, "price"=$4, "type"=$5, "trainingTypes"=$6, "phone"=$7, "resumeSummary"=$8, "professorPhotoUrl"=$9, "audienceAdult"=$10, "audienceKids"=$11
+      WHERE id=$12 RETURNING *
     `;
     const result = await db.query(updateQ, [
-      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || '', professorPhotoUrl || '', slotId
+      professorName, timeAndDay, region, price || '', type || 'fixo', trainingTypes, phone, resumeSummary || '', professorPhotoUrl || '', !!audienceAdult, !!audienceKids, slotId
     ]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'Slot não encontrado.' });
     res.json(result.rows[0]);

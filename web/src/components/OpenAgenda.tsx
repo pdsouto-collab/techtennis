@@ -16,6 +16,8 @@ interface AgendaSlot {
   professorPhotoUrl?: string;
   trainingTypes: string;
   phone: string;
+  audienceAdult?: boolean;
+  audienceKids?: boolean;
 }
 
 export const OpenAgenda = () => {
@@ -38,6 +40,8 @@ export const OpenAgenda = () => {
   const [trainingTypes, setTrainingTypes] = useState('');
   const [resumeSummary, setResumeSummary] = useState('');
   const [phone, setPhone] = useState('');
+  const [audienceAdult, setAudienceAdult] = useState(false);
+  const [audienceKids, setAudienceKids] = useState(false);
 
   const API_URL = import.meta.env.VITE_API_URL || 'https://techtennis-api.vercel.app';
   const getAuthHeader = () => {
@@ -70,6 +74,8 @@ export const OpenAgenda = () => {
     setTrainingTypes('');
     setResumeSummary('');
     setPhone('');
+    setAudienceAdult(false);
+    setAudienceKids(false);
     setEditingId(null);
   };
 
@@ -83,6 +89,8 @@ export const OpenAgenda = () => {
       setTrainingTypes(slot.trainingTypes);
       setResumeSummary(slot.resumeSummary || '');
       setPhone(slot.phone);
+      setAudienceAdult(slot.audienceAdult || false);
+      setAudienceKids(slot.audienceKids || false);
       setEditingId(slot.id);
     } else {
       resetForm();
@@ -92,7 +100,7 @@ export const OpenAgenda = () => {
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
-    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl: currentUser?.photoUrl || '' };
+    const payload = { professorName, timeAndDay, region, price, type, trainingTypes, phone, resumeSummary, professorPhotoUrl: currentUser?.photoUrl || '', audienceAdult, audienceKids };
 
     try {
       const url = editingId ? `${API_URL}/api/agenda/${editingId}` : `${API_URL}/api/agenda`;
@@ -231,6 +239,12 @@ export const OpenAgenda = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: '12px', color: 'var(--text-secondary)', fontSize: '14px' }}>
                     <Activity size={16} /> <span>{slot.trainingTypes}</span>
                   </div>
+                  {(slot.audienceAdult || slot.audienceKids) && (
+                    <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
+                      {slot.audienceAdult && <span style={{ padding: '4px 10px', background: 'rgba(66, 152, 231, 0.2)', color: '#7EBDF7', borderRadius: '8px', fontSize: '12px', fontWeight: 700 }}>Adulto</span>}
+                      {slot.audienceKids && <span style={{ padding: '4px 10px', background: 'rgba(236, 72, 153, 0.2)', color: '#F472B6', borderRadius: '8px', fontSize: '12px', fontWeight: 700 }}>Infantil</span>}
+                    </div>
+                  )}
                   {slot.resumeSummary && (
                     <div style={{ marginTop: '4px', padding: '12px', background: 'rgba(0,0,0,0.2)', borderRadius: '8px', fontSize: '13px', color: 'var(--text-secondary)', fontStyle: 'italic' }}>
                       "{slot.resumeSummary}"
@@ -290,6 +304,20 @@ export const OpenAgenda = () => {
                     <input type="text" value={trainingTypes} onChange={e => setTrainingTypes(e.target.value)} required style={inputStyle} placeholder="Ex: Treino Competitivo, Rebatedor, Tático" />
                   </div>
                   
+                  <div>
+                    <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Público-Alvo</label>
+                    <div style={{ display: 'flex', gap: '24px', padding: '12px', background: 'rgba(0,0,0,0.1)', borderRadius: '12px', border: '1px solid rgba(255,255,255,0.05)' }}>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
+                        <input type="checkbox" checked={audienceAdult} onChange={e => setAudienceAdult(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: '#4298E7' }} />
+                        Adulto
+                      </label>
+                      <label style={{ display: 'flex', alignItems: 'center', gap: '8px', color: 'white', cursor: 'pointer', fontSize: '15px' }}>
+                        <input type="checkbox" checked={audienceKids} onChange={e => setAudienceKids(e.target.checked)} style={{ width: '18px', height: '18px', accentColor: '#4298E7' }} />
+                        Infantil
+                      </label>
+                    </div>
+                  </div>
+
                   <div>
                     <label style={{ display: 'block', marginBottom: '8px', color: 'var(--text-secondary)', fontSize: '14px' }}>Currículo Resumido</label>
                     <textarea value={resumeSummary} onChange={e => setResumeSummary(e.target.value)} style={{...inputStyle, resize: 'vertical', minHeight: '80px'}} placeholder="Ex: Ex-atleta ATP, treinador há 10 anos..." />
