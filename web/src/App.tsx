@@ -12,6 +12,7 @@ import { ProfessorSingleClass } from './components/ProfessorSingleClass';
 import { OpenAgenda } from './components/OpenAgenda';
 import { LoginView } from './components/LoginView';
 import { UserManagement } from './components/UserManagement';
+import { LogsView } from './components/LogsView';
 import { GlobalRadarNotification } from './components/GlobalRadarNotification';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProfileSettingsModal } from './components/ProfileSettingsModal';
@@ -210,11 +211,19 @@ const Hero = () => {
         {(profile === 'ADMIN' || profile === 'ENCORDOADOR') && (
           <>
             {profile === 'ADMIN' && (
-              <HomeTile 
-                title="Configurações de Usuários" subtitle="Gestão de Acessos" fullWidth
-                backgroundImage={gestaoUsuariosImg} backgroundPosition="center 40%"
-                onClick={() => navigate('/users')}
-              />
+              <>
+                <HomeTile 
+                  title="Configurações de Usuários" subtitle="Gestão de Acessos" fullWidth
+                  backgroundImage={gestaoUsuariosImg} backgroundPosition="center 40%"
+                  onClick={() => navigate('/users')}
+                />
+                <HomeTile 
+                  title="Logs do Sistema" subtitle="Auditoria" fullWidth
+                  backgroundImage="https://images.unsplash.com/photo-1555949963-ff9fe0c870eb?q=80&w=1500&auto=format&fit=crop"
+                  backgroundPosition="center 40%"
+                  onClick={() => navigate('/logs')}
+                />
+              </>
             )}
             <HomeTile 
               title="Gestão de Encordoamento" subtitle="Acesso Master" { ...(profile !== 'ADMIN' ? { fullWidth: true } : {}) }
@@ -377,6 +386,7 @@ function App() {
             <Route path="/professor-single-class" element={<ProfessorSingleClass />} />
             <Route path="/open-agenda" element={<OpenAgenda />} />
             <Route path="/users" element={<UserManagement />} />
+            <Route path="/logs" element={<LogsView />} />
           </Routes>
         </main>
       </div>
