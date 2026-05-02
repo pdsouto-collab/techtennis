@@ -1324,9 +1324,23 @@ export const StringerDashboard = () => {
                           price: finalPriceAux,
                           pickupDate,
                           commissionedProfessorId: commissionedProfessorId || null,
-                          auxServices
+                          auxServices,
+                          stringerName: dashboardStringer,
+                          pickupNotes,
+                          stringingPoint: jobStringingPoint,
+                          hasOwnReel,
+                          hasOwnSet,
+                          hasLogo,
+                          logoNotes,
+                          racketNotes
                         };
                         setJobs(prev => [newJob, ...prev]);
+                        
+                        fetch(`${API_URL}/api/jobs`, {
+                          method: 'POST',
+                          headers: { ...getAuthHeader(), 'Content-Type': 'application/json' },
+                          body: JSON.stringify(newJob)
+                        }).catch(console.error);
                         
                         setSelectedJobRacket('');
                         setMainString('');
