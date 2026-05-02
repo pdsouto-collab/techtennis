@@ -119,6 +119,46 @@ app.get('/api/health', (req, res) => {
   res.json({ message: 'TechTennis API is healthy and connected to Neon!', env: process.env.NODE_ENV });
 });
 
+// Middleware Global de Logging
+app.use((req, res, next) => {
+  res.on('finish', async () => {
+    if (['POST', 'PUT', 'DELETE'].includes(req.method) && req.path.startsWith('/api/') && req.path !== '/api/auth/login' && req.path !== '/api/auth/register' && req.path !== '/api/logs' && res.statusCode >= 200 && res.statusCode < 300 && req.user) {
+      let action = 'CREATE';
+      if (req.method === 'PUT') action = 'UPDATE';
+      if (req.method === 'DELETE') action = 'DELETE';
+      
+      const parts = req.path.split('/');
+      const resource = parts[2] || 'unknown'; 
+      const userName = req.user.email || 'Sistema';
+      
+      let details = '';
+      if (req.method === 'DELETE') {
+        details = `ID Removido: ${parts[parts.length - 1]}`;
+      } else {
+        const safeBody = { ...req.body };
+        if (safeBody.password) delete safeBody.password;
+        if (safeBody.photoUrl) safeBody.photoUrl = '[URL]';
+        if (safeBody.image) safeBody.image = '[IMG]';
+        if (safeBody.signature) safeBody.signature = '[SIGNATURE]';
+        details = JSON.stringify(safeBody).substring(0, 1000);
+      }
+
+      try {
+        const db = getDB();
+        await db.connect();
+        await db.query(`
+          INSERT INTO "SystemLog" (action, resource, details, "userName")
+          VALUES ($1, $2, $3, $4)
+        `, [action, resource, details, userName]);
+        await db.end();
+      } catch (e) {
+        console.error('Failed to save SystemLog:', e);
+      }
+    }
+  });
+  next();
+});
+
 // ==========================================
 // API RESTful: JOBS (SERVIÇOS DA AGENDA)
 // ==========================================
@@ -134,6 +174,21 @@ const authenticateToken = (req, res, next) => {
     next();
   });
 };
+
+app.get('/api/logs', authenticateToken, async (req, res) => {
+  if (req.user.role !== 'ADMIN') return res.status(403).json({ error: 'Forbidden' });
+  const db = getDB();
+  try {
+    await db.connect();
+    const result = await db.query('SELECT * FROM "SystemLog" ORDER BY "createdAt" DESC LIMIT 100');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Erro ao buscar logs.' });
+  } finally {
+    await db.end();
+  }
+});
 
 app.get('/api/jobs', authenticateToken, async (req, res) => {
   const db = getDB();
