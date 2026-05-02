@@ -248,26 +248,48 @@ export const StringerDashboard = () => {
     if (!isStringing) return;
     let computedPrice = 0;
     
+    const getStringObj = (sName: string) => {
+       return appSettings.strings?.find((s: any) => (typeof s === 'string' ? s : s.name) === sName);
+    };
+
     const getStringPrice = (sName: string) => {
-      const sObj = appSettings.strings?.find((s: any) => (typeof s === 'string' ? s : s.name) === sName);
+      const sObj = getStringObj(sName);
       if (sObj && typeof sObj !== 'string') {
         return sObj.price || 0;
       }
       return 0;
     };
 
+    const getStringingPrice = (type: string) => {
+       const sp = appSettings.stringingPrices?.find((sp: any) => sp.type === type);
+       return sp ? sp.price : 0;
+    };
+
     if (mainString) {
-      const mPrice = getStringPrice(mainString);
-      if (isHybrid && crossString && mainString !== crossString) {
-         const cPrice = getStringPrice(crossString);
-         computedPrice = (mPrice / 2) + (cPrice / 2);
+      if (hasOwnReel || hasOwnSet) {
+         const mObj = getStringObj(mainString);
+         const mType = (mObj && typeof mObj !== 'string') ? mObj.type : 'Monofilamento';
+         
+         if (isHybrid && crossString && mainString !== crossString) {
+            const cObj = getStringObj(crossString);
+            const cType = (cObj && typeof cObj !== 'string') ? cObj.type : 'Monofilamento';
+            computedPrice = (getStringingPrice(mType) / 2) + (getStringingPrice(cType) / 2);
+         } else {
+            computedPrice = getStringingPrice(mType);
+         }
       } else {
-         computedPrice = mPrice;
+         const mPrice = getStringPrice(mainString);
+         if (isHybrid && crossString && mainString !== crossString) {
+            const cPrice = getStringPrice(crossString);
+            computedPrice = (mPrice / 2) + (cPrice / 2);
+         } else {
+            computedPrice = mPrice;
+         }
       }
     }
     
     setPrice(computedPrice);
-  }, [mainString, crossString, isHybrid, appSettings.strings, isStringing]);
+  }, [mainString, crossString, isHybrid, appSettings.strings, appSettings.stringingPrices, isStringing, hasOwnReel, hasOwnSet]);
 
   let filteredJobs = activeFilter === 'all' 
     ? jobs 

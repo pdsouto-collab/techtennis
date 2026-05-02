@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Trash2, Plus, Edit } from 'lucide-react';
 
 export const SettingsView = ({ settings, setSettings }: any) => {
-  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports' | 'clubs' | 'commissions' | 'clubDiscounts'>('strings');
+  const [activeTab, setActiveTab] = useState<'strings' | 'pickupPoints' | 'machines' | 'stringers' | 'sports' | 'clubs' | 'commissions' | 'clubDiscounts' | 'stringingPrices'>('strings');
   
   const [newItemText, setNewItemText] = useState('');
   const [newCommissionPercent, setNewCommissionPercent] = useState('');
@@ -16,6 +16,13 @@ export const SettingsView = ({ settings, setSettings }: any) => {
   const [editStringType, setEditStringType] = useState('');
   const [newStringBrand, setNewStringBrand] = useState('');
   const [editStringBrand, setEditStringBrand] = useState('');
+  const [newStringShortDescription, setNewStringShortDescription] = useState('');
+  const [editStringShortDescription, setEditStringShortDescription] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [newStringingPriceType, setNewStringingPriceType] = useState('Multifilamento');
+  const [newStringingPriceValue, setNewStringingPriceValue] = useState('');
+  const [editStringingPriceType, setEditStringingPriceType] = useState('Multifilamento');
+  const [editStringingPriceValue, setEditStringingPriceValue] = useState('');
 
   const [newClub, setNewClub] = useState('');
   const [newDiscountService, setNewDiscountService] = useState('');
@@ -41,10 +48,13 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       value = { name: newItemText.trim(), percent: Number(newCommissionPercent) || 0 };
     } else if (activeTab === 'strings') {
       if (!newItemText.trim()) return;
-      value = { name: newItemText.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento', brand: newStringBrand.trim() || 'Desconhecida' };
+      value = { name: newItemText.trim(), shortDescription: newStringShortDescription.trim(), price: Number(newStringPrice) || 0, type: newStringType || 'Monofilamento', brand: newStringBrand.trim() || 'Desconhecida' };
     } else if (activeTab === 'clubDiscounts') {
       if (!newClub || !newDiscountService || (!newDiscountPercent && !newDiscountValue)) return;
       value = { club: newClub, service: newDiscountService, percent: Number(newDiscountPercent) || 0, value: Number(newDiscountValue) || 0, startDate: newStartDate, endDate: newEndDate };
+    } else if (activeTab === 'stringingPrices') {
+      if (!newStringingPriceValue) return;
+      value = { type: newStringingPriceType, price: Number(newStringingPriceValue) || 0 };
     } else {
       if (!newItemText.trim()) return;
       if (currentList.some((item: any) => typeof item === 'string' && item.toLowerCase() === value.toLowerCase())) {
@@ -62,12 +72,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setNewStringPrice('');
     setNewStringType('');
     setNewStringBrand('');
+    setNewStringShortDescription('');
     setNewClub('');
     setNewDiscountService('');
     setNewDiscountPercent('');
     setNewDiscountValue('');
     setNewStartDate('');
     setNewEndDate('');
+    setNewStringingPriceValue('');
   };
 
   const [itemsPerPage, setItemsPerPage] = useState<number | 'all'>(10);
@@ -78,6 +90,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     setActiveTab(tabId);
     setEditingIndex(null);
     setNewItemText('');
+    setSearchQuery('');
     setCurrentPage(1);
   };
 
@@ -105,6 +118,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
         setEditStringPrice(str.price.toString());
         setEditStringType(str.type || 'Monofilamento');
         setEditStringBrand(str.brand || 'Desconhecida');
+        setEditStringShortDescription(str.shortDescription || '');
       }
     } else if (activeTab === 'clubDiscounts') {
       setEditClub(currentList[index].club);
@@ -113,6 +127,9 @@ export const SettingsView = ({ settings, setSettings }: any) => {
       setEditDiscountValue(currentList[index].value?.toString() || '');
       setEditStartDate(currentList[index].startDate || '');
       setEditEndDate(currentList[index].endDate || '');
+    } else if (activeTab === 'stringingPrices') {
+      setEditStringingPriceType(currentList[index].type || 'Multifilamento');
+      setEditStringingPriceValue(currentList[index].price?.toString() || '0');
     } else {
       setEditItemText(currentList[index]);
     }
@@ -126,10 +143,13 @@ export const SettingsView = ({ settings, setSettings }: any) => {
          newList[index] = { name: editItemText.trim(), percent: Number(editCommissionPercent) || 0 };
       } else if (activeTab === 'strings') {
          if (!editItemText.trim()) return prev;
-         newList[index] = { name: editItemText.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento', brand: editStringBrand.trim() || 'Desconhecida' };
+         newList[index] = { name: editItemText.trim(), shortDescription: editStringShortDescription.trim(), price: Number(editStringPrice) || 0, type: editStringType || 'Monofilamento', brand: editStringBrand.trim() || 'Desconhecida' };
       } else if (activeTab === 'clubDiscounts') {
          if (!editClub.trim() || !editDiscountService || (!editDiscountPercent && !editDiscountValue)) return prev;
          newList[index] = { club: editClub.trim(), service: editDiscountService, percent: Number(editDiscountPercent) || 0, value: Number(editDiscountValue) || 0, startDate: editStartDate, endDate: editEndDate };
+      } else if (activeTab === 'stringingPrices') {
+         if (!editStringingPriceValue) return prev;
+         newList[index] = { type: editStringingPriceType, price: Number(editStringingPriceValue) || 0 };
       } else {
          if (!editItemText.trim()) return prev;
          if (newList.some((item: any, i: number) => i !== index && typeof item === 'string' && item.toLowerCase() === editItemText.trim().toLowerCase())) {
@@ -152,6 +172,7 @@ export const SettingsView = ({ settings, setSettings }: any) => {
     { id: 'sports', label: 'Esporte' },
     { id: 'machines', label: 'Máquina de Encordoamento' },
     { id: 'pickupPoints', label: 'Ponto de Encordoamento' },
+    { id: 'stringingPrices', label: 'Valor de Encordoamento' },
   ];
 
   return (
@@ -183,9 +204,20 @@ export const SettingsView = ({ settings, setSettings }: any) => {
 
       {/* Main Content */}
       <div style={{ flex: 1, background: 'rgba(0,0,0,0.2)', padding: '24px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-        <h3 style={{ color: 'white', fontSize: '18px', marginBottom: '24px' }}>
-          Gerenciar: {tabs.find(t => t.id === activeTab)?.label}
-        </h3>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
+          <h3 style={{ color: 'white', fontSize: '18px', margin: 0 }}>
+            Gerenciar: {tabs.find(t => t.id === activeTab)?.label}
+          </h3>
+          {activeTab === 'strings' && (
+            <input
+              type="text"
+              placeholder="Buscar corda..."
+              value={searchQuery}
+              onChange={(e) => { setSearchQuery(e.target.value); setCurrentPage(1); }}
+              style={{ padding: '8px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white', width: '250px' }}
+            />
+          )}
+        </div>
 
         {/* Add New */}
         <div style={{ display: 'flex', gap: '12px', marginBottom: '32px', flexWrap: 'wrap' }}>
@@ -227,6 +259,26 @@ export const SettingsView = ({ settings, setSettings }: any) => {
               <option value="Compra de raquete nova">Compra de raquete nova</option>
               <option value="Outros serviços">Outros serviços</option>
             </select>
+          ) : activeTab === 'stringingPrices' ? (
+             <>
+              <select
+                value={newStringingPriceType}
+                onChange={(e) => setNewStringingPriceType(e.target.value)}
+                style={{ flex: 1, padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              >
+                <option value="Multifilamento">1- Multifilamento</option>
+                <option value="Monofilamento">2- Monofilamento</option>
+                <option value="Tripa Natural">3- Tripa Natural</option>
+              </select>
+              <input 
+                type="number" 
+                value={newStringingPriceValue}
+                onChange={(e) => setNewStringingPriceValue(e.target.value)}
+                placeholder="Valor (BRL)"
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              />
+             </>
           ) : (
             <input 
               type="text" 
@@ -269,6 +321,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                 style={{ width: '120px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
               />
               <input 
+                type="text" 
+                value={newStringShortDescription}
+                onChange={(e) => setNewStringShortDescription(e.target.value)}
+                placeholder="Descrição Curta"
+                onKeyDown={(e) => e.key === 'Enter' && handleAdd()}
+                style={{ width: '150px', padding: '12px 16px', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.2)', background: 'rgba(255,255,255,0.05)', color: 'white' }}
+              />
+              <input 
                 type="number" 
                 value={newStringPrice}
                 onChange={(e) => setNewStringPrice(e.target.value)}
@@ -289,7 +349,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
             <div style={{ padding: '24px', textAlign: 'center', color: 'rgba(255,255,255,0.5)' }}>Nenhum item cadastrado.</div>
           ) : (
             (() => {
-              const renderList = currentList.map((item: any, idx: number) => ({ item, originalIndex: idx }));
+              let renderList = currentList.map((item: any, idx: number) => ({ item, originalIndex: idx }));
+              if (activeTab === 'strings' && searchQuery) {
+                renderList = renderList.filter(({ item }: any) => {
+                  const name = typeof item === 'string' ? item : item.name || '';
+                  const short = typeof item === 'string' ? '' : item.shortDescription || '';
+                  return name.toLowerCase().includes(searchQuery.toLowerCase()) || short.toLowerCase().includes(searchQuery.toLowerCase());
+                });
+              }
               renderList.sort((a: any, b: any) => {
                 let nameA = typeof a.item === 'string' ? a.item : (a.item.name || a.item.club || '');
                 let nameB = typeof b.item === 'string' ? b.item : (b.item.name || b.item.club || '');
@@ -343,6 +410,16 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                         <option value="Compra de raquete nova">Compra de raquete nova</option>
                         <option value="Outros serviços">Outros serviços</option>
                       </select>
+                    ) : activeTab === 'stringingPrices' ? (
+                      <select
+                        value={editStringingPriceType}
+                        onChange={(e) => setEditStringingPriceType(e.target.value)}
+                        style={{ flex: 1, padding: '8px 12px', borderRadius: '6px', border: '1px solid rgba(255,255,255,0.3)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                      >
+                        <option value="Multifilamento">1- Multifilamento</option>
+                        <option value="Monofilamento">2- Monofilamento</option>
+                        <option value="Tripa Natural">3- Tripa Natural</option>
+                      </select>
                     ) : (
                       <input 
                         type="text"
@@ -358,6 +435,15 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                         type="number"
                         value={editCommissionPercent}
                         onChange={(e) => setEditCommissionPercent(e.target.value)}
+                        onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                        style={{ width: '80px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                      />
+                    )}
+                    {activeTab === 'stringingPrices' && (
+                      <input 
+                        type="number"
+                        value={editStringingPriceValue}
+                        onChange={(e) => setEditStringingPriceValue(e.target.value)}
                         onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
                         style={{ width: '80px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
                       />
@@ -382,6 +468,14 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                           style={{ width: '100px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
                         />
                         <input 
+                          type="text"
+                          value={editStringShortDescription}
+                          onChange={(e) => setEditStringShortDescription(e.target.value)}
+                          placeholder="Desc. Curta"
+                          onKeyDown={(e) => e.key === 'Enter' && saveEdit(idx)}
+                          style={{ width: '100px', padding: '8px 12px', borderRadius: '4px', border: '1px solid var(--primary-color)', background: 'rgba(255,255,255,0.1)', color: 'white' }}
+                        />
+                        <input 
                           type="number"
                           value={editStringPrice}
                           onChange={(e) => setEditStringPrice(e.target.value)}
@@ -393,10 +487,22 @@ export const SettingsView = ({ settings, setSettings }: any) => {
                   </div>
                 ) : (
                   <div style={{ display: 'flex', gap: '16px', alignItems: 'center', flex: 1, paddingRight: '16px' }}>
-                     {activeTab === 'strings' ? (
+                     {activeTab === 'stringingPrices' ? (
+                       <>
+                         <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.5, minWidth: '150px' }}>
+                           {item.type}
+                         </span>
+                         <span style={{ color: '#60A5FA', fontWeight: 500, fontSize: '14px', flex: 1 }}>
+                           BRL {item.price ? item.price.toFixed(2) : '0.00'}
+                         </span>
+                       </>
+                     ) : activeTab === 'strings' ? (
                        <>
                          <span style={{ color: 'white', fontWeight: 600, fontSize: '15px', flex: 1.5, minWidth: '150px' }}>
                            {typeof item === 'string' ? item : item.name}
+                         </span>
+                         <span style={{ color: '#E5E7EB', fontWeight: 500, fontSize: '14px', flex: 1 }}>
+                           {typeof item === 'string' ? '' : item.shortDescription}
                          </span>
                          <span style={{ color: '#9CA3AF', fontWeight: 500, fontSize: '14px', flex: 0.8 }}>
                            {typeof item === 'string' ? 'Desconhecida' : (item.brand || 'Desconhecida')}
