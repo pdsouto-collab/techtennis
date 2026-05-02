@@ -301,9 +301,10 @@ export const StringerDashboard = () => {
   if (dateFilter === 'today') {
       filteredJobs = filteredJobs.filter(job => {
           if (!job.pickupDate) return false;
-          const today = new Date().toISOString().split('T')[0];
-          const jobDate = new Date(job.pickupDate).toISOString().split('T')[0];
-          return today === jobDate;
+          const d = new Date();
+          const todayLocal = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+          const jobDateLocal = job.pickupDate.split('T')[0];
+          return todayLocal === jobDateLocal;
       });
   }
 
