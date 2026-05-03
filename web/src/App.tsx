@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User } from 'lucide-react';
+
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
