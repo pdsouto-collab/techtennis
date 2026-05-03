@@ -133,10 +133,27 @@ export const CustomerFeedback = () => {
                     </td>
                   )}
                   
-                  <td style={{ padding: '20px 12px', fontSize: '15px' }}>
-                    <div style={{fontWeight: 700}}>{job.stringMains || '-'}</div>
-                    {job.isHybrid && <div style={{fontWeight: 700}}>{job.stringCross}</div>}
-                    <div style={{color: '#4B5563', fontSize: '14px'}}>@{job.tension || job.tensionMain || 'N/A'}</div>
+                  <td style={{ padding: '20px 12px', fontSize: '15px', lineHeight: '1.4' }}>
+                    {job.isHybrid ? (
+                      <>
+                        <div style={{fontWeight: 700}}>{job.stringMains || '-'} <span style={{color: '#9CA3AF', fontSize: '12px', fontWeight: 600}}>(M)</span></div>
+                        <div style={{fontWeight: 700}}>{job.stringCross || '-'} <span style={{color: '#9CA3AF', fontSize: '12px', fontWeight: 600}}>(X)</span></div>
+                        <div style={{color: '#6B7280', fontSize: '14px', marginTop: '4px', fontWeight: 500}}>
+                          @{job.tensionMain || job.tension || 'N/A'} / {job.tensionCross || job.tension || 'N/A'} {job.tensionUnit || 'Lbs'}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div style={{fontWeight: 700}}>{job.stringMains || '-'}</div>
+                        <div style={{color: '#6B7280', fontSize: '14px', marginTop: '4px', fontWeight: 500}}>
+                          @{job.tensionMain || job.tension || 'N/A'} {
+                            (job.tensionCross && job.tensionCross !== (job.tensionMain || job.tension)) 
+                            ? `/ ${job.tensionCross} ` 
+                            : ''
+                          }{!String(job.tension || '').toLowerCase().includes('lbs') && !String(job.tension || '').toLowerCase().includes('kg') ? (job.tensionUnit || 'Lbs') : ''}
+                        </div>
+                      </>
+                    )}
                   </td>
                   
                   <td style={{ padding: '20px 12px', fontSize: '14px', color: '#6B7280', fontWeight: 500 }}>
