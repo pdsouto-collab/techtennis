@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Trophy, Target, Calendar, Radio } from 'lucide-react';
-import { useAuth } from '../contexts/AuthContext';
 
 export const FriendlyMatchRadar = () => {
   const navigate = useNavigate();
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth(); // unused for now
   
   const [radius, setRadius] = useState<number>(10);
   const [myCategory, setMyCategory] = useState<string>('');
