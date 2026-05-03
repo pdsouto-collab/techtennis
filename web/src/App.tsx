@@ -21,29 +21,7 @@ import racketCollectionImg from './assets/racket-collection.jpg';
 import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 import gestaoUsuariosImg from './assets/gestao-usuarios-bg.jpg';
-
-const TennisProfileIcon = ({ size = 22, color = "currentColor", onClick, style }: any) => (
-  <svg 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke={color} 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round"
-    style={style}
-    onClick={onClick}
-  >
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-    <path d="M12 15a4 4 0 1 0 0-8 4 4 0 0 0 0 8z" />
-    {/* Headband */}
-    <path d="M8.5 9h7" />
-    <path d="M8.2 7h7.6" />
-    {/* Hair spikes */}
-    <path d="M9 5c1-1 3-1 4 0s2 1 3-1" />
-  </svg>
-);
+import tennisProfileImg from './assets/tennis-profile.png';
 
 const Navbar = () => {
   const { logout, currentUser, updateProfile } = useAuth();
@@ -75,7 +53,7 @@ const Navbar = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
             <div style={{ position: 'relative' }}>
-              <TennisProfileIcon size={36} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
+              <img src={tennisProfileImg} alt="Profile" style={{ width: 36, height: 36, cursor: 'pointer', borderRadius: '50%', objectFit: 'cover' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
               {isProfileOpen && (
                 <div style={{
                   position: 'absolute', top: '40px', right: '0',
