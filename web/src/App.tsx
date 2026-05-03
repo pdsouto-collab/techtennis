@@ -75,7 +75,7 @@ const Navbar = () => {
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
             <div style={{ position: 'relative' }}>
-              <TennisProfileIcon size={24} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
+              <TennisProfileIcon size={36} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
               {isProfileOpen && (
                 <div style={{
                   position: 'absolute', top: '40px', right: '0',
