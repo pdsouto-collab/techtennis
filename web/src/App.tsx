@@ -16,12 +16,14 @@ import { LogsView } from './components/LogsView';
 import { GlobalRadarNotification } from './components/GlobalRadarNotification';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProfileSettingsModal } from './components/ProfileSettingsModal';
+import { FriendlyMatchRadar } from './components/FriendlyMatchRadar';
 import ernestoImg from './assets/miami-open-ernesto.jpg';
 import racketCollectionImg from './assets/racket-collection.jpg';
 import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 import gestaoUsuariosImg from './assets/gestao-usuarios-bg.jpg';
 import tennisProfileImg from './assets/tennis-profile.png';
+import buscarAmistosoImg from './assets/buscar-amistoso-bg.png';
 
 const Navbar = () => {
   const { logout, currentUser, updateProfile } = useAuth();
@@ -181,6 +183,13 @@ const Hero = () => {
         gap: '24px' 
       }}>
         
+        {/* DISPONÍVEL PARA TODOS OS PERFIS */}
+        <HomeTile 
+          title="Buscar Amistoso" subtitle="Radar de Adversários" fullWidth
+          backgroundImage={buscarAmistosoImg} backgroundPosition="center 30%"
+          onClick={() => navigate('/friendly-match')}
+        />
+
         {/* ADMIN E ENCORDOADOR */}
         {(profile === 'ADMIN' || profile === 'ENCORDOADOR') && (
           <>
@@ -359,6 +368,7 @@ function App() {
             <Route path="/customer-single-class" element={<CustomerSingleClass />} />
             <Route path="/professor-single-class" element={<ProfessorSingleClass />} />
             <Route path="/open-agenda" element={<OpenAgenda />} />
+            <Route path="/friendly-match" element={<FriendlyMatchRadar />} />
             <Route path="/users" element={<UserManagement />} />
             <Route path="/logs" element={<LogsView />} />
           </Routes>
