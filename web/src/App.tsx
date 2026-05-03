@@ -23,7 +23,7 @@ import agendaAbertaImg from './assets/agenda-aberta-bg.jpg';
 import brandLogo from './assets/techtennis-logo.png';
 import gestaoUsuariosImg from './assets/gestao-usuarios-bg.jpg';
 import tennisProfileImg from './assets/tennis-profile.png';
-import buscarAmistosoImg from './assets/buscar-amistoso-bg.png';
+import buscarAmistosoImg from './assets/buscar-amistoso-bg.jpg';
 
 const Navbar = () => {
   const { logout, currentUser, updateProfile } = useAuth();
