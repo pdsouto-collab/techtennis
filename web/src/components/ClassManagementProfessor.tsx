@@ -3,19 +3,18 @@ import { applyPhoneMask } from '../utils/masks';
 import { ArrowLeft, Users, Calendar, BarChart2, Plus, Edit, Trash2, X, MapPin } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
 
 export const ClassManagementProfessor = () => {
   const navigate = useNavigate();
+  const { currentUser } = useAuth();
 
-  // Local Storage Data
-  const [professors] = useState<any[]>(() => {
+  const [professors, setProfessors] = useState<any[]>(() => {
     const saved = localStorage.getItem('tt_professors');
     return saved ? JSON.parse(saved) : [];
   });
-  
 
   const [students, setStudents] = useState<any[]>([]);
-
   const [classes, setClasses] = useState<any[]>([]);
 
   const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001";
@@ -27,12 +26,26 @@ export const ClassManagementProfessor = () => {
 
   const fetchData = async () => {
     try {
-      const [stdRes, clsRes] = await Promise.all([
+      const [stdRes, clsRes, profRes] = await Promise.all([
         fetch(`${API_URL}/api/class-students`, { headers: getAuthHeader() }),
-        fetch(`${API_URL}/api/classes`, { headers: getAuthHeader() })
+        fetch(`${API_URL}/api/classes`, { headers: getAuthHeader() }),
+        fetch(`${API_URL}/api/professors`, { headers: getAuthHeader() })
       ]);
       if (stdRes.ok) setStudents(await stdRes.json());
       if (clsRes.ok) setClasses(await clsRes.json());
+      if (profRes.ok) {
+        const profData = await profRes.json();
+        setProfessors(profData);
+        localStorage.setItem('tt_professors', JSON.stringify(profData));
+        
+        // Auto-select if the logged user is a professor
+        if (currentUser?.role.includes('PROFESSOR')) {
+          const myProf = profData.find((p: any) => p.email === currentUser.email || p.numericId === currentUser.numericId);
+          if (myProf && !selectedProfessorId) {
+            setSelectedProfessorId(myProf.id);
+          }
+        }
+      }
     } catch (e) {
       console.error('Error fetching class data', e);
     }
@@ -40,7 +53,7 @@ export const ClassManagementProfessor = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentUser]);
 
   const [appSettings, setAppSettings] = useState<any>({});
 
@@ -82,18 +95,20 @@ export const ClassManagementProfessor = () => {
         </h1>
       </div>
 
-      {/* Professor Selector */}
-      <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
-        <label style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Logado como (Professor):</label>
-        <select 
-          value={selectedProfessorId} 
-          onChange={(e) => setSelectedProfessorId(e.target.value)}
-          style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '250px' }}
-        >
-          <option value="">Selecione o professor para começar...</option>
-          {professors.map(p => <option key={p.id} value={p.id}>{p.name} {p.numericId ? `(ID: ${p.numericId})` : ''}</option>)}
-        </select>
-      </div>
+      {/* Professor Selector (Only for Admins) */}
+      {currentUser?.role === 'ADMIN' && (
+        <div className="glass-panel" style={{ padding: '24px', marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '16px', flexWrap: 'wrap' }}>
+          <label style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Logado como (Professor):</label>
+          <select 
+            value={selectedProfessorId} 
+            onChange={(e) => setSelectedProfessorId(e.target.value)}
+            style={{ padding: '12px 16px', borderRadius: '12px', background: 'rgba(255,255,255,0.05)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', cursor: 'pointer', minWidth: '250px' }}
+          >
+            <option value="">Selecione o professor para começar...</option>
+            {professors.map(p => <option key={p.id} value={p.id}>{p.name} {p.numericId ? `(ID: ${p.numericId})` : ''}</option>)}
+          </select>
+        </div>
+      )}
 
       {selectedProfessorId ? (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="glass-panel" style={{ background: 'var(--bg-panel-solid)', borderRadius: '24px', overflow: 'hidden' }}>
