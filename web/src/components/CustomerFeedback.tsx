@@ -174,7 +174,7 @@ export const CustomerFeedback = () => {
                       <button 
                         onClick={() => { setActiveFeedbackJob(job); setIsFeedbackModalOpen(true); }} 
                         style={{ 
-                          background: job.feedback?.comments || job.feedback?.power ? '#2D1E4B' : '#10B981', 
+                          background: job.feedback?.comments || job.feedback?.power ? '#483375' : '#10B981', 
                           border: 'none', padding: '10px 16px', borderRadius: '8px', color: 'white', 
                           display: 'inline-flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontWeight: 700, fontSize: '14px',
                           transition: 'opacity 0.2s'
