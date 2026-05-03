@@ -274,7 +274,7 @@ app.put('/api/jobs/:id', authenticateToken, async (req, res) => {
       RETURNING *
     `;
     const result = await db.query(updateQ, [
-      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null, date, stringerName, feedback ? JSON.stringify(feedback) : null, req.params.id, hasOwnReel ? true : false, hasOwnSet ? true : false, pickupNotes || null, stringingPoint || null
+      cId, customerName || 'Desconhecido', customerName || 'Desconhecido', racketModel, type, tension, price, status, mainString, crossString, orderCode, isHybrid, racketId, isStringing, stringingType, tensionUnit, preStretchMain, preStretchCross, basePrice, priceDiscountPercent, priceDiscountValue, tensionMain, tensionCross, pickupDate, commissionedProfessorId, auxServices ? JSON.stringify(auxServices) : null, date, stringerName, feedback ? JSON.stringify(feedback) : null, req.params.id, hasOwnReel ? true : false, hasOwnSet ? true : false, pickupNotes || null, stringingPoint || null, hasLogo ? true : false, logoNotes || null, racketNotes || null
     ]);
     if (result.rowCount === 0) return res.status(404).json({ error: 'ServiA o nAo encontrado.' });
     res.json(result.rows[0]);
