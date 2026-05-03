@@ -14,6 +14,7 @@ import { LoginView } from './components/LoginView';
 import { UserManagement } from './components/UserManagement';
 import { LogsView } from './components/LogsView';
 import { GlobalRadarNotification } from './components/GlobalRadarNotification';
+import { FriendlyMatchGlobalNotification } from './components/FriendlyMatchGlobalNotification';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProfileSettingsModal } from './components/ProfileSettingsModal';
 import { FriendlyMatchRadar } from './components/FriendlyMatchRadar';
@@ -385,6 +386,7 @@ function App() {
         </main>
       </div>
       {(currentUser.role === 'PROFESSOR' || currentUser.role === 'PROFESSOR_PREMIUM' || currentUser.role === 'ADMIN') && <GlobalRadarNotification />}
+      <FriendlyMatchGlobalNotification />
     </>
   );
 }

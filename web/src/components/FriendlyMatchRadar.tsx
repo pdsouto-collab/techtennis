@@ -1,22 +1,48 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, MapPin, Trophy, Target, Calendar, Radio } from 'lucide-react';
 
 export const FriendlyMatchRadar = () => {
   const navigate = useNavigate();
-  // const { currentUser } = useAuth(); // unused for now
   
-  const [radius, setRadius] = useState<number>(10);
-  const [myCategory, setMyCategory] = useState<string>('');
+  const [radius, setRadius] = useState<number>(() => Number(localStorage.getItem('tt_fm_radius')) || 10);
+  const [myCategory, setMyCategory] = useState<string>(() => localStorage.getItem('tt_fm_mycat') || '');
   
   const opponentCategories = ['Especial', 'A', 'B', 'C'];
-  const [selectedOpponentCategories, setSelectedOpponentCategories] = useState<string[]>([]);
+  const [selectedOpponentCategories, setSelectedOpponentCategories] = useState<string[]>(() => {
+    const saved = localStorage.getItem('tt_fm_oppcats');
+    return saved ? JSON.parse(saved) : [];
+  });
   
-  const [courtType, setCourtType] = useState<'Possui Quadra' | 'Quadra Alugada' | ''>('');
+  const [courtType, setCourtType] = useState<'Possui Quadra' | 'Quadra Alugada' | ''>(() => localStorage.getItem('tt_fm_court') as any || '');
   
-  const [ageRange, setAgeRange] = useState<string>('');
+  const [ageRange, setAgeRange] = useState<string>(() => localStorage.getItem('tt_fm_age') || '');
 
-  const [isActive, setIsActive] = useState(false);
+  const [isActive, setIsActive] = useState(() => localStorage.getItem('tt_radar_amistoso_active') === 'true');
+  const [matchFound, setMatchFound] = useState<any>(() => {
+    const saved = localStorage.getItem('tt_radar_amistoso_match');
+    return saved ? JSON.parse(saved) : null;
+  });
+
+  // Keep localStorage in sync with state changes
+  useEffect(() => { localStorage.setItem('tt_fm_radius', radius.toString()); }, [radius]);
+  useEffect(() => { localStorage.setItem('tt_fm_mycat', myCategory); }, [myCategory]);
+  useEffect(() => { localStorage.setItem('tt_fm_oppcats', JSON.stringify(selectedOpponentCategories)); }, [selectedOpponentCategories]);
+  useEffect(() => { localStorage.setItem('tt_fm_court', courtType); }, [courtType]);
+  useEffect(() => { localStorage.setItem('tt_fm_age', ageRange); }, [ageRange]);
+
+  // Listen to cross-tab or timer match events
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const match = localStorage.getItem('tt_radar_amistoso_match');
+      if (match) {
+        setMatchFound(JSON.parse(match));
+      } else {
+        setMatchFound(null);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const toggleOpponentCategory = (cat: string) => {
     setSelectedOpponentCategories(prev => 
@@ -47,12 +73,18 @@ export const FriendlyMatchRadar = () => {
     }
 
     setIsActive(true);
+    localStorage.setItem('tt_radar_amistoso_active', 'true');
+    localStorage.setItem('tt_radar_amistoso_time', Date.now().toString());
     // Future: send to backend
-    alert('Você agora está ativo no Radar de Busca para amistosos!');
+    alert('Você agora está ativo no Radar de Busca para amistosos! Você pode navegar por outras telas enquanto busca.');
   };
 
   const handleDeactivateRadar = () => {
     setIsActive(false);
+    setMatchFound(null);
+    localStorage.removeItem('tt_radar_amistoso_active');
+    localStorage.removeItem('tt_radar_amistoso_time');
+    localStorage.removeItem('tt_radar_amistoso_match');
   };
 
   return (
@@ -69,39 +101,85 @@ export const FriendlyMatchRadar = () => {
       <div className="glass-panel" style={{ padding: '32px', borderRadius: '24px' }}>
         {isActive ? (
           <div style={{ textAlign: 'center', padding: '40px 20px' }}>
-            <div style={{ 
-              width: '100px', height: '100px', background: 'rgba(56, 212, 48, 0.1)', 
-              borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
-              margin: '0 auto 24px', position: 'relative' 
-            }}>
-              <div style={{
-                position: 'absolute', inset: 0, border: '2px solid #38D430', borderRadius: '50%',
-                animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite'
-              }}></div>
-              <Radio size={48} color="#38D430" />
-            </div>
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
-              Você está ativo no Radar!
-            </h2>
-            <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
-              Buscando adversários num raio de {radius}km...
-            </p>
-            
-            <button 
-              onClick={handleDeactivateRadar}
-              style={{ 
-                background: '#EF4444', color: 'white', border: 'none', padding: '16px 32px', 
-                borderRadius: '100px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', width: '100%' 
-              }}
-            >
-              Parar Busca
-            </button>
+            {matchFound ? (
+              <div style={{ animation: 'fadeIn 0.5s ease-out' }}>
+                <div style={{ 
+                  width: '120px', height: '120px', background: 'rgba(56, 212, 48, 0.2)', 
+                  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  margin: '0 auto 24px', border: '4px solid #38D430'
+                }}>
+                  <Trophy size={64} color="#38D430" />
+                </div>
+                <h2 style={{ fontSize: '32px', fontWeight: 800, color: '#38D430', marginBottom: '8px' }}>
+                  MATCH ENCONTRADO!
+                </h2>
+                <div style={{ background: 'rgba(255,255,255,0.05)', padding: '24px', borderRadius: '16px', marginBottom: '32px', textAlign: 'left' }}>
+                  <p style={{ margin: '0 0 8px 0', color: 'white', fontSize: '18px' }}><strong>Adversário:</strong> {matchFound.name}</p>
+                  <p style={{ margin: '0 0 8px 0', color: 'var(--text-secondary)' }}><strong>Categoria:</strong> {matchFound.level}</p>
+                  <p style={{ margin: '0 0 8px 0', color: 'var(--text-secondary)' }}><strong>Distância:</strong> {matchFound.distance}</p>
+                  <p style={{ margin: '0', color: 'var(--text-secondary)' }}><strong>Quadra:</strong> {matchFound.court}</p>
+                </div>
+                
+                <div style={{ display: 'flex', gap: '16px' }}>
+                  <button 
+                    onClick={() => alert('Abrindo chat com ' + matchFound.name)}
+                    className="button-primary"
+                    style={{ flex: 1, padding: '16px', fontSize: '16px' }}
+                  >
+                    Iniciar Chat
+                  </button>
+                  <button 
+                    onClick={handleDeactivateRadar}
+                    style={{ 
+                      background: 'rgba(255,255,255,0.1)', color: 'white', border: 'none', padding: '16px', 
+                      borderRadius: '100px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', flex: 1 
+                    }}
+                  >
+                    Descartar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div>
+                <div style={{ 
+                  width: '100px', height: '100px', background: 'rgba(56, 212, 48, 0.1)', 
+                  borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', 
+                  margin: '0 auto 24px', position: 'relative' 
+                }}>
+                  <div style={{
+                    position: 'absolute', inset: 0, border: '2px solid #38D430', borderRadius: '50%',
+                    animation: 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite'
+                  }}></div>
+                  <Radio size={48} color="#38D430" />
+                </div>
+                <h2 style={{ fontSize: '24px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '8px' }}>
+                  Você está ativo no Radar!
+                </h2>
+                <p style={{ color: 'var(--text-secondary)', marginBottom: '32px' }}>
+                  Buscando adversários num raio de {radius}km...
+                </p>
+                
+                <button 
+                  onClick={handleDeactivateRadar}
+                  style={{ 
+                    background: '#EF4444', color: 'white', border: 'none', padding: '16px 32px', 
+                    borderRadius: '100px', fontSize: '16px', fontWeight: 700, cursor: 'pointer', width: '100%' 
+                  }}
+                >
+                  Parar Busca
+                </button>
+              </div>
+            )}
             <style>{`
               @keyframes ping {
                 75%, 100% {
                   transform: scale(2);
                   opacity: 0;
                 }
+              }
+              @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.9); }
+                to { opacity: 1; transform: scale(1); }
               }
             `}</style>
           </div>
