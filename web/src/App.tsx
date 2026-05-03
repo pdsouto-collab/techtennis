@@ -183,12 +183,7 @@ const Hero = () => {
         gap: '24px' 
       }}>
         
-        {/* DISPONÍVEL PARA TODOS OS PERFIS */}
-        <HomeTile 
-          title="Buscar Amistoso" subtitle="Radar de Adversários" fullWidth
-          backgroundImage={buscarAmistosoImg} backgroundPosition="center 30%"
-          onClick={() => navigate('/friendly-match')}
-        />
+
 
         {/* ADMIN E ENCORDOADOR */}
         {(profile === 'ADMIN' || profile === 'ENCORDOADOR') && (
@@ -238,6 +233,11 @@ const Hero = () => {
               backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'ENCORDOADOR' } })}
             />
+            <HomeTile 
+              title="Buscar Amistoso" subtitle="Radar de Adversários"
+              backgroundImage={buscarAmistosoImg} backgroundPosition="center center"
+              onClick={() => navigate('/friendly-match')}
+            />
           </>
         )}
 
@@ -269,6 +269,11 @@ const Hero = () => {
               backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'PROFESSOR' } })}
             />
+            <HomeTile 
+              title="Buscar Amistoso" subtitle="Radar de Adversários"
+              backgroundImage={buscarAmistosoImg} backgroundPosition="center center"
+              onClick={() => navigate('/friendly-match')}
+            />
           </>
         )}
 
@@ -294,6 +299,11 @@ const Hero = () => {
               title="Agenda Aberta" subtitle="Horários Disponíveis"
               backgroundImage={agendaAbertaImg}
               onClick={() => navigate('/open-agenda', { state: { role: 'CLIENTE' } })}
+            />
+            <HomeTile 
+              title="Buscar Amistoso" subtitle="Radar de Adversários"
+              backgroundImage={buscarAmistosoImg} backgroundPosition="center center"
+              onClick={() => navigate('/friendly-match')}
             />
           </>
         )}
