@@ -387,6 +387,44 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
           }
           return prev.map(u => u.id === (currentUser?.id || updatedUser.id) || u.email === updatedUser.email ? { ...u, ...updatedUser } : u);
         });
+
+        // Sincroniza dados com o cadastro central
+        const oldEmail = currentUser?.email;
+        if (updatedUser.role === 'CLIENTE') {
+          const savedC = localStorage.getItem('tt_customers');
+          if (savedC) {
+            let customers = JSON.parse(savedC);
+            let isUpdated = false;
+            customers = customers.map((c: any) => {
+              if (c.email === oldEmail || c.email === updatedUser.email) {
+                isUpdated = true;
+                return { ...c, name: updatedUser.name, email: updatedUser.email, phone: updatedUser.phone || c.phone };
+              }
+              return c;
+            });
+            if (isUpdated) {
+              localStorage.setItem('tt_customers', JSON.stringify(customers));
+              window.dispatchEvent(new StorageEvent('storage', { key: 'tt_customers', newValue: JSON.stringify(customers) }));
+            }
+          }
+        } else if (updatedUser.role.includes('PROFESSOR') || updatedUser.role === 'ENCORDOADOR' || updatedUser.role === 'ADMIN') {
+          const savedP = localStorage.getItem('tt_professors');
+          if (savedP) {
+            let professors = JSON.parse(savedP);
+            let isUpdated = false;
+            professors = professors.map((p: any) => {
+              if (p.email === oldEmail || p.email === updatedUser.email) {
+                isUpdated = true;
+                return { ...p, name: updatedUser.name, email: updatedUser.email, phone: updatedUser.phone || p.phone };
+              }
+              return p;
+            });
+            if (isUpdated) {
+              localStorage.setItem('tt_professors', JSON.stringify(professors));
+              window.dispatchEvent(new StorageEvent('storage', { key: 'tt_professors', newValue: JSON.stringify(professors) }));
+            }
+          }
+        }
         return true;
       }
       return false;
