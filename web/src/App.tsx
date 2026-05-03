@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { HashRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, User } from 'lucide-react';
+import { User } from 'lucide-react';
 import { StringerDashboard } from './components/StringerDashboard';
 import { CustomerFeedback } from './components/CustomerFeedback';
 import { RacketCollection } from './components/RacketCollection';
@@ -24,8 +24,6 @@ import gestaoUsuariosImg from './assets/gestao-usuarios-bg.jpg';
 
 const Navbar = () => {
   const { logout, currentUser, updateProfile } = useAuth();
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isMyProfileModalOpen, setIsMyProfileModalOpen] = useState(false);
 
@@ -53,31 +51,6 @@ const Navbar = () => {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '20px', position: 'relative' }}>
-            {isSearchOpen && (
-              <motion.input
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 200, opacity: 1 }}
-                type="text"
-                placeholder="Buscar..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                     alert('Busca ativada para: ' + searchQuery);
-                     setSearchQuery('');
-                     setIsSearchOpen(false);
-                  }
-                }}
-                style={{
-                  padding: '6px 16px', borderRadius: '100px', border: '1px solid rgba(255,255,255,0.4)',
-                  background: 'rgba(255,255,255,0.1)', color: 'white', outline: 'none'
-                }}
-                autoFocus
-                onBlur={() => !searchQuery && setIsSearchOpen(false)}
-              />
-            )}
-            <Search size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsSearchOpen(!isSearchOpen)} />
-            
             <div style={{ position: 'relative' }}>
               <User size={22} color="var(--text-primary)" style={{ cursor: 'pointer' }} onClick={() => setIsProfileOpen(!isProfileOpen)} />
               {isProfileOpen && (
